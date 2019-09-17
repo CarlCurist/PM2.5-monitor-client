@@ -15,7 +15,15 @@ import {
   Text,
   StatusBar,
   Image,
+  TouchableOpacity,
+  Button,
+  TextInput,
+  Dimensions,
+  FlatList,
 } from 'react-native';
+
+import { createAppContainer } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
 
 import {
   Header,
@@ -25,69 +33,213 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
+var window_width = Dimensions.get('window').width;//得到屏幕宽度
 
-const App = () => {
-  
-  return (
-    <Fragment>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
+class HomeScreen extends React.Component {
+  render() {
+    
+    return (
+      <Fragment>
+        <StatusBar barStyle="dark-content" />
+        <SafeAreaView>
+          <ScrollView
+            contentInsetAdjustmentBehavior="automatic"
+            style={styles.scrollView}>
 
-          <View style={{flex:1,justifyContent:"space-between",flexDirection: 'row'}}>
+            <View style={{flex:1,justifyContent:"space-between",flexDirection: 'row'}}>
+              <TouchableOpacity 
+              onPress={() => this.props.navigation.navigate('Login',{logined:false})}>
+                <Image source={require('./image/user.png')}
+                style={{width: 35, height: 35}}/>
+              </TouchableOpacity>
+              <Text style={styles.sectionTitle}>Battery:</Text>
+            </View>
+
+
+            <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+
+                <Image source={require('./image/logo.png')}/>
+              
+            </View>
             
-            <Image source={require('./image/user.png')}
-            style={{width: 35, height: 35}}/>
-            <Text style={styles.sectionTitle}>Battery:</Text>
-          </View>
-
-
-          <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-            <Image source={require('./image/logo.png')}/>
-          </View>
-
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}><Text style={styles.highlight}>Temperature(°C) :</Text> </Text>
-              <Text style={styles.sectionDescription}>
-                A polyline graph used to show trends of change
-              </Text>
+            <View style={styles.body}>
+              <View style={styles.sectionContainer}>
+                <Text style={styles.sectionTitle}><Text style={styles.highlight}>Temperature(°C) :</Text> </Text>
+                <Text style={styles.sectionDescription}>
+                  A line chart used to show trends of change
+                </Text>
+              </View>
+              <View style={styles.sectionContainer}>
+                <Text style={styles.sectionTitle}><Text style={styles.highlight}>Humidity(%) :</Text></Text>
+                <Text style={styles.sectionDescription}>
+                  A line chart used to show trends of change
+                  
+                </Text>
+              </View>
+              <View style={styles.sectionContainer}>
+                <Text style={styles.sectionTitle}><Text style={styles.highlight}>PM1.0(µg/m 3) :</Text></Text>
+                <Text style={styles.sectionDescription}>
+                  A line chart used to show trends of change
+                  {/*<DebugInstructions />*/}
+                </Text>
+              </View>
+              <View style={styles.sectionContainer}>
+                <Text style={styles.sectionTitle}><Text style={styles.highlight}>PM2.5(µg/m 3) :</Text></Text>
+                <Text style={styles.sectionDescription}>
+                  A line chart used to show trends of change
+                </Text>
+              </View>
+              <View style={styles.sectionContainer}>
+                <Text style={styles.sectionTitle}><Text style={styles.highlight}>PM10(µg/m 3) :</Text></Text>
+                <Text style={styles.sectionDescription}>
+                  A line chart used to show trends of change
+                </Text>
+              </View>
+              {/*<LearnMoreLinks />*/}
             </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}><Text style={styles.highlight}>Humidity(%) :</Text></Text>
-              <Text style={styles.sectionDescription}>
-                A polyline graph used to show trends of change
-                
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}><Text style={styles.highlight}>PM1.0(µg/m 3) :</Text></Text>
-              <Text style={styles.sectionDescription}>
-                 A polyline graph used to show trends of change
-                {/*<DebugInstructions />*/}
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}><Text style={styles.highlight}>PM2.5(µg/m 3) :</Text></Text>
-              <Text style={styles.sectionDescription}>
-                A polyline graph used to show trends of change
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}><Text style={styles.highlight}>PM10(µg/m 3) :</Text></Text>
-              <Text style={styles.sectionDescription}>
-                A polyline graph used to show trends of change
-              </Text>
-            </View>
-            {/*<LearnMoreLinks />*/}
-           </View>
-        </ScrollView>
-      </SafeAreaView>
-    </Fragment>
-  );
+          </ScrollView>
+        </SafeAreaView>
+      </Fragment>
+    );
+  }
 };
+
+class LoginScreen extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { username: '',password:'',token:'' };
+  }
+  render() {
+    const { navigation } = this.props;
+    const logined = navigation.getParam('logined', false);
+    if(logined)
+    {
+      return (
+      
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={styles.sectionTitle}>Account information</Text>
+          <Text style={styles.sectionDescription}>user name</Text>
+          <View style={{flex: 2,alignItems: 'center',justifyContent:'space-evenly',}}>
+            <Button
+              title="Logout"
+              onPress={() => alert("title","messages")}
+            />
+            <Button
+              title="switch sensors"
+              onPress={() => this.props.navigation.navigate('Scan')}
+            />
+          </View>
+        </View>
+      );
+    }
+    else{
+      return(
+        
+        <View style={{ flex: 1,alignItems:'center', flexDirection: 'column', justifyContent: 'center' }}>
+          {/*
+          <View style={{alignItems:'center',flexDirection:'row'}}>
+            <Text style={styles.sectionDescription}>user name:</Text>
+            <TextInput
+              style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+              onChangeText={(text) => this.setState({text})}
+              value={this.state.username}
+            />
+          </View>
+          */}
+          <View style={{flex:1,alignItems:'center', justifyContent: 'center'}}>
+            <TextInput  placeholder="username"
+                        underlineColorAndroid={'transparent'}//去掉下划线
+                        style={styles.username_input}
+                        onChangeText={(username) => this.setState({username})}/>
+
+            <TextInput  placeholder="password"
+                        secureTextEntry={true}//隐藏输入内容
+                        underlineColorAndroid={'transparent'}
+                        style={styles.username_input}
+                        onChangeText={(password) => this.setState({password})}/>
+          </View>
+          <View style={{flex:1,justifyContent:'space-evenly'}}>
+            <Button
+                title="Login"
+                onPress={() => console.log('Flame '+this.state.username +' '+ this.state.password)}
+            />
+            <Button
+                title="switch sensors"
+                onPress={() => this.props.navigation.navigate('Scan')}
+            />
+          </View>
+ 
+        </View>
+      );
+    }
+
+  }
+}
+
+class ScanBLEScreen extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      BLEDevicesList: [], 
+      loaded: false,  // 用来控制loading视图的显示，当数据加载完成，loading视图不再显示
+    };
+  }
+
+  findAvailableDevices(){
+    devices=[];
+    item1 = {'name':'device1','mac':'DDDD'};
+    item2 = {'name':'device2','mac':'AAAA'};
+    devices.push(item1);
+    devices.push(item2)
+
+    this.setState({
+      BLEDevicesList : devices,
+      loaded : true
+    })
+  }
+  render() {
+    return (
+      <View style={{flex:1,alignItems:'center', justifyContent: 'center'}}>
+        <Text style={styles.sectionTitle}>Available devices</Text>
+        <FlatList
+        data={this.state.BLEDevicesList}
+        renderItem={({item}) => <Text style={{fontSize: 28}}
+                                  onPress={()=>{alert(item.mac);this.props.navigation.goBack()}}>{item.name+' '+item.mac}</Text>}
+        keyExtractor={item => item.mac}
+        />
+        <Button
+          title="scan"
+          onPress={()=>this.findAvailableDevices()}
+        />
+      </View>
+    )
+  }
+}
+
+const RootStack = createStackNavigator(
+  {
+    Home: {
+      screen: HomeScreen,
+    },
+    Login: {
+      screen: LoginScreen,
+    },
+    Scan:{
+      screen:ScanBLEScreen,
+    }
+  },
+  {
+    initialRouteName: 'Home',
+  }
+);
+
+const AppContainer = createAppContainer(RootStack);
+
+export default class App extends React.Component {
+  render() {
+    return <AppContainer />;
+  }
+}
 
 const styles = StyleSheet.create({
   scrollView: {
@@ -126,6 +278,17 @@ const styles = StyleSheet.create({
     paddingRight: 12,
     textAlign: 'right',
   },
+  username_input: {
+    width:window_width-32,//居中，宽度为屏幕宽度-32，这样左右都有16的边距
+    borderRadius: 20,//输入框边界圆角度数
+    borderColor: 'skyblue',//输入框边界颜色
+    marginBottom:16,
+    paddingLeft:10,//这里是为了在圆角之后输入
+    padding:0,//去掉Android默认的padding
+    borderWidth: 1,
+    alignSelf:'center'//自身居中
+  }
+
 });
 
-export default App;
+
