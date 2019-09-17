@@ -32,6 +32,8 @@ import {
   DebugInstructions,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import BLEtest from './src/ble'
+import BLEMonitor from './src/BLEMonitor'
 
 var window_width = Dimensions.get('window').width;//得到屏幕宽度
 
@@ -177,27 +179,9 @@ class LoginScreen extends React.Component {
 }
 
 class ScanBLEScreen extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      BLEDevicesList: [], 
-      loaded: false,  // 用来控制loading视图的显示，当数据加载完成，loading视图不再显示
-    };
-  }
 
-  findAvailableDevices(){
-    devices=[];
-    item1 = {'name':'device1','mac':'DDDD'};
-    item2 = {'name':'device2','mac':'AAAA'};
-    devices.push(item1);
-    devices.push(item2)
-
-    this.setState({
-      BLEDevicesList : devices,
-      loaded : true
-    })
-  }
   render() {
+    {/*
     return (
       <View style={{flex:1,alignItems:'center', justifyContent: 'center'}}>
         <Text style={styles.sectionTitle}>Available devices</Text>
@@ -207,12 +191,18 @@ class ScanBLEScreen extends React.Component {
                                   onPress={()=>{alert(item.mac);this.props.navigation.goBack()}}>{item.name+' '+item.mac}</Text>}
         keyExtractor={item => item.mac}
         />
+        
         <Button
           title="scan"
           onPress={()=>this.findAvailableDevices()}
         />
       </View>
     )
+    */}
+    return(
+          <BLEMonitor/>
+      )
+    
   }
 }
 
