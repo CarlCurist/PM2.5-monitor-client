@@ -13,6 +13,20 @@ import BleModule from './BleModule';
 
 //确保全局只有一个BleManager实例，BleModule类保存着蓝牙的连接信息
 global.BluetoothManager = new BleModule();  
+global.BLEStatus = {
+    isStart : false,
+    isConnected:false,
+    updateStateListener:null,
+    stopScanListener:null,
+    discoverPeripheralListener:null,
+    connectPeripheralListener:null,
+    disconnectPeripheralListener:null,
+    updateValueListener:null,
+    data:'',
+}
+global.RWServiceUUID = '0000fff0-0000-1000-8000-00805f9b34fb';
+global.ReadUUID = '0000fff1-0000-1000-8000-00805f9b34fb';
+
 
 export default class BLEMonitor extends Component {
     constructor(props) {
@@ -20,7 +34,6 @@ export default class BLEMonitor extends Component {
         this.state={
             data: [],
             scaning:false,
-            isConnected:false,
             text:'',
             writeData:'',
             receiveData:'',
@@ -33,16 +46,30 @@ export default class BLEMonitor extends Component {
     }
     
     componentDidMount(){
-        BluetoothManager.start();  //蓝牙初始化     	    
+        /*
+        BluetoothManager.start();  //蓝牙初始化    	    
         this.updateStateListener = BluetoothManager.addListener('BleManagerDidUpdateState',this.handleUpdateState);
         this.stopScanListener = BluetoothManager.addListener('BleManagerStopScan',this.handleStopScan);	   
         this.discoverPeripheralListener = BluetoothManager.addListener('BleManagerDiscoverPeripheral',this.handleDiscoverPeripheral);
 	    this.connectPeripheralListener = BluetoothManager.addListener('BleManagerConnectPeripheral',this.handleConnectPeripheral);
         this.disconnectPeripheralListener = BluetoothManager.addListener('BleManagerDisconnectPeripheral',this.handleDisconnectPeripheral);
-        this.updateValueListener = BluetoothManager.addListener('BleManagerDidUpdateValueForCharacteristic', this.handleUpdateValue);       
+        this.updateValueListener = BluetoothManager.addListener('BleManagerDidUpdateValueForCharacteristic', this.handleUpdateValue);  
+        */    
+       if(BLEStatus.isStart == false){
+            BLEStatus.isStart = true
+            BluetoothManager.start();
+            BLEStatus.updateStateListener=BluetoothManager.addListener('BleManagerDidUpdateState',this.handleUpdateState);
+            BLEStatus.stopScanListener=BluetoothManager.addListener('BleManagerStopScan',this.handleStopScan);	   
+            BLEStatus.discoverPeripheralListener=BluetoothManager.addListener('BleManagerDiscoverPeripheral',this.handleDiscoverPeripheral);
+            BLEStatus.connectPeripheralListener=BluetoothManager.addListener('BleManagerConnectPeripheral',this.handleConnectPeripheral);
+            BLEStatus.disconnectPeripheralListener=BluetoothManager.addListener('BleManagerDisconnectPeripheral',this.handleDisconnectPeripheral);
+            BLEStatus.updateValueListener=BluetoothManager.addListener('BleManagerDidUpdateValueForCharacteristic', this.handleUpdateValue);  
+       }
+ 
     }   
 
     componentWillUnmount(){
+        /*
         this.updateStateListener.remove();
         this.stopScanListener.remove();
         this.discoverPeripheralListener.remove();       
@@ -52,6 +79,9 @@ export default class BLEMonitor extends Component {
         if(this.state.isConnected){
             BluetoothManager.disconnect();  //退出时断开蓝牙连接
         }
+        */
+
+
     }
 
     //蓝牙状态改变
@@ -94,7 +124,8 @@ export default class BLEMonitor extends Component {
 
     //蓝牙设备已连接 
     handleConnectPeripheral=(args)=>{
-        console.log('BleManagerConnectPeripheral:', args); 
+        console.log('flame BleManagerConnectPeripheral:', args); 
+        
     }
 
     //蓝牙设备已断开连接
@@ -104,12 +135,13 @@ export default class BLEMonitor extends Component {
         BluetoothManager.initUUID();  //断开连接后清空UUID
         this.setState({
             data:newData,
-            isConnected:false,
+            //isConnected:false,
             writeData:'',
             readData:'',
             receiveData:'',
             text:'',
         });
+        BLEStatus.isConnected=false;
     }
 
      //接收到新数据
@@ -120,6 +152,7 @@ export default class BLEMonitor extends Component {
         this.bluetoothReceiveData.push(value);			
         console.log('BluetoothUpdateValue', value);
         this.setState({receiveData:this.bluetoothReceiveData.join('')})
+        //BLEStatus.data = this.state.receiveData;
     }
 
     connect(item){
@@ -143,8 +176,9 @@ export default class BLEMonitor extends Component {
                 //连接成功，列表只显示已连接的设备
                 this.setState({  
                     data:[item.item],
-                    isConnected:true
+                    //isConnected:true
                 });
+                BLEStatus.isConnected=true;
             })
             .catch(err=>{                
                 let newData = [...this.state.data];
@@ -154,13 +188,53 @@ export default class BLEMonitor extends Component {
             })
     } 
 
+    connectAndStartNotify(item){
+        //当前蓝牙正在连接时不能打开另一个连接进程
+        if(BluetoothManager.isConnecting){
+            console.log('当前蓝牙正在连接时不能打开另一个连接进程');
+            return;
+        }
+        if(this.state.scaning){  //当前正在扫描中，连接时关闭扫描
+            BluetoothManager.stopScan();
+            this.setState({scaning:false});
+        }
+        let newData = [...this.deviceMap.values()]
+        newData[item.index].isConnecting = true;       
+        this.setState({data:newData});
+        
+        BluetoothManager.connect(item.item.id)
+            .then(peripheralInfo=>{
+                let newData = [...this.state.data];
+                newData[item.index].isConnecting = false;
+                //连接成功，列表只显示已连接的设备
+                this.setState({  
+                    data:[item.item],
+                    //isConnected:true
+                });
+                BLEStatus.isConnected=true;
+                this.notifyUUID(RWServiceUUID,ReadUUID)
+            })
+            //.then()
+            .catch(err=>{                
+                let newData = [...this.state.data];
+                newData[item.index].isConnecting = false;                
+                this.setState({data:newData});
+                this.alert('连接失败');
+                console.log('flame',error);
+            })
+    } 
+
+    
     disconnect(){
         this.setState({
             data:[...this.deviceMap.values()], 
-            isConnected:false
+            //isConnected:false
         });
+        BLEStatus.isConnected=false;
         BluetoothManager.disconnect();
     }   
+    
+
 
     scan(){
         if(this.state.scaning){  //当前正在扫描中
@@ -257,13 +331,26 @@ export default class BLEMonitor extends Component {
             })
     }
 
+    notifyUUID = (ServiceUUID,CharUUID)=>{
+        BluetoothManager.startNotificationUUID(ServiceUUID,CharUUID)
+        .then(()=>{
+            this.setState({isMonitoring:true});
+            //this.alert('开启成功');
+        })
+        .catch(err=>{
+            this.setState({isMonitoring:false});
+            console.log('flame',err);
+            this.alert('开启失败');                
+        })
+    }
+
     renderItem=(item)=>{
         let data = item.item;
         return(
             <TouchableOpacity
                 activeOpacity={0.7}
-                disabled={this.state.isConnected?true:false}
-                onPress={()=>{this.connect(item)}}
+                disabled={BLEStatus.isConnected?true:false}
+                onPress={()=>{this.connectAndStartNotify(item)}}
                 style={styles.item}>          
                 
                 <View style={{flexDirection:'row',}}>
@@ -282,12 +369,12 @@ export default class BLEMonitor extends Component {
                 <TouchableOpacity 
                     activeOpacity={0.7}
                     style={[styles.buttonView,{marginHorizontal:10,height:40,alignItems:'center'}]}
-                    onPress={this.state.isConnected?this.disconnect.bind(this):this.scan.bind(this)}>
-                    <Text style={styles.buttonText}>{this.state.scaning?'正在搜索中':this.state.isConnected?'断开蓝牙':'搜索蓝牙'}</Text>
+                    onPress={BLEStatus.isConnected?this.disconnect.bind(this):this.scan.bind(this)}>
+                    <Text style={styles.buttonText}>{this.state.scaning?'正在搜索中':BLEStatus.isConnected?'断开蓝牙':'搜索蓝牙'}</Text>
                 </TouchableOpacity>
                 
                 <Text style={{marginLeft:10,marginTop:10}}>
-                    {this.state.isConnected?'当前连接的设备':'可用设备'}
+                    {BLEStatus.isConnected?'当前连接的设备':'可用设备'}
                 </Text>
             </View>
         )
@@ -296,7 +383,7 @@ export default class BLEMonitor extends Component {
     renderFooter=()=>{
         return(
             <View style={{marginBottom:30}}>
-                {this.state.isConnected?
+                {BLEStatus.isConnected?
                     <View>
                     {this.renderWriteView('写数据(write)：','发送',BluetoothManager.writeWithResponseCharacteristicUUID,this.write,this.state.writeData)}
                     {this.renderWriteView('写数据(writeWithoutResponse)：','发送',BluetoothManager.writeWithoutResponseCharacteristicUUID,this.writeWithoutResponse,this.state.writeData)}
@@ -368,17 +455,44 @@ export default class BLEMonitor extends Component {
         )
     }
 
+    testRenderNotify=() => {
+        return(
+            <View style={{marginBottom:30}}>
+                {BLEStatus.isConnected?
+                    <View>
+                    
+                    <Text style={styles.content}>
+                        {this.state.receiveData}
+                    </Text>
+                    <TouchableOpacity 
+                        activeOpacity={0.7} 
+                        style={styles.buttonView} 
+                        onPress={()=>{this.notifyUUID(RWServiceUUID,ReadUUID)}} 
+                        >
+                        <Text style={styles.buttonText}>press</Text>
+                    </TouchableOpacity>
+                    </View>                   
+                    : <View></View>
+                }        
+            </View>
+        )
+    }
+
     render () {
         return (
             <View style={styles.container}>  
                 <FlatList 
+                
                     renderItem={this.renderItem}
+                    
                     ListHeaderComponent={this.renderHeader}
                     ListFooterComponent={this.renderFooter}
+                    ListFooterComponent={this.testRenderNotify}
                     keyExtractor={item=>item.id}
                     data={this.state.data}
-                    extraData={[this.state.isConnected,this.state.text,this.state.receiveData,this.state.readData,this.state.writeData,this.state.isMonitoring,this.state.scaning]}
+                    extraData={[BLEStatus.isConnected,this.state.text,this.state.receiveData,this.state.readData,this.state.writeData,this.state.isMonitoring,this.state.scaning]}
                     keyboardShouldPersistTaps='handled'
+                    
                 />   
             </View>
         )

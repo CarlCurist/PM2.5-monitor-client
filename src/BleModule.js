@@ -1,12 +1,10 @@
-/**
- * Created by guang on 2016/11/21.
- */
 import {
     Platform,
     NativeModules,
     NativeEventEmitter
 } from 'react-native';
 import BleManager from 'react-native-ble-manager';
+import { nullLiteral } from '@babel/types';
 
 const BleManagerModule = NativeModules.BleManager;
 //通过NativeAppEventEmitter.addListener添加监听的方法官方已不建议使用
@@ -247,6 +245,24 @@ export default class BleModule{
                     reject(error);
                 });
         });
+    }
+
+    startNotificationUUID(ServiceUUID= 0,CharUUID=0){
+        if(ServiceUUID===0 || CharUUID === 0){
+            return null;
+        }else{
+            return new Promise( (resolve, reject) =>{
+                BleManager.startNotification(this.peripheralId, ServiceUUID, CharUUID)
+                    .then(() => {
+                        console.log('Notification started');
+                        resolve();
+                    })
+                    .catch((error) => {
+                        console.log('Notification error:',error);
+                        reject(error);
+                    });
+            });
+        }
     }
 
     /** 
