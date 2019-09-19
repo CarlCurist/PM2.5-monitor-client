@@ -42,7 +42,7 @@ class HomeScreen extends React.Component {
   constructor(props) {
     super(props);   
     this.state={
-      receiveData:'',
+      //receiveData:'',
       battery : '',
       temperature : 0,
       humidity : 0,
@@ -50,7 +50,7 @@ class HomeScreen extends React.Component {
       _2p5 : 0,
       _10p : 0,
     }
-    this.bluetoothReceiveData = [];
+    //this.bluetoothReceiveData = [];
     this.displayReceiveData = this.displayReceiveData.bind(this)
   }
   componentDidMount(){
@@ -119,9 +119,7 @@ class HomeScreen extends React.Component {
                 <Text style={styles.sectionDescription}>
                   A line chart used to show trends of change
                 </Text>
-                <Text style={styles.sectionDescription}>
-                  {this.state.receiveData}
-                </Text>
+              
               </View>
               <View style={styles.sectionContainer}>
                 <Text style={styles.sectionTitle}><Text style={styles.highlight}>Humidity(%) :{this.state.humidity}</Text></Text>
