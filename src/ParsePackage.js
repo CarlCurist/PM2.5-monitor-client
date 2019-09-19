@@ -12,13 +12,14 @@ export default class ParsePackage{
         console.log('BluetoothUpdateValue', value);
         //this.setState({receiveData:this.bluetoothReceiveData.join('')})
         //BLEStatus.data = this.state.receiveData;
+        var result = null;
         if(value[2]===3){
-            this.parseBATT_PACKAGE(value);
+            result = this.parseBATT_PACKAGE(value);
         }
         if(value[2]===2){
-            this.parseRUNN_PACKAGE(value);
+            result = this.parseRUNN_PACKAGE(value);
         }
-        return this.bluetoothReceiveData.join('');
+        return result;
     }
 
     parseBATT_PACKAGE(data){
@@ -26,7 +27,7 @@ export default class ParsePackage{
         if(!this.checkValid(data)){
             return null;
         }
-
+        result.type = 3;
         result.year = 2000+ this.BCDtoNum(data[3]);
         result.month = this.BCDtoNum(data[4]);
         result.data = this.BCDtoNum(data[5]);
@@ -35,7 +36,17 @@ export default class ParsePackage{
         result.second = this.BCDtoNum(data [8]);
         result.cd = data[9]?true:false;
 
-        result.battery = ((data[10]<<8)+data[11])*3.3/65535*1.5*1000;
+        result.voltage = ((data[10]<<8)+data[11])*3.3/65535*1.5*1000;
+        
+        if(result.voltage>=4100){
+            result.battery = 'high';
+        }else if(result.voltage>=4000 && result.voltage<4100){
+            result.battery = 'midium';
+        }else if(result.voltage>=3900 && result.voltage < 4000){
+            result.battery = 'low';
+        }else{
+            result.battery = 'critical';
+        }
 
         console.log("flame parse BATT_PACKAGE ",JSON.stringify(result));
         return result;
@@ -47,13 +58,17 @@ export default class ParsePackage{
         if(!this.checkValid(data)){
             return null;
         }
-
+        result.type = 2;
         result.sd = data[3]?true:false;
         result.temperature = ((data[4]<<8)+data[5])*175/65535-45;
         result.humidity = ((data[6]<<8)+data[7])/65535*100
-        result._1p = ((data[8]<<8)+data[9]);
+        result._1p0 = ((data[8]<<8)+data[9]);
         result._2p5 = ((data[10]<<8)+data[11]);
         result._10p = ((data[12]<<8)+data[13]);
+
+        result.temperature = result.temperature.toFixed(2);
+        result.humidity = result.humidity.toFixed(2);
+
         result.error = data[14];
         console.log("flame parse RUNN_PACKAGE ",JSON.stringify(result));
         console.log("flame original package ",data.join(' '));

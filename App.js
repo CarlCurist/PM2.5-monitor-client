@@ -42,7 +42,13 @@ class HomeScreen extends React.Component {
   constructor(props) {
     super(props);   
     this.state={
-      receiveData:''
+      receiveData:'',
+      battery : '',
+      temperature : 0,
+      humidity : 0,
+      _1p0 : 0,
+      _2p5 : 0,
+      _10p : 0,
     }
     this.bluetoothReceiveData = [];
     this.displayReceiveData = this.displayReceiveData.bind(this)
@@ -62,8 +68,22 @@ class HomeScreen extends React.Component {
   }
 
   displayReceiveData(data){
-    var tmp =  gParseData.handleUpdateValue(data);
-    this.setState({receiveData:tmp});
+    this.package =  gParseData.handleUpdateValue(data);
+
+    if(this.package.type === 3){
+      this.setState({battery:this.package.battery});
+    }
+
+    if(this.package.type===2){
+      this.setState({temperature:this.package.temperature,
+                    humidity:this.package.humidity,
+                    _1p0:this.package._1p0,
+                    _2p5:this.package._2p5,
+                    _10p:this.package._10p})
+    }
+
+
+    
   }
   
 
@@ -83,7 +103,7 @@ class HomeScreen extends React.Component {
                 <Image source={require('./image/user.png')}
                 style={{width: 35, height: 35}}/>
               </TouchableOpacity>
-              <Text style={styles.sectionTitle}>Battery:</Text>
+              <Text style={styles.sectionTitle}>Battery:{this.state.battery}</Text>
             </View>
 
 
@@ -95,7 +115,7 @@ class HomeScreen extends React.Component {
             
             <View style={styles.body}>
               <View style={styles.sectionContainer}>
-                <Text style={styles.sectionTitle}><Text style={styles.highlight}>Temperature(°C) :</Text> </Text>
+                <Text style={styles.sectionTitle}><Text style={styles.highlight}>Temperature(°C) :{this.state.temperature}</Text> </Text>
                 <Text style={styles.sectionDescription}>
                   A line chart used to show trends of change
                 </Text>
@@ -104,27 +124,27 @@ class HomeScreen extends React.Component {
                 </Text>
               </View>
               <View style={styles.sectionContainer}>
-                <Text style={styles.sectionTitle}><Text style={styles.highlight}>Humidity(%) :</Text></Text>
+                <Text style={styles.sectionTitle}><Text style={styles.highlight}>Humidity(%) :{this.state.humidity}</Text></Text>
                 <Text style={styles.sectionDescription}>
                   A line chart used to show trends of change
                   
                 </Text>
               </View>
               <View style={styles.sectionContainer}>
-                <Text style={styles.sectionTitle}><Text style={styles.highlight}>PM1.0(µg/m 3) :</Text></Text>
+                <Text style={styles.sectionTitle}><Text style={styles.highlight}>PM1.0(µg/m 3) :{this.state._1p0}</Text></Text>
                 <Text style={styles.sectionDescription}>
                   A line chart used to show trends of change
                   {/*<DebugInstructions />*/}
                 </Text>
               </View>
               <View style={styles.sectionContainer}>
-                <Text style={styles.sectionTitle}><Text style={styles.highlight}>PM2.5(µg/m 3) :</Text></Text>
+                <Text style={styles.sectionTitle}><Text style={styles.highlight}>PM2.5(µg/m 3) :{this.state._2p5}</Text></Text>
                 <Text style={styles.sectionDescription}>
                   A line chart used to show trends of change
                 </Text>
               </View>
               <View style={styles.sectionContainer}>
-                <Text style={styles.sectionTitle}><Text style={styles.highlight}>PM10(µg/m 3) :</Text></Text>
+                <Text style={styles.sectionTitle}><Text style={styles.highlight}>PM10(µg/m 3) :{this.state._10p}</Text></Text>
                 <Text style={styles.sectionDescription}>
                   A line chart used to show trends of change
                 </Text>
