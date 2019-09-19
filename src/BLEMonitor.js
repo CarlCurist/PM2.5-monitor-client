@@ -51,7 +51,8 @@ export default class BLEMonitor extends Component {
        BLEStatus.connectPeripheralListener=BluetoothManager.addListener('BleManagerConnectPeripheral',this.handleConnectPeripheral);
        BLEStatus.disconnectPeripheralListener=BluetoothManager.addListener('BleManagerDisconnectPeripheral',this.handleDisconnectPeripheral);
        BLEStatus.updateValueListener=BluetoothManager.addListener('BleManagerDidUpdateValueForCharacteristic', this.handleUpdateValue);  
- 
+       
+       BluetoothManager.checkState();
     }   
 
     componentWillUnmount(){

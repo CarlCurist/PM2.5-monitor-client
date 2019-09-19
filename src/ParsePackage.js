@@ -38,11 +38,11 @@ export default class ParsePackage{
 
         result.voltage = ((data[10]<<8)+data[11])*3.3/65535*1.5*1000;
         
-        if(result.voltage>=4100){
+        if(result.voltage>=3900){
             result.battery = 'high';
-        }else if(result.voltage>=4000 && result.voltage<4100){
+        }else if(result.voltage>=3600 && result.voltage<3900){
             result.battery = 'midium';
-        }else if(result.voltage>=3900 && result.voltage < 4000){
+        }else if(result.voltage>=3300 && result.voltage < 3600){
             result.battery = 'low';
         }else{
             result.battery = 'critical';
