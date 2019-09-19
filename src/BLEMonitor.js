@@ -28,7 +28,7 @@ export default class BLEMonitor extends Component {
         }
         this.bluetoothReceiveData = [];  //蓝牙接收的数据缓存
         this.deviceMap = new Map();  
-
+        
     }
     
     componentDidMount(){
@@ -72,6 +72,7 @@ export default class BLEMonitor extends Component {
        BLEStatus.connectPeripheralListener.remove();
        BLEStatus.disconnectPeripheralListener.remove();
        BLEStatus.updateValueListener.remove();  
+       
 
     }
 

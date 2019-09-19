@@ -32,13 +32,41 @@ import {
   DebugInstructions,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-import BLEtest from './src/ble'
-import BLEMonitor from './src/BLEMonitor'
+import BLEtest from './src/ble';
+import BLEMonitor from './src/BLEMonitor';
+
 
 var window_width = Dimensions.get('window').width;//得到屏幕宽度
 
 class HomeScreen extends React.Component {
+  constructor(props) {
+    super(props);   
+    this.state={
+      receiveData:''
+    }
+    this.bluetoothReceiveData = [];
+    this.displayReceiveData = this.displayReceiveData.bind(this)
+  }
+  componentDidMount(){
+    if(BLEStatus.isStart == false){
+      BLEStatus.isStart = true
+      BluetoothManager.start();
+    }
+    BLEStatus.updateValueListener=BluetoothManager.addListener('BleManagerDidUpdateValueForCharacteristic', this.displayReceiveData);
+  }
+  componentWillUnmount(){
+    BLEStatus.updateValueListener.remove();
+    if(BLEStatus.isConnected){
+      BluetoothManager.disconnect();  //退出时断开蓝牙连接
+    }
+  }
+
+  displayReceiveData(data){
+    var tmp =  gParseData.handleUpdateValue(data);
+    this.setState({receiveData:tmp});
+  }
   
+
   render() {
     
     return (
@@ -70,6 +98,9 @@ class HomeScreen extends React.Component {
                 <Text style={styles.sectionTitle}><Text style={styles.highlight}>Temperature(°C) :</Text> </Text>
                 <Text style={styles.sectionDescription}>
                   A line chart used to show trends of change
+                </Text>
+                <Text style={styles.sectionDescription}>
+                  {this.state.receiveData}
                 </Text>
               </View>
               <View style={styles.sectionContainer}>

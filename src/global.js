@@ -1,7 +1,9 @@
 import BleModule from './BleModule';
+import ParsePackage from './ParsePackage'
 
 //确保全局只有一个BleManager实例，BleModule类保存着蓝牙的连接信息
 global.BluetoothManager = new BleModule();  
+global.gParseData = new ParsePackage();
 global.BLEStatus = {
     isStart : false,
     isConnected:false,
