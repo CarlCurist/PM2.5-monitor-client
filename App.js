@@ -38,6 +38,7 @@ import BLEMonitor from './src/BLEMonitor'
 var window_width = Dimensions.get('window').width;//得到屏幕宽度
 
 class HomeScreen extends React.Component {
+  
   render() {
     
     return (

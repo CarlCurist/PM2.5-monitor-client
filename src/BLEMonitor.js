@@ -9,23 +9,9 @@ import {
     TextInput,
     Alert,
 } from 'react-native'
-import BleModule from './BleModule';
 
-//确保全局只有一个BleManager实例，BleModule类保存着蓝牙的连接信息
-global.BluetoothManager = new BleModule();  
-global.BLEStatus = {
-    isStart : false,
-    isConnected:false,
-    updateStateListener:null,
-    stopScanListener:null,
-    discoverPeripheralListener:null,
-    connectPeripheralListener:null,
-    disconnectPeripheralListener:null,
-    updateValueListener:null,
-    data:'',
-}
-global.RWServiceUUID = '0000fff0-0000-1000-8000-00805f9b34fb';
-global.ReadUUID = '0000fff1-0000-1000-8000-00805f9b34fb';
+import {Global} from './global'
+
 
 
 export default class BLEMonitor extends Component {
@@ -58,13 +44,13 @@ export default class BLEMonitor extends Component {
        if(BLEStatus.isStart == false){
             BLEStatus.isStart = true
             BluetoothManager.start();
-            BLEStatus.updateStateListener=BluetoothManager.addListener('BleManagerDidUpdateState',this.handleUpdateState);
-            BLEStatus.stopScanListener=BluetoothManager.addListener('BleManagerStopScan',this.handleStopScan);	   
-            BLEStatus.discoverPeripheralListener=BluetoothManager.addListener('BleManagerDiscoverPeripheral',this.handleDiscoverPeripheral);
-            BLEStatus.connectPeripheralListener=BluetoothManager.addListener('BleManagerConnectPeripheral',this.handleConnectPeripheral);
-            BLEStatus.disconnectPeripheralListener=BluetoothManager.addListener('BleManagerDisconnectPeripheral',this.handleDisconnectPeripheral);
-            BLEStatus.updateValueListener=BluetoothManager.addListener('BleManagerDidUpdateValueForCharacteristic', this.handleUpdateValue);  
        }
+       BLEStatus.updateStateListener=BluetoothManager.addListener('BleManagerDidUpdateState',this.handleUpdateState);
+       BLEStatus.stopScanListener=BluetoothManager.addListener('BleManagerStopScan',this.handleStopScan);	   
+       BLEStatus.discoverPeripheralListener=BluetoothManager.addListener('BleManagerDiscoverPeripheral',this.handleDiscoverPeripheral);
+       BLEStatus.connectPeripheralListener=BluetoothManager.addListener('BleManagerConnectPeripheral',this.handleConnectPeripheral);
+       BLEStatus.disconnectPeripheralListener=BluetoothManager.addListener('BleManagerDisconnectPeripheral',this.handleDisconnectPeripheral);
+       BLEStatus.updateValueListener=BluetoothManager.addListener('BleManagerDidUpdateValueForCharacteristic', this.handleUpdateValue);  
  
     }   
 
@@ -80,7 +66,12 @@ export default class BLEMonitor extends Component {
             BluetoothManager.disconnect();  //退出时断开蓝牙连接
         }
         */
-
+       BLEStatus.updateStateListener.remove();
+       BLEStatus.stopScanListener.remove();
+       BLEStatus.discoverPeripheralListener.remove();       
+       BLEStatus.connectPeripheralListener.remove();
+       BLEStatus.disconnectPeripheralListener.remove();
+       BLEStatus.updateValueListener.remove();  
 
     }
 
@@ -103,7 +94,7 @@ export default class BLEMonitor extends Component {
     handleDiscoverPeripheral=(data)=>{
         // console.log('BleManagerDiscoverPeripheral:', data);
         console.log('flame',data.id,data.name);
-        if(data.name != null && data.name.startsWith('PM')){
+        //if(data.name != null && data.name.startsWith('PM')){
             console.log(data.id,data.name);
             let id;  //蓝牙连接id
             let macAddress;  //蓝牙Mac地址           
@@ -118,7 +109,7 @@ export default class BLEMonitor extends Component {
             } 
             this.deviceMap.set(data.id,data);  //使用Map类型保存搜索到的蓝牙设备，确保列表不显示重复的设备
             this.setState({data:[...this.deviceMap.values()]});      
-        }
+        //}
          
     }
 
