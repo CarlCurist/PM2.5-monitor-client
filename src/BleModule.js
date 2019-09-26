@@ -346,6 +346,7 @@ export default class BleModule{
         BleManager.getConnectedPeripherals([])
             .then((peripheralsArray) => {
                 console.log('Connected peripherals: ', peripheralsArray);
+                return peripheralsArray;
             }).catch(error=>{
 
             })

@@ -53,6 +53,11 @@ export default class BLEMonitor extends Component {
        BLEStatus.updateValueListener=BluetoothManager.addListener('BleManagerDidUpdateValueForCharacteristic', this.handleUpdateValue);  
        
        BluetoothManager.checkState();
+
+       if(BLEStatus.isConnected){
+        this.setState({data:JSON.parse(BLEStatus.connectedDevice)});
+        }
+        console.log("flame2",this.state.data);
     }   
 
     componentWillUnmount(){
@@ -75,13 +80,14 @@ export default class BLEMonitor extends Component {
        BLEStatus.updateValueListener.remove();  
        
 
+
     }
 
     //蓝牙状态改变
     handleUpdateState=(args)=>{
         console.log('BleManagerDidUpdateStatea:', args);
         BluetoothManager.bluetoothState = args.state;  
-        if(args.state == 'on'){  //蓝牙打开时自动搜索
+        if(args.state == 'on' && !BLEStatus.isConnected){  //蓝牙打开时自动搜索
             this.scan();
         }            
     }
@@ -161,16 +167,19 @@ export default class BLEMonitor extends Component {
         let newData = [...this.deviceMap.values()]
         newData[item.index].isConnecting = true;       
         this.setState({data:newData});
+
         
         BluetoothManager.connect(item.item.id)
             .then(peripheralInfo=>{
                 let newData = [...this.state.data];
                 newData[item.index].isConnecting = false;
                 //连接成功，列表只显示已连接的设备
+                
                 this.setState({  
                     data:[item.item],
                     //isConnected:true
                 });
+                
                 BLEStatus.isConnected=true;
             })
             .catch(err=>{                
@@ -200,10 +209,15 @@ export default class BLEMonitor extends Component {
                 let newData = [...this.state.data];
                 newData[item.index].isConnecting = false;
                 //连接成功，列表只显示已连接的设备
+                
                 this.setState({  
                     data:[item.item],
                     //isConnected:true
                 });
+                
+                BLEStatus.connectedDevice =  JSON.stringify(this.state.data);
+                console.log("flame connectedDevice",BLEStatus.connectedDevice);
+
                 BLEStatus.isConnected=true;
                 this.notifyUUID(RWServiceUUID,ReadUUID)
             })
@@ -342,13 +356,13 @@ export default class BLEMonitor extends Component {
         return(
             <TouchableOpacity
                 activeOpacity={0.7}
-                disabled={BLEStatus.isConnected?true:false}
+                //disabled={BLEStatus.isConnected?true:false}
                 onPress={()=>{this.connectAndStartNotify(item)}}
                 style={styles.item}>          
                 
                 <View style={{flexDirection:'row',}}>
                     <Text style={{color:'black'}}>{data.name?data.name:''}</Text>
-                    <Text style={{marginLeft:50,color:"red"}}>{data.isConnecting?'连接中...':''}</Text>
+                    <Text style={{marginLeft:50,color:"red"}}>{data.isConnecting?'connecting...':''}</Text>
                 </View>
                 <Text>{data.id}</Text>
                
@@ -363,11 +377,11 @@ export default class BLEMonitor extends Component {
                     activeOpacity={0.7}
                     style={[styles.buttonView,{marginHorizontal:10,height:40,alignItems:'center'}]}
                     onPress={BLEStatus.isConnected?this.disconnect.bind(this):this.scan.bind(this)}>
-                    <Text style={styles.buttonText}>{this.state.scaning?'正在搜索中':BLEStatus.isConnected?'断开蓝牙':'搜索蓝牙'}</Text>
+                    <Text style={styles.buttonText}>{this.state.scaning?'scanning':BLEStatus.isConnected?'disconnect':'scan ble devices'}</Text>
                 </TouchableOpacity>
                 
                 <Text style={{marginLeft:10,marginTop:10}}>
-                    {BLEStatus.isConnected?'当前连接的设备':'可用设备'}
+                    {BLEStatus.isConnected?'connected device':'found devices'}
                 </Text>
             </View>
         )
