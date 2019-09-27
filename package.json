@@ -17,7 +17,8 @@
     "react-native-storage": "^1.0.1",
     "react-navigation": "^4.0.5",
     "react-navigation-drawer": "^2.2.1",
-    "react-navigation-stack": "^1.7.3"
+    "react-navigation-stack": "^1.7.3",
+    "realm": "^3.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.6.0",

@@ -36,10 +36,14 @@ import {
 import BLEtest from './src/ble';
 import BLEMonitor from './src/BLEMonitor';
 import Geolocation from 'react-native-geolocation-service';
+import DatabaseServices from './src/DatabaseHelper';
 import { isDeclareModuleExports } from '@babel/types';
 
 
 var window_width = Dimensions.get('window').width;//得到屏幕宽度
+//const Realm = require('realm');
+
+
 
 class HomeScreen extends React.Component {
   constructor(props) {
@@ -75,7 +79,7 @@ class HomeScreen extends React.Component {
     var a=new Date();
     var b=a.toString();
     console.log("flame-date "+b);
-    
+    */
 
    //if (hasLocationPermission) {
     this.requestPermission();
@@ -90,7 +94,15 @@ class HomeScreen extends React.Component {
         { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
     );
     //}
-    */
+    
+    DatabaseServices.testsave(4);
+    DatabaseServices.testsave(5);
+    DatabaseServices.testsave(6);
+    
+    var d = new Date();
+    d.setTime(d.getTime()-24*60*60*1000);
+    var e = new Date();
+    
   }
   componentWillUnmount(){
     BLEStatus.updateValueListener.remove();
