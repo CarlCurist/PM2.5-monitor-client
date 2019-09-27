@@ -20,6 +20,7 @@ import {
   TextInput,
   Dimensions,
   FlatList,
+  PermissionsAndroid,
 } from 'react-native';
 
 import { createAppContainer } from 'react-navigation';
@@ -34,6 +35,8 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import BLEtest from './src/ble';
 import BLEMonitor from './src/BLEMonitor';
+import Geolocation from 'react-native-geolocation-service';
+import { isDeclareModuleExports } from '@babel/types';
 
 
 var window_width = Dimensions.get('window').width;//得到屏幕宽度
@@ -59,6 +62,35 @@ class HomeScreen extends React.Component {
       BluetoothManager.start();
     }
     BLEStatus.updateValueListener=BluetoothManager.addListener('BleManagerDidUpdateValueForCharacteristic', this.displayReceiveData);
+
+    /*
+    var arr =[];
+    arr.push(new Date("Thu Sep 26 2019 20:34:28 GMT+0800 (GMT+08:00)"));
+    arr.push(new Date("Thu Sep 26 2019 3:50:29 GMT+0800 (GMT+08:00)"));
+    arr.push(new Date("Fri Sep 27 2019 14:32:28 GMT+0800 (GMT+08:00)"));
+    arr.push(new Date("Fri Sep 27 2019 11:42:28 GMT+0800 (GMT+08:00)"));
+    arr.sort(function(a, b){
+      return a > b ? 1 : -1; // 这里改为大于号
+    });
+    var a=new Date();
+    var b=a.toString();
+    console.log("flame-date "+b);
+    
+
+   //if (hasLocationPermission) {
+    this.requestPermission();
+    Geolocation.getCurrentPosition(
+        (position) => {
+            console.log("flame"+position);
+        },
+        (error) => {
+            // See error code charts below.
+            console.log(error.code, error.message);
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    );
+    //}
+    */
   }
   componentWillUnmount(){
     BLEStatus.updateValueListener.remove();
@@ -80,10 +112,49 @@ class HomeScreen extends React.Component {
                     _1p0:this.package._1p0,
                     _2p5:this.package._2p5,
                     _10p:this.package._10p})
+    } 
+  }
+
+  async requestPermission() {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'request fine location permissions',
+          message:
+            'request fine location permissions' +
+            'request fine location permissions',
+          buttonNeutral: 'ask me later',
+          buttonNegative: 'no',
+          buttonPositive: 'ok',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('flame 现在你获得fine location权限了');
+      } else {
+        console.log('flame 用户并不屌你');
+      }
+
+      const granted2 = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+        {
+          title: 'request coarse location permissions',
+          message:
+            'request coarse location permissions' +
+            'request coarse location permissions',
+          buttonNeutral: 'ask me later',
+          buttonNegative: 'no',
+          buttonPositive: 'ok',
+        },
+      );
+      if (granted2 === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('flame 现在你获得coarse location权限了');
+      } else {
+        console.log('flame 用户并不屌你');
+      }
+    } catch (err) {
+      console.warn(err);
     }
-
-
-    
   }
   
 
