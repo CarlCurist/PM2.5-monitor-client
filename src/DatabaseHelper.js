@@ -25,6 +25,7 @@ const AirSchema = {
     name: 'Item',
     properties: {
       date:     'date',
+      device: 'string',
       location: 'Location',
       air:     'Air',
     }
@@ -37,6 +38,7 @@ const AirSchema = {
         Database.write(()=>{
             var a = {
                 date: new Date(),
+                device:"JD-DI-fs1654",
                 location:{
                     accuracy:tmp,
                     altitude:tmp,
@@ -55,8 +57,40 @@ const AirSchema = {
             }
             Database.create('Item',a);
         })
+      },
+
+      saveDataFromJson: function(tdeviceMac,tlocation,tair,recordDate=null){
+        Database.write(()=>{
+          var a ={
+            date:recordDate?recordDate:new Date(),
+            device:deviceMac,
+            location:tlocation,
+            air:tair
+          }
+          Database.create('Item',a);
+        })
+      },
+
+      loadAll: function(){
+        return Database.objects("Item");
+      },
+
+      loadDateFromUTC: function(utcdate_string){
+        return Database.objects("Item").filtered('date > '+ utcdate_string);
+      },
+
+      deleteAllData: function(){
+        /*
+        let t = Database.objects("Item");
+        Database.delete(t);
+        */
+       Database.write(() =>{
+         Database.deleteAll();
+         });
       }
   }
+
+  
 
 
 
