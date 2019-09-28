@@ -37,6 +37,7 @@ import BLEtest from './src/ble';
 import BLEMonitor from './src/BLEMonitor';
 import Geolocation from 'react-native-geolocation-service';
 import DatabaseServices from './src/DatabaseHelper';
+import {Global} from './src/global'
 import { isDeclareModuleExports } from '@babel/types';
 
 
@@ -58,7 +59,8 @@ class HomeScreen extends React.Component {
       _10p : 0,
     }
     //this.bluetoothReceiveData = [];
-    this.displayReceiveData = this.displayReceiveData.bind(this)
+    this.displayReceiveData = this.displayReceiveData.bind(this);
+    this.getUTCString = this.getUTCString.bind(this);
   }
   componentDidMount(){
     if(BLEStatus.isStart == false){
@@ -83,32 +85,58 @@ class HomeScreen extends React.Component {
 
    //if (hasLocationPermission) {
     this.requestPermission();
-    Geolocation.getCurrentPosition(
-        (position) => {
-            console.log("flame"+position);
-        },
-        (error) => {
-            // See error code charts below.
-            console.log(error.code, error.message);
-        },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-    );
+
     //}
     
-    DatabaseServices.testsave(4);
-    DatabaseServices.testsave(5);
-    DatabaseServices.testsave(6);
+    /*
+    DatabaseServices.testsave(7);
+    DatabaseServices.testsave(8);
+    DatabaseServices.testsave(9);
+    */
     
-    var d = new Date();
-    d.setTime(d.getTime()-24*60*60*1000);
+    /*
+    var d = new Date('2019-1-1 00:59:20');
+    //var d = new Date();
+    //d.setTime(d.getTime()-24*60*60*1000);
+    console.log("flame "+d);
+    var w = this.getUTCString(d);
+    console.log("flame "+w);
     var e = new Date();
-    
+    */
+    /*
+    //var tmp = DatabaseServices.loadAll();
+    //filter1 = tmp.filtered('air.temperature > 3')
+    //var dd =  new Date(2019, 7, 31);
+    var dd =  new Date('2019/9/28 13:56:00');
+    console.log("flame-database 1 "+dd);
+    var ddt = this.getUTCString();
+    var tmp = DatabaseServices.loadDateFromUTC(ddt);
+    console.log("flame-database 2 "+ddt);
+    //filter1 = tmp.filtered('date < '+ ddt);
+    for (let p of tmp) {
+      console.log("flame-database 3 "+JSON.stringify(p));
+    }
+    console.log("flame-database 4 "+tmp.length);
+    //DatabaseServices.deleteAllData();
+    */
   }
   componentWillUnmount(){
     BLEStatus.updateValueListener.remove();
     if(BLEStatus.isConnected){
       BluetoothManager.disconnect();  //退出时断开蓝牙连接
     }
+  }
+
+  getUTCString(date=null){
+    // it will return last 24H by default
+    if(date===null){
+      date = new Date();
+      date.setTime(date.getTime()-24*60*60*1000); // get yesterday
+    }
+    var t1 = date.getUTCMonth();
+    var t2 = date.getUTCDate();
+    // getUTCMounth() return 0-11
+    return date.getUTCFullYear()+'-'+(date.getUTCMonth()+1)+'-'+date.getUTCDate()+'@'+date.getUTCHours()+':'+date.getUTCMinutes()+':'+date.getUTCSeconds();
   }
 
   displayReceiveData(data){
@@ -119,12 +147,51 @@ class HomeScreen extends React.Component {
     }
 
     if(this.package.type===2){
-      this.setState({temperature:this.package.temperature,
-                    humidity:this.package.humidity,
+      this.setState({temperature:this.package.temperature.toFixed(2),
+                    humidity:this.package.humidity.toFixed(2),
                     _1p0:this.package._1p0,
                     _2p5:this.package._2p5,
                     _10p:this.package._10p})
-    } 
+      var a = this.package;
+      delete a.type;
+      delete a.sd;
+      delete a.error;
+      var b = JSON.parse(BLEStatus.connectedDevice);
+      deviceMac = b[0]['id'];
+
+      Geolocation.getCurrentPosition(
+        (position) => {
+
+          //a.temperature parseFloat();
+          //a. = parseInt()
+
+          
+          
+          console.log('flame package ',JSON.stringify(a));
+          console.log('flame connectedDevice ',deviceMac);
+          //console.log("flame position "+position);
+          console.log('flame position ',JSON.stringify(position['coords']));
+          DatabaseServices.saveDataFromJson(deviceMac,position['coords'],a);
+        },
+        (error) => {
+          var NullPosition = {
+            accuracy:0,
+            altitude:0,
+            heading:0,
+            latitude:0,
+            longitude:0,
+            speed:0
+          }
+          
+          DatabaseServices.saveDataFromJson(deviceMac,NullPosition,a);
+            // See error code charts below.
+            console.log("flame GPS can't find location ",error.code, error.message);
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+      );
+    }
+    
+
   }
 
   async requestPermission() {

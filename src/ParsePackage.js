@@ -61,13 +61,13 @@ export default class ParsePackage{
         result.type = 2;
         result.sd = data[3]?true:false;
         result.temperature = ((data[4]<<8)+data[5])*175/65535-45;
-        result.humidity = ((data[6]<<8)+data[7])/65535*100
+        result.humidity = ((data[6]<<8)+data[7])/65535*100;
         result._1p0 = ((data[8]<<8)+data[9]);
         result._2p5 = ((data[10]<<8)+data[11]);
         result._10p = ((data[12]<<8)+data[13]);
 
-        result.temperature = result.temperature.toFixed(2);
-        result.humidity = result.humidity.toFixed(2);
+        //result.temperature = result.temperature.toFixed(2); //this function will let number become string
+        //result.humidity = result.humidity.toFixed(2);
 
         result.error = data[14];
         console.log("flame parse RUNN_PACKAGE ",JSON.stringify(result));

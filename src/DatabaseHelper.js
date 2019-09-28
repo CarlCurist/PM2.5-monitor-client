@@ -17,7 +17,7 @@ const AirSchema = {
       altitude: 'double',
       heading:     'double',
       latitude:  'double', 
-      longtitude:     'double',
+      longitude:     'double',
       speed:     'double'
     }
   };
@@ -44,7 +44,7 @@ const AirSchema = {
                     altitude:tmp,
                     heading: tmp,
                     latitude:tmp, 
-                    longtitude:tmp,
+                    longitude:tmp,
                     speed:tmp
                 },
                 air:{
