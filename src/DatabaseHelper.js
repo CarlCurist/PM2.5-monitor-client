@@ -5,9 +5,9 @@ const AirSchema = {
     properties: {
       temperature:     'double',
       humidity: 'double',
-      _1p0:     'int',
-      _2p5:  'int', 
-      _10p:     'int',
+      _1p0:     'double',
+      _2p5:  'double', 
+      _10p:     'double',
     }
   };
   const LocationSchema = {
