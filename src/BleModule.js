@@ -319,6 +319,24 @@ export default class BleModule{
                 });
         });		
     }
+
+    writeUUID(data,ServiceUUID= 0,CharUUID=0){
+        if(ServiceUUID===0 || CharUUID === 0){
+            return null;
+        }else{
+            return new Promise( (resolve, reject) =>{
+                BleManager.write(this.peripheralId, ServiceUUID, CharUUID, data)
+                    .then(() => {
+                        console.log('flame Write success: ',data);
+                        resolve();
+                    })
+                    .catch((error) => {
+                        console.log('flame Write  failed: ',data);
+                        reject(error);
+                    });
+            });		
+        }
+    }
     
     /** 
      * 读取数据  

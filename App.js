@@ -36,7 +36,7 @@ import {
 import BLEtest from './src/ble';
 import BLEMonitor from './src/BLEMonitor';
 import Geolocation from 'react-native-geolocation-service';
-import DatabaseServices from './src/DatabaseHelper';
+//import DatabaseServices from './src/DatabaseHelper'; annotation for debug
 import {Global} from './src/global'
 import { isDeclareModuleExports } from '@babel/types';
 
@@ -61,6 +61,7 @@ class HomeScreen extends React.Component {
     //this.bluetoothReceiveData = [];
     this.displayReceiveData = this.displayReceiveData.bind(this);
     this.getUTCString = this.getUTCString.bind(this);
+    
   }
   componentDidMount(){
     if(BLEStatus.isStart == false){
@@ -142,8 +143,28 @@ class HomeScreen extends React.Component {
   displayReceiveData(data){
     this.package =  gParseData.handleUpdateValue(data);
 
-    if(this.package.type === 3){
+    if("battery" in this.package){
       this.setState({battery:this.package.battery});
+      if(this.package.battery==="charging"){
+        BLEStatus.isCharging = true;
+        if(BLEStatus.synchronizeClock===false){
+          gParseData.synchronizeClock();
+        }
+        
+      }else{
+        BLEStatus.synchronizeClock = false;
+        BLEStatus.isCharging = false;
+      }
+    }
+
+    if("timestat" in this.package){
+      if(this.package.timestat){
+        BLEStatus.synchronizeClock = true;
+        console.log('synchronize clock success');
+      }
+      else{
+        console.log('synchronize clock fail');
+      }
     }
 
     if(this.package.type===2){
@@ -159,6 +180,7 @@ class HomeScreen extends React.Component {
       var b = JSON.parse(BLEStatus.connectedDevice);
       deviceMac = b[0]['id'];
 
+      /* annotation for debug
       Geolocation.getCurrentPosition(
         (position) => {
 
@@ -189,6 +211,7 @@ class HomeScreen extends React.Component {
         },
         { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
       );
+      */
     }
     
 

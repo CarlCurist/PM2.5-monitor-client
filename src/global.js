@@ -14,6 +14,10 @@ global.BLEStatus = {
     disconnectPeripheralListener:null,
     updateValueListener:null,
     connectedDevice:'',
+    isCharging:false,
+    synchronizeClock:false,
 }
+
 global.RWServiceUUID = '0000fff0-0000-1000-8000-00805f9b34fb';
 global.ReadUUID = '0000fff1-0000-1000-8000-00805f9b34fb';
+global.WriteUUID = '0000fff2-0000-1000-8000-00805f9b34fb';

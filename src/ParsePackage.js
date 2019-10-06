@@ -1,3 +1,5 @@
+import {Global} from './global'
+
 export default class ParsePackage{
     constructor(){
 	    this.bluetoothReceiveData=[]
@@ -19,6 +21,23 @@ export default class ParsePackage{
         if(value[2]===2){
             result = this.parseRUNN_PACKAGE(value);
         }
+        if(value[2]===1){
+            result = this.parseCHRG_PACKAGE(value);
+        }
+        return result;
+    }
+
+    parseCHRG_PACKAGE(data){
+        var result={};
+        if(!this.checkValid(data)){
+            return null;
+        }
+        result.type = 1;
+        result.battery = data[3] ? "Full":"charging";
+        result.current = ((data[4]<<8) + data[5])*3.3/65535*500;
+        result.timestat = data[6] ? true:false;
+
+        console.log("flame parse CHRG_PACKAGE ",JSON.stringify(result));
         return result;
     }
 
@@ -79,6 +98,10 @@ export default class ParsePackage{
         return bcd-(bcd >> 4)*6;
     }
 
+    NumtoBCD(num){
+        return num + parseInt(num/10)*6;
+    }
+
     checkValid(data){
         if(data[0] != 0xAA && data[1] != 0xAA){
             console.log('flame invalid RUNN_PACKAGE :',data.join(' '))
@@ -97,6 +120,56 @@ export default class ParsePackage{
         }
         return true;
     }
+    
+    calcCheckSum(data){
+        var i,tmp=0;
+        for(i=2;i<=17;i++){
+            tmp = tmp + data[i];
+        }
+        return tmp;
+    }
+
+    synchronizeClock(){
+        var data = Array(20),i;
+        currentDate = new Date();//'2019-1-1 00:59:20'
+    
+        data[0]=data[1]=0xAA;
+        data[2] = 1;
+        data[3] = 0;//millisecond
+        data[4] = this.NumtoBCD(currentDate.getSeconds());
+        data[5] = this.NumtoBCD(currentDate.getMinutes());
+        data[6] = this.NumtoBCD(currentDate.getHours());
+        data[7] = currentDate.getDay()===0 ? 7: currentDate.getDay()+1;
+        data[8] = this.NumtoBCD(currentDate.getDate());
+        data[9] = this.NumtoBCD(currentDate.getMonth()+1);
+        data[10] = this.NumtoBCD(currentDate.getYear()-100);
+
+        for(i=11;i<18;i++)
+            data[i]=0;
+
+        checksum = this.calcCheckSum(data);
+        data[18] = checksum>>8;
+        data[19] = checksum & 0xff;
+
+        var debugstr = '';
+        for(i=0;i<20;i++){
+            debugstr += data[i].toString(16) + ' ';
+        }
+        //console.log(currentDate.getDay() + ' ' +currentDate.getYear());
+        console.log('flame synchronizeClock package :',debugstr);
+
+        BluetoothManager.writeUUID(data,RWServiceUUID,WriteUUID)
+        .then(()=>{
+            console.log('flame writeUUID success');
+
+        })
+        .catch(err=>{
+            console.log('flame writeUUID ',err);               
+        })
+        return data;
+    }
+
+
 
 
 }
