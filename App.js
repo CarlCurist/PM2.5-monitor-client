@@ -73,6 +73,8 @@ class HomeScreen extends React.Component {
     this.displayReceiveData = this.displayReceiveData.bind(this);
     this.getUTCString = this.getUTCString.bind(this);
     this.loadDataFromDatabase = this.loadDataFromDatabase.bind(this);
+    this.updateChart = this.updateChart.bind(this);
+    
   }
 
   componentDidMount(){
@@ -142,6 +144,23 @@ class HomeScreen extends React.Component {
     if(BLEStatus.isConnected){
       BluetoothManager.disconnect();  //退出时断开蓝牙连接
     }
+  }
+
+  updateChart(a){
+    this.state.dataSet.push(a);
+    this.state.temperatureSet.push(a.temperature);
+    this.state.humiditySet.push(a.humidity);
+    this.state._1p0Set.push(a._1p0);
+    this.state._2p5Set.push(a._2p5);
+    this.state._10pSet.push(a._10p);
+
+    this.temperatureChart.updateData(this.state.temperatureSet);
+    this.humidityChart.updateData(this.state.humiditySet);
+    this._1p0Chart.updateData(this.state._1p0Set);
+    this._2p5Chart.updateData(this.state._2p5Set);
+    this._10pChart.updateData(this.state._10pSet);
+
+    //console.log("flame4 temperatureSet "+ JSON.stringify(this.state.temperatureSet));
   }
 
   loadDataFromDatabase(){
@@ -222,10 +241,7 @@ class HomeScreen extends React.Component {
       var b = JSON.parse(BLEStatus.connectedDevice);
       deviceMac = b[0]['id'];
 
-      this.state.dataSet.push(a);
-      this.state.temperatureSet.push(a.temperature);
-      this.temperatureChart.updateData(this.state.temperatureSet);
-      console.log("flame4 temperatureSet "+ JSON.stringify(this.state.temperatureSet));
+      this.updateChart(a);
 
       ///* annotation for debug
       Geolocation.getCurrentPosition(
