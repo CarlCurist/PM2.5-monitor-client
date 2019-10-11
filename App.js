@@ -36,9 +36,13 @@ import {
 import BLEtest from './src/ble';
 import BLEMonitor from './src/BLEMonitor';
 import Geolocation from 'react-native-geolocation-service';
-//import DatabaseServices from './src/DatabaseHelper'; annotation for debug
+import DatabaseServices from './src/DatabaseHelper'; //annotation for debug
 import {Global} from './src/global'
 import { isDeclareModuleExports } from '@babel/types';
+
+import MyLineChart from './src/both-axes';
+import ExtrasExample from './src/extras';
+import { Grid, LineChart, XAxis, YAxis } from 'react-native-svg-charts'
 
 
 var window_width = Dimensions.get('window').width;//得到屏幕宽度
@@ -57,12 +61,20 @@ class HomeScreen extends React.Component {
       _1p0 : 0,
       _2p5 : 0,
       _10p : 0,
+
+      dataSet :[],
+      temperatureSet : [],
+      humiditySet:[],
+      _1p0Set:[],
+      _2p5Set:[],
+      _10pSet:[],
     }
     //this.bluetoothReceiveData = [];
     this.displayReceiveData = this.displayReceiveData.bind(this);
     this.getUTCString = this.getUTCString.bind(this);
-    
+    this.loadDataFromDatabase = this.loadDataFromDatabase.bind(this);
   }
+
   componentDidMount(){
     if(BLEStatus.isStart == false){
       BLEStatus.isStart = true
@@ -88,7 +100,11 @@ class HomeScreen extends React.Component {
     this.requestPermission();
 
     //}
-    
+
+    this.loadDataFromDatabase();
+
+    //console.log("flame4 temperatureSet "+JSON.stringify(this.state.temperatureSet));
+
     /*
     DatabaseServices.testsave(7);
     DatabaseServices.testsave(8);
@@ -126,6 +142,32 @@ class HomeScreen extends React.Component {
     if(BLEStatus.isConnected){
       BluetoothManager.disconnect();  //退出时断开蓝牙连接
     }
+  }
+
+  loadDataFromDatabase(){
+    var tmp = DatabaseServices.loadAll();
+    this.state.dataSet = tmp.map(a=>a.air);
+    this.state.temperatureSet = this.state.dataSet.map(a=>a.temperature);
+    this.state.humiditySet = this.state.dataSet.map(a=>a.humidity);
+    this.state._1p0Set = this.state.dataSet.map(a=>a._1p0);
+    this.state._2p5Set = this.state.dataSet.map(a=>a._2p5);
+    this.state._10pSet = this.state.dataSet.map(a=>a._10p);
+    this.temperatureChart.updateData(this.state.temperatureSet);
+    this.humidityChart.updateData(this.state.humiditySet);
+    this._1p0Chart.updateData(this.state._1p0Set);
+    this._2p5Chart.updateData(this.state._2p5Set);
+    this._10pChart.updateData(this.state._10pSet);
+
+    var latestItem = tmp[tmp.length - 1].air;
+    this.setState({
+      temperature:latestItem.temperature.toFixed(2),
+      humidity:latestItem.humidity.toFixed(2),
+      _1p0:latestItem._1p0,
+      _2p5:latestItem._2p5,
+      _10p:latestItem._10p,
+    });
+
+    //this.forceUpdate();
   }
 
   getUTCString(date=null){
@@ -180,7 +222,12 @@ class HomeScreen extends React.Component {
       var b = JSON.parse(BLEStatus.connectedDevice);
       deviceMac = b[0]['id'];
 
-      /* annotation for debug
+      this.state.dataSet.push(a);
+      this.state.temperatureSet.push(a.temperature);
+      this.temperatureChart.updateData(this.state.temperatureSet);
+      console.log("flame4 temperatureSet "+ JSON.stringify(this.state.temperatureSet));
+
+      ///* annotation for debug
       Geolocation.getCurrentPosition(
         (position) => {
 
@@ -211,7 +258,7 @@ class HomeScreen extends React.Component {
         },
         { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
       );
-      */
+      //*/
     }
     
 
@@ -289,36 +336,23 @@ class HomeScreen extends React.Component {
             <View style={styles.body}>
               <View style={styles.sectionContainer}>
                 <Text style={styles.sectionTitle}><Text style={styles.highlight}>Temperature(°C) :{this.state.temperature}</Text> </Text>
-                <Text style={styles.sectionDescription}>
-                  A line chart used to show trends of change
-                </Text>
-              
+                <MyLineChart ref={instance => { this.temperatureChart = instance; }} />
               </View>
               <View style={styles.sectionContainer}>
                 <Text style={styles.sectionTitle}><Text style={styles.highlight}>Humidity(%) :{this.state.humidity}</Text></Text>
-                <Text style={styles.sectionDescription}>
-                  A line chart used to show trends of change
-                  
-                </Text>
+                <MyLineChart ref={instance => { this.humidityChart = instance; }} />
               </View>
               <View style={styles.sectionContainer}>
                 <Text style={styles.sectionTitle}><Text style={styles.highlight}>PM1.0(µg/m 3) :{this.state._1p0}</Text></Text>
-                <Text style={styles.sectionDescription}>
-                  A line chart used to show trends of change
-                  {/*<DebugInstructions />*/}
-                </Text>
+                <MyLineChart ref={instance => { this._1p0Chart = instance; }} />
               </View>
               <View style={styles.sectionContainer}>
                 <Text style={styles.sectionTitle}><Text style={styles.highlight}>PM2.5(µg/m 3) :{this.state._2p5}</Text></Text>
-                <Text style={styles.sectionDescription}>
-                  A line chart used to show trends of change
-                </Text>
+                <MyLineChart ref={instance => { this._2p5Chart = instance; }} />
               </View>
               <View style={styles.sectionContainer}>
                 <Text style={styles.sectionTitle}><Text style={styles.highlight}>PM10(µg/m 3) :{this.state._10p}</Text></Text>
-                <Text style={styles.sectionDescription}>
-                  A line chart used to show trends of change
-                </Text>
+                <MyLineChart ref={instance => { this._10pChart = instance; }} />
               </View>
               {/*<LearnMoreLinks />*/}
             </View>
@@ -424,6 +458,8 @@ class ScanBLEScreen extends React.Component {
     */}
     return(
           <BLEMonitor/>
+          //<MyLineChart/>
+          
       )
     
   }
