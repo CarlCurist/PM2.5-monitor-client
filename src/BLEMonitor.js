@@ -9,9 +9,21 @@ import {
     TextInput,
     Alert,
 } from 'react-native'
-
+import {
+  Container,
+  Header,
+  Button,
+  Title,
+  Content,
+  Icon,
+  Footer,
+  FooterTab,
+  Left,
+  Right,
+  Body
+} from "native-base";
+import { DrawerActions } from 'react-navigation';
 import {Global} from './global'
-
 
 
 export default class BLEMonitor extends Component {
@@ -28,9 +40,8 @@ export default class BLEMonitor extends Component {
         }
         this.bluetoothReceiveData = [];  //蓝牙接收的数据缓存
         this.deviceMap = new Map();  
-        
     }
-    
+
     componentDidMount(){
         /*
         BluetoothManager.start();  //蓝牙初始化    	    
@@ -82,7 +93,7 @@ export default class BLEMonitor extends Component {
 
 
     }
-
+    
     //蓝牙状态改变
     handleUpdateState=(args)=>{
         console.log('BleManagerDidUpdateStatea:', args);
@@ -486,7 +497,24 @@ export default class BLEMonitor extends Component {
     }
 
     render () {
+        //const { navigation } = this.props;
         return (
+        <Container style={styles.container}>
+        <Header>
+          <Left>
+            <Button
+              transparent
+              onPress={() => this.props.navigation.goBack()}
+            >
+              <Icon name="arrow-back" />
+            </Button>
+          </Left>
+          <Body>
+            <Title>Sensor</Title>
+          </Body>
+          <Right />
+        </Header>
+            
             <View style={styles.container}>  
                 <FlatList 
                 
@@ -502,6 +530,8 @@ export default class BLEMonitor extends Component {
                     
                 />   
             </View>
+            
+            </Container>
         )
     }
 }

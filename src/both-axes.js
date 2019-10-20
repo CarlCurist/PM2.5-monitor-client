@@ -1,6 +1,6 @@
 import React from 'react'
 import { Grid, LineChart, XAxis, YAxis } from 'react-native-svg-charts'
-import { View } from 'react-native'
+import { View,ScrollView } from 'react-native'
 
 class MyLineChart extends React.PureComponent {
     constructor(props) {
@@ -44,6 +44,7 @@ class MyLineChart extends React.PureComponent {
         // and then displace the other axis with just as many pixels. Simple but manual.
 
         return (
+
             <View style={{ height: 200, padding: 20, flexDirection: 'row' }}>
                 <YAxis
                     data={this.state.data}
@@ -57,6 +58,7 @@ class MyLineChart extends React.PureComponent {
                         data={this.state.data}
                         contentInset={verticalContentInset}
                         svg={{ stroke: 'rgb(134, 65, 244)' }}
+                        
                     >
                         <Grid/>
                     </LineChart>
@@ -71,6 +73,7 @@ class MyLineChart extends React.PureComponent {
                     */}
                 </View>
             </View>
+
         )
     }
 

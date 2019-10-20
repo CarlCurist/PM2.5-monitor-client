@@ -16,18 +16,30 @@ import {
   StatusBar,
   Image,
   TouchableOpacity,
-  Button,
   TextInput,
   Dimensions,
   FlatList,
   PermissionsAndroid,
 } from 'react-native';
 
+import {
+  Container,
+  Content,
+  Icon,
+  Left,
+  Header,
+  Button,
+  Title,
+  Body,
+  Right,
+} from "native-base";
+
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
+import { createDrawerNavigator } from 'react-navigation-drawer';
+import SideBar from "./src/sidebar";
 
 import {
-  Header,
   LearnMoreLinks,
   Colors,
   DebugInstructions,
@@ -36,13 +48,14 @@ import {
 import BLEtest from './src/ble';
 import BLEMonitor from './src/BLEMonitor';
 import Geolocation from 'react-native-geolocation-service';
-import DatabaseServices from './src/DatabaseHelper'; //annotation for debug
+//import DatabaseServices from './src/DatabaseHelper'; //annotation for debug
 import {Global} from './src/global'
 import { isDeclareModuleExports } from '@babel/types';
 
 import MyLineChart from './src/both-axes';
 import ExtrasExample from './src/extras';
 import { Grid, LineChart, XAxis, YAxis } from 'react-native-svg-charts'
+import LoginScreen from './src/LoginScreen'
 
 
 var window_width = Dimensions.get('window').width;//得到屏幕宽度
@@ -72,7 +85,7 @@ class HomeScreen extends React.Component {
     //this.bluetoothReceiveData = [];
     this.displayReceiveData = this.displayReceiveData.bind(this);
     this.getUTCString = this.getUTCString.bind(this);
-    this.loadDataFromDatabase = this.loadDataFromDatabase.bind(this);
+    //this.loadDataFromDatabase = this.loadDataFromDatabase.bind(this);
     this.updateChart = this.updateChart.bind(this);
     
   }
@@ -103,7 +116,7 @@ class HomeScreen extends React.Component {
 
     //}
 
-    this.loadDataFromDatabase();
+    //this.loadDataFromDatabase();
 
     //console.log("flame4 temperatureSet "+JSON.stringify(this.state.temperatureSet));
 
@@ -162,7 +175,7 @@ class HomeScreen extends React.Component {
 
     //console.log("flame4 temperatureSet "+ JSON.stringify(this.state.temperatureSet));
   }
-
+/*annotation for debug
   loadDataFromDatabase(){
     var tmp = DatabaseServices.loadAll();
     this.state.dataSet = tmp.map(a=>a.air);
@@ -188,7 +201,7 @@ class HomeScreen extends React.Component {
 
     //this.forceUpdate();
   }
-
+*/
   getUTCString(date=null){
     // it will return last 24H by default
     if(date===null){
@@ -243,7 +256,7 @@ class HomeScreen extends React.Component {
 
       this.updateChart(a);
 
-      ///* annotation for debug
+      /* annotation for debug
       Geolocation.getCurrentPosition(
         (position) => {
 
@@ -326,19 +339,37 @@ class HomeScreen extends React.Component {
   render() {
     
     return (
+
       <Fragment>
-        <StatusBar barStyle="dark-content" />
+        <StatusBar barStyle="light-content" />
+          <Header>
+          <Left>
+            <Button
+              transparent
+              onPress={() => this.props.navigation.openDrawer()}
+            >
+              <Icon name="ios-menu" />
+            </Button>
+          </Left>
+          <Body>
+            <Title>Home Screen</Title>
+          </Body>
+          <Right />
+        </Header>
+
         <SafeAreaView>
           <ScrollView
             contentInsetAdjustmentBehavior="automatic"
             style={styles.scrollView}>
 
             <View style={{flex:1,justifyContent:"space-between",flexDirection: 'row'}}>
+              {/*
               <TouchableOpacity 
               onPress={() => this.props.navigation.navigate('Login',{logined:false})}>
                 <Image source={require('./image/user.png')}
                 style={{width: 35, height: 35}}/>
               </TouchableOpacity>
+              */}
               <Text style={styles.sectionTitle}>Battery:{this.state.battery}</Text>
             </View>
 
@@ -370,86 +401,18 @@ class HomeScreen extends React.Component {
                 <Text style={styles.sectionTitle}><Text style={styles.highlight}>PM10(µg/m 3) :{this.state._10p}</Text></Text>
                 <MyLineChart ref={instance => { this._10pChart = instance; }} />
               </View>
+
               {/*<LearnMoreLinks />*/}
             </View>
           </ScrollView>
         </SafeAreaView>
       </Fragment>
+      
     );
   }
 };
 
-class LoginScreen extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { username: '',password:'',token:'' };
-  }
-  render() {
-    const { navigation } = this.props;
-    const logined = navigation.getParam('logined', false);
-    if(logined)
-    {
-      return (
-      
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={styles.sectionTitle}>Account information</Text>
-          <Text style={styles.sectionDescription}>user name</Text>
-          <View style={{flex: 2,alignItems: 'center',justifyContent:'space-evenly',}}>
-            <Button
-              title="Logout"
-              onPress={() => alert("title","messages")}
-            />
-            <Button
-              title="switch sensors"
-              onPress={() => this.props.navigation.navigate('Scan')}
-            />
-          </View>
-        </View>
-      );
-    }
-    else{
-      return(
-        
-        <View style={{ flex: 1,alignItems:'center', flexDirection: 'column', justifyContent: 'center' }}>
-          {/*
-          <View style={{alignItems:'center',flexDirection:'row'}}>
-            <Text style={styles.sectionDescription}>user name:</Text>
-            <TextInput
-              style={{height: 40, borderColor: 'gray', borderWidth: 1}}
-              onChangeText={(text) => this.setState({text})}
-              value={this.state.username}
-            />
-          </View>
-          */}
-          <View style={{flex:1,alignItems:'center', justifyContent: 'center'}}>
-            <TextInput  placeholder="username"
-                        underlineColorAndroid={'transparent'}//去掉下划线
-                        style={styles.username_input}
-                        onChangeText={(username) => this.setState({username})}/>
 
-            <TextInput  placeholder="password"
-                        secureTextEntry={true}//隐藏输入内容
-                        underlineColorAndroid={'transparent'}
-                        style={styles.username_input}
-                        onChangeText={(password) => this.setState({password})}/>
-          </View>
-          <View style={{flex:1,justifyContent:'space-evenly'}}>
-            <Button
-                title="Login"
-                onPress={() => console.log('Flame '+this.state.username +' '+ this.state.password)}
-            />
-            <Button
-                title="switch sensors"
-                onPress={() => this.props.navigation.navigate('Scan')}
-            />
-          </View>
- 
-        </View>
-      );
-    }
-
-  }
-}
 
 class ScanBLEScreen extends React.Component {
 
@@ -481,7 +444,7 @@ class ScanBLEScreen extends React.Component {
   }
 }
 
-const RootStack = createStackNavigator(
+const Drawer = createDrawerNavigator(
   {
     Home: {
       screen: HomeScreen,
@@ -490,15 +453,37 @@ const RootStack = createStackNavigator(
       screen: LoginScreen,
     },
     Scan:{
-      screen:ScanBLEScreen,
+      screen:BLEMonitor,
     }
   },
   {
-    initialRouteName: 'Home',
+    initialRouteName: "Home",
+    contentOptions: {
+      activeTintColor: "#e91e63"
+    },
+    contentComponent: props => <SideBar {...props} />
   }
 );
 
-const AppContainer = createAppContainer(RootStack);
+const RootStack = createStackNavigator(
+  {
+    Drawer: { screen: Drawer },
+    Home: {
+      screen: HomeScreen,
+    },
+    Login: {
+      screen: LoginScreen,
+    },
+    Scan:{
+      screen:BLEMonitor,
+    }
+  },
+  {
+    initialRouteName: 'RootStack',
+  }
+);
+
+const AppContainer = createAppContainer(Drawer);
 
 export default class App extends React.Component {
   render() {

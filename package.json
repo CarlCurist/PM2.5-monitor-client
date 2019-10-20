@@ -8,6 +8,8 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "create-react-class": "^15.6.3",
+    "native-base": "^2.13.8",
     "react": "16.8.6",
     "react-native": "0.60.5",
     "react-native-ble-manager": "^6.6.9",
