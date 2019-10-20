@@ -20,6 +20,12 @@ export default {
     height: 75,
     resizeMode: "cover"
   },
+    userThumbnailStyle: {
+    position: "absolute",
+    left: Platform.OS === "android" ? deviceWidth / 4 : deviceWidth / 4,
+    top: deviceHeight / 14,
+    resizeMode: "cover"
+  },
   text: {
     fontWeight: Platform.OS === "ios" ? "500" : "400",
     fontSize: 16,

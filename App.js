@@ -20,6 +20,7 @@ import {
   Dimensions,
   FlatList,
   PermissionsAndroid,
+  ImageBackground,Alert,
 } from 'react-native';
 
 import {
@@ -31,7 +32,7 @@ import {
   Button,
   Title,
   Body,
-  Right,
+  Right,Card,CardItem,Thumbnail,
 } from "native-base";
 
 import { createAppContainer } from 'react-navigation';
@@ -48,7 +49,7 @@ import {
 import BLEtest from './src/ble';
 import BLEMonitor from './src/BLEMonitor';
 import Geolocation from 'react-native-geolocation-service';
-//import DatabaseServices from './src/DatabaseHelper'; //annotation for debug
+import DatabaseServices from './src/DatabaseHelper'; //annotation for debug
 import {Global} from './src/global'
 import { isDeclareModuleExports } from '@babel/types';
 
@@ -56,9 +57,13 @@ import MyLineChart from './src/both-axes';
 import ExtrasExample from './src/extras';
 import { Grid, LineChart, XAxis, YAxis } from 'react-native-svg-charts'
 import LoginScreen from './src/LoginScreen'
+import DataCard from './src/DataCard/DataCard'
+//import NHCardShowcase from './src/DataCard/card-showcase'
 
 
 var window_width = Dimensions.get('window').width;//得到屏幕宽度
+const deviceWidth = Dimensions.get("window").width;
+const deviceHeight = Dimensions.get("window").height;
 //const Realm = require('realm');
 
 
@@ -85,7 +90,7 @@ class HomeScreen extends React.Component {
     //this.bluetoothReceiveData = [];
     this.displayReceiveData = this.displayReceiveData.bind(this);
     this.getUTCString = this.getUTCString.bind(this);
-    //this.loadDataFromDatabase = this.loadDataFromDatabase.bind(this);
+    this.loadDataFromDatabase = this.loadDataFromDatabase.bind(this); //annotation for debug
     this.updateChart = this.updateChart.bind(this);
     
   }
@@ -116,7 +121,7 @@ class HomeScreen extends React.Component {
 
     //}
 
-    //this.loadDataFromDatabase();
+    this.loadDataFromDatabase();//annotation for debug
 
     //console.log("flame4 temperatureSet "+JSON.stringify(this.state.temperatureSet));
 
@@ -175,7 +180,7 @@ class HomeScreen extends React.Component {
 
     //console.log("flame4 temperatureSet "+ JSON.stringify(this.state.temperatureSet));
   }
-/*annotation for debug
+//*annotation for debug
   loadDataFromDatabase(){
     var tmp = DatabaseServices.loadAll();
     this.state.dataSet = tmp.map(a=>a.air);
@@ -201,7 +206,7 @@ class HomeScreen extends React.Component {
 
     //this.forceUpdate();
   }
-*/
+//*/
   getUTCString(date=null){
     // it will return last 24H by default
     if(date===null){
@@ -256,7 +261,7 @@ class HomeScreen extends React.Component {
 
       this.updateChart(a);
 
-      /* annotation for debug
+      ///* annotation for debug
       Geolocation.getCurrentPosition(
         (position) => {
 
@@ -339,8 +344,7 @@ class HomeScreen extends React.Component {
   render() {
     
     return (
-
-      <Fragment>
+    <Container style={{backgroundColor: "#FFF"}}>
         <StatusBar barStyle="light-content" />
           <Header>
           <Left>
@@ -357,29 +361,131 @@ class HomeScreen extends React.Component {
           <Right />
         </Header>
 
+
+        
+        
         <SafeAreaView>
+          
           <ScrollView
             contentInsetAdjustmentBehavior="automatic"
             style={styles.scrollView}>
-
+            {/* 
             <View style={{flex:1,justifyContent:"space-between",flexDirection: 'row'}}>
-              {/*
+              
+              
               <TouchableOpacity 
               onPress={() => this.props.navigation.navigate('Login',{logined:false})}>
                 <Image source={require('./image/user.png')}
                 style={{width: 35, height: 35}}/>
               </TouchableOpacity>
-              */}
+              
               <Text style={styles.sectionTitle}>Battery:{this.state.battery}</Text>
             </View>
-
+              */}
 
             <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
 
-                <Image source={require('./image/logo.png')}/>
+                <ImageBackground  style={styles.drawerCover} source={require('./assets/logo.jpg')}>
+                  <Text style={styles.BatteryText}>Battery:{this.state.battery}</Text>
+                </ImageBackground >
               
             </View>
+
+
+
+          <Content padder>
+              <Card style={styles.mb}>
+                <CardItem>
+                  <Left>
+                    <Thumbnail square source={require("./assets/temperature.png")} />
+                    <Body>
+                      <Text>Temperature(°C)</Text>
+                      <Text note>11h ago</Text>
+                    </Body>
+                    <Text style={styles.sectionTitle}>{this.state.temperature}</Text>
+                  </Left>
+
+                </CardItem>
+                        
+                        <TouchableOpacity
+          onPress={() => Alert.alert(
+            'Alert Title')}>
+
+          
+                <MyLineChart ref={instance => { this.temperatureChart = instance; }} />
+                </TouchableOpacity>
+              </Card>
+            </Content>
             
+          <Content padder>
+              <Card style={styles.mb}>
+                <CardItem>
+                  <Left>
+                    <Thumbnail square source={require("./assets/humidity.png")} />
+                    <Body>
+                      <Text>Humidity(%)</Text>
+                      <Text note>11h ago</Text>
+                    </Body>
+                    <Text style={styles.sectionTitle}>{this.state.humidity}</Text>
+                  </Left>
+
+                </CardItem>
+                <MyLineChart ref={instance => { this.humidityChart = instance; }} />
+              </Card>
+            </Content>
+            
+            <Content padder>
+              <Card style={styles.mb}>
+                <CardItem>
+                  <Left>
+                    <Thumbnail square source={require("./assets/haze.png")} />
+                    <Body>
+                      <Text>PM1.0(µg/m 3)</Text>
+                      <Text note>11h ago</Text>
+                    </Body>
+                    <Text style={styles.sectionTitle}>{this.state._1p0}</Text>
+                  </Left>
+
+                </CardItem>
+                <MyLineChart ref={instance => { this._1p0Chart = instance; }} />
+              </Card>
+            </Content>
+
+            <Content padder>
+              <Card style={styles.mb}>
+                <CardItem>
+                  <Left>
+                    <Thumbnail square source={require("./assets/haze.png")} />
+                    <Body>
+                      <Text>PM2.5(µg/m 3)</Text>
+                      <Text note>11h ago</Text>
+                    </Body>
+                    <Text style={styles.sectionTitle}>{this.state._2p5}</Text>
+                  </Left>
+
+                </CardItem>
+                <MyLineChart ref={instance => { this._2p5Chart = instance; }} />
+              </Card>
+            </Content>
+
+            <Content padder>
+              <Card style={{marginBottom: 40}}>
+                <CardItem>
+                  <Left>
+                    <Thumbnail square source={require("./assets/haze.png")} />
+                    <Body>
+                      <Text>PM10(µg/m 3)</Text>
+                      <Text note>11h ago</Text>
+                    </Body>
+                    <Text style={styles.sectionTitle}>{this.state._10p}</Text>
+                  </Left>
+
+                </CardItem>
+                <MyLineChart ref={instance => { this._10pChart = instance; }} />
+              </Card>
+            </Content>
+            
+            {/** 
             <View style={styles.body}>
               <View style={styles.sectionContainer}>
                 <Text style={styles.sectionTitle}><Text style={styles.highlight}>Temperature(°C) :{this.state.temperature}</Text> </Text>
@@ -401,13 +507,12 @@ class HomeScreen extends React.Component {
                 <Text style={styles.sectionTitle}><Text style={styles.highlight}>PM10(µg/m 3) :{this.state._10p}</Text></Text>
                 <MyLineChart ref={instance => { this._10pChart = instance; }} />
               </View>
-
-              {/*<LearnMoreLinks />*/}
             </View>
+            */}
           </ScrollView>
         </SafeAreaView>
-      </Fragment>
-      
+            
+      </Container>
     );
   }
 };
@@ -447,7 +552,7 @@ class ScanBLEScreen extends React.Component {
 const Drawer = createDrawerNavigator(
   {
     Home: {
-      screen: HomeScreen,
+      screen: HomeScreen,//HomeScreen
     },
     Login: {
       screen: LoginScreen,
@@ -537,8 +642,20 @@ const styles = StyleSheet.create({
     padding:0,//去掉Android默认的padding
     borderWidth: 1,
     alignSelf:'center'//自身居中
-  }
-
+  },
+  drawerCover: {
+    alignSelf: "stretch",
+    height: deviceHeight / 3.5,
+    width: null,
+    position: "relative",
+    marginBottom: 10
+  },
+  BatteryText: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: Colors.black,
+    textAlign: 'right',
+  },
 });
 
 

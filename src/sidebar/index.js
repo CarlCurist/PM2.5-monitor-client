@@ -9,17 +9,18 @@ import {
   Container,
   Left,
   Right,
-  Badge
+  Badge,Thumbnail,
 } from "native-base";
 import styles from "./style";
 
 const drawerCover = require("../../assets/drawer-cover.png");
 const drawerImage = require("../../assets/logo-kitchen-sink.png");
+const userThumbnail = require("../../assets/user.jpg");
 const datas = [
   {
     name: "Home Screen",
     route: "Home",
-    icon: "phone-portrait",
+    icon: "home",
     bg: "#C5F442"
   },
   {
@@ -31,7 +32,7 @@ const datas = [
   {
     name: "Sensor",
     route: "Scan",
-    icon: "arrow-up",
+    icon: "easel",
     bg: "#477EEA",
   },
 ];
@@ -54,7 +55,8 @@ class SideBar extends Component {
           style={{ flex: 1, backgroundColor: "#fff", top: -1 }}
         >
           <Image source={drawerCover} style={styles.drawerCover} />
-          <Image square style={styles.drawerImage} source={drawerImage} />
+          {/*<Image square style={styles.drawerImage} source={drawerImage} /> */}
+          <Thumbnail large style={styles.userThumbnailStyle} source={userThumbnail} />
 
           <List
             dataArray={datas}
