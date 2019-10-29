@@ -183,28 +183,31 @@ class HomeScreen extends React.Component {
 //*annotation for debug
   loadDataFromDatabase(){
     var tmp = DatabaseServices.loadAll();
-    this.state.dataSet = tmp.map(a=>a.air);
-    this.state.temperatureSet = this.state.dataSet.map(a=>a.temperature);
-    this.state.humiditySet = this.state.dataSet.map(a=>a.humidity);
-    this.state._1p0Set = this.state.dataSet.map(a=>a._1p0);
-    this.state._2p5Set = this.state.dataSet.map(a=>a._2p5);
-    this.state._10pSet = this.state.dataSet.map(a=>a._10p);
-    this.temperatureChart.updateData(this.state.temperatureSet);
-    this.humidityChart.updateData(this.state.humiditySet);
-    this._1p0Chart.updateData(this.state._1p0Set);
-    this._2p5Chart.updateData(this.state._2p5Set);
-    this._10pChart.updateData(this.state._10pSet);
+    if(tmp.length !== 0){
+      this.state.dataSet = tmp.map(a=>a.air);
+      this.state.temperatureSet = this.state.dataSet.map(a=>a.temperature);
+      this.state.humiditySet = this.state.dataSet.map(a=>a.humidity);
+      this.state._1p0Set = this.state.dataSet.map(a=>a._1p0);
+      this.state._2p5Set = this.state.dataSet.map(a=>a._2p5);
+      this.state._10pSet = this.state.dataSet.map(a=>a._10p);
+      this.temperatureChart.updateData(this.state.temperatureSet);
+      this.humidityChart.updateData(this.state.humiditySet);
+      this._1p0Chart.updateData(this.state._1p0Set);
+      this._2p5Chart.updateData(this.state._2p5Set);
+      this._10pChart.updateData(this.state._10pSet);
+  
+      var latestItem = tmp[tmp.length - 1].air;
+      this.setState({
+        temperature:latestItem.temperature.toFixed(2),
+        humidity:latestItem.humidity.toFixed(2),
+        _1p0:latestItem._1p0,
+        _2p5:latestItem._2p5,
+        _10p:latestItem._10p,
+      });
+  
+      //this.forceUpdate();
+    }
 
-    var latestItem = tmp[tmp.length - 1].air;
-    this.setState({
-      temperature:latestItem.temperature.toFixed(2),
-      humidity:latestItem.humidity.toFixed(2),
-      _1p0:latestItem._1p0,
-      _2p5:latestItem._2p5,
-      _10p:latestItem._10p,
-    });
-
-    //this.forceUpdate();
   }
 //*/
   getUTCString(date=null){
