@@ -32,7 +32,7 @@ import {
   Button,
   Title,
   Body,
-  Right,Card,CardItem,Thumbnail,
+  Right,Card,CardItem,Thumbnail,Root
 } from "native-base";
 
 import { createAppContainer } from 'react-navigation';
@@ -49,15 +49,17 @@ import {
 import BLEtest from './src/ble';
 import BLEMonitor from './src/BLEMonitor';
 import Geolocation from 'react-native-geolocation-service';
-import DatabaseServices from './src/DatabaseHelper'; //annotation for debug
+//import DatabaseServices from './src/DatabaseHelper'; //annotation for debug
 import {Global} from './src/global'
 import { isDeclareModuleExports } from '@babel/types';
 
 import MyLineChart from './src/both-axes';
 import ExtrasExample from './src/extras';
 import { Grid, LineChart, XAxis, YAxis } from 'react-native-svg-charts'
-import LoginScreen from './src/LoginScreen'
-import DataCard from './src/DataCard/DataCard'
+import LoginScreen from './src/user/LoginScreen'
+import UserScreen from './src/user/UserScreen'
+import RegisterScreen from './src/user/RegisterScreen'
+//import DataCard from './src/DataCard/DataCard'
 //import NHCardShowcase from './src/DataCard/card-showcase'
 
 
@@ -90,7 +92,7 @@ class HomeScreen extends React.Component {
     //this.bluetoothReceiveData = [];
     this.displayReceiveData = this.displayReceiveData.bind(this);
     this.getUTCString = this.getUTCString.bind(this);
-    this.loadDataFromDatabase = this.loadDataFromDatabase.bind(this); //annotation for debug
+    //this.loadDataFromDatabase = this.loadDataFromDatabase.bind(this); //annotation for debug
     this.updateChart = this.updateChart.bind(this);
     
   }
@@ -121,7 +123,7 @@ class HomeScreen extends React.Component {
 
     //}
 
-    this.loadDataFromDatabase();//annotation for debug
+    //this.loadDataFromDatabase();//annotation for debug
 
     //console.log("flame4 temperatureSet "+JSON.stringify(this.state.temperatureSet));
 
@@ -180,7 +182,7 @@ class HomeScreen extends React.Component {
 
     //console.log("flame4 temperatureSet "+ JSON.stringify(this.state.temperatureSet));
   }
-//*annotation for debug
+/*annotation for debug
   loadDataFromDatabase(){
     var tmp = DatabaseServices.loadAll();
     if(tmp.length !== 0){
@@ -264,7 +266,7 @@ class HomeScreen extends React.Component {
 
       this.updateChart(a);
 
-      ///* annotation for debug
+      /* annotation for debug
       Geolocation.getCurrentPosition(
         (position) => {
 
@@ -560,6 +562,12 @@ const Drawer = createDrawerNavigator(
     Login: {
       screen: LoginScreen,
     },
+    User:{
+      screen:UserScreen,
+    },
+    Register:{
+      screen:RegisterScreen,
+    },
     Scan:{
       screen:BLEMonitor,
     }
@@ -595,7 +603,10 @@ const AppContainer = createAppContainer(Drawer);
 
 export default class App extends React.Component {
   render() {
-    return <AppContainer />;
+    return (
+      <Root>
+        <AppContainer />
+      </Root>)
   }
 }
 
