@@ -55,4 +55,8 @@ export default class NetworkModule{
         });
     }))
     }
+
+    async requestRegister(username,password){
+
+    }
 }

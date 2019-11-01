@@ -1,5 +1,6 @@
 import React from 'react'
 import { StyleSheet, View, Text, StatusBar, TextInput, CheckBox } from 'react-native'
+import {Toast} from "native-base";
 
 import background from '../../assets/background3.jpg'
 import BackgroundComponent from './BackgroundComponent'
@@ -12,7 +13,10 @@ class RegisterScreen extends React.Component{
     super(props);
   
     this.state = {
-      remember: true
+      remember: true,
+      username:"",
+      password1:"",
+      password2:"",
     }
   }
 
@@ -33,24 +37,28 @@ class RegisterScreen extends React.Component{
               style={styles.textInput}
               underlineColorAndroid='transparent'
               placeholder='Username'
-              placeholderTextColor='#fff' />
+              placeholderTextColor='#fff' 
+              onChangeText={(text) => this.setState({username:text})}/>
 
             <TextInput
               secureTextEntry={true}
               style={styles.textInput}
               underlineColorAndroid='transparent'
               placeholder='Password'
-              placeholderTextColor='#fff' />              
+              placeholderTextColor='#fff' 
+              onChangeText={(text) => this.setState({password1:text})}/>              
 
             <TextInput
               secureTextEntry={true}
               style={styles.textInput}
               underlineColorAndroid='transparent'
               placeholder='Confirm Password'
-              placeholderTextColor='#fff' />              
+              placeholderTextColor='#fff' 
+              onChangeText={(text) => this.setState({password2:text})}/>              
 
             <View style={styles.btnSignin}>
-              <Text style={styles.textBtnSignin}>SIGN UP</Text>
+              <Text style={styles.textBtnSignin}
+              onPress={() => this.startRegister()}>SIGN UP</Text>
             </View>
           </View>         
 
@@ -62,6 +70,46 @@ class RegisterScreen extends React.Component{
         </View>
       </View>
     )
+  }
+
+  startRegister(){
+    if(this.state.password1 !== this.state.password2){
+      Toast.show({
+        text: "The two passwords you typed do not match.",
+        type: "danger"
+      })
+      return
+    }
+
+    fetch('http://106.54.62.64:8080/user/register',{
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },body: JSON.stringify({
+                "userName": this.state.username,
+                "password": this.state.password1,
+              })
+            })
+        .then((response) => response.json())
+        .then((responseJson) => {
+         if (responseJson.code==='-1'){
+          Toast.show({
+            text: "The username already exists.",
+            type: "danger"
+          })
+         }
+         if (responseJson.code==='0'){
+          Toast.show({
+            text: "Registered successfully",
+            type: "success"
+          })
+          this.props.navigation.navigate('Login')
+         }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
   }
 }
 

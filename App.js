@@ -88,12 +88,15 @@ class HomeScreen extends React.Component {
       _1p0Set:[],
       _2p5Set:[],
       _10pSet:[],
+      latestPackageTime:null,
+      latestPackageTimeStr:'',
     }
     //this.bluetoothReceiveData = [];updateChart
     this.displayReceiveData = this.displayReceiveData.bind(this);
     this.getUTCString = this.getUTCString.bind(this);
     //this.loadDataFromDatabase = this.loadDataFromDatabase.bind(this); //annotation for debug
     this.updateChart = this.updateChart.bind(this);
+    this.setLastReceiveDataFromNow = this.setLastReceiveDataFromNow.bind(this)
     
   }
 
@@ -104,6 +107,7 @@ class HomeScreen extends React.Component {
     }
     BLEStatus.updateValueListener=BluetoothManager.addListener('BleManagerDidUpdateValueForCharacteristic', this.displayReceiveData);
 
+    setInterval(() => {this.setLastReceiveDataFromNow()}, 1000);
     /*
     var arr =[];
     arr.push(new Date("Thu Sep 26 2019 20:34:28 GMT+0800 (GMT+08:00)"));
@@ -133,6 +137,7 @@ class HomeScreen extends React.Component {
     DatabaseServices.testsave(9);
     */
     
+    //tmp = this.lastReceiveDataFromNow(new Date('2019-10-31 17:51:20'))
     /*
     var d = new Date('2019-1-1 00:59:20');
     //var d = new Date();
@@ -224,8 +229,46 @@ class HomeScreen extends React.Component {
     return date.getUTCFullYear()+'-'+(date.getUTCMonth()+1)+'-'+date.getUTCDate()+'@'+date.getUTCHours()+':'+date.getUTCMinutes()+':'+date.getUTCSeconds();
   }
 
+  
+  setLastReceiveDataFromNow(){
+    if(this.state.latestPackageTime === null){
+      return
+    }
+    var date = Date.parse(this.state.latestPackageTime)
+    var newTime = Date.parse(new Date());//获得当前时间，转化时间戳
+		var interval = (newTime - date)/1000;
+    timestamp = ''
+    if(interval<0){
+			timestamp =  "now";
+			}
+		else if(interval>24*3600){
+          timestamp = Math.round((interval/24/3600))+"d ago";
+			}
+		else if(interval>3600){
+          timestamp =  Math.round((interval/3600))+"h ago";
+				}
+		else if(interval>60){
+          timestamp =  Math.round((interval/60))+"m ago";
+				}
+		else{
+          timestamp =  "now";
+        }
+    this.setState({latestPackageTimeStr:timestamp})
+    
+	 //var now=new Date(date);
+     //var year=now.getFullYear(); 
+     //var month=now.getMonth()+1; 
+     //var date=now.getDate(); 
+     //var hour=now.getHours(); 
+     //var minute=now.getMinutes(); 
+     //var second=now.getSeconds();
+     //return year+"-"+month+"-"+date; 
+  }
+
   displayReceiveData(data){
     this.package =  gParseData.handleUpdateValue(data);
+
+    
 
     if("battery" in this.package){
       this.setState({battery:this.package.battery});
@@ -256,7 +299,8 @@ class HomeScreen extends React.Component {
                     humidity:this.package.humidity.toFixed(2),
                     _1p0:this.package._1p0,
                     _2p5:this.package._2p5,
-                    _10p:this.package._10p})
+                    _10p:this.package._10p,
+                    latestPackageTime:new Date()})
       var a = this.package;
       delete a.type;
       delete a.sd;
@@ -402,7 +446,7 @@ class HomeScreen extends React.Component {
                     <Thumbnail square source={require("./assets/temperature.png")} />
                     <Body>
                       <Text>Temperature(°C)</Text>
-                      <Text note>11h ago</Text>
+                      <Text note>{this.state.latestPackageTimeStr}</Text>
                     </Body>
                     <Text style={styles.sectionTitle}>{this.state.temperature}</Text>
                   </Left>
@@ -424,7 +468,7 @@ class HomeScreen extends React.Component {
                     <Thumbnail square source={require("./assets/humidity.png")} />
                     <Body>
                       <Text>Humidity(%)</Text>
-                      <Text note>11h ago</Text>
+                      <Text note>{this.state.latestPackageTimeStr}</Text>
                     </Body>
                     <Text style={styles.sectionTitle}>{this.state.humidity}</Text>
                   </Left>
@@ -439,7 +483,7 @@ class HomeScreen extends React.Component {
                     <Thumbnail square source={require("./assets/haze.png")} />
                     <Body>
                       <Text>PM1.0(µg/m 3)</Text>
-                      <Text note>11h ago</Text>
+                      <Text note>{this.state.latestPackageTimeStr}</Text>
                     </Body>
                     <Text style={styles.sectionTitle}>{this.state._1p0}</Text>
                   </Left>
@@ -454,7 +498,7 @@ class HomeScreen extends React.Component {
                     <Thumbnail square source={require("./assets/haze.png")} />
                     <Body>
                       <Text>PM2.5(µg/m 3)</Text>
-                      <Text note>11h ago</Text>
+                      <Text note>{this.state.latestPackageTimeStr}</Text>
                     </Body>
                     <Text style={styles.sectionTitle}>{this.state._2p5}</Text>
                   </Left>
@@ -469,7 +513,7 @@ class HomeScreen extends React.Component {
                     <Thumbnail square source={require("./assets/haze.png")} />
                     <Body>
                       <Text>PM10(µg/m 3)</Text>
-                      <Text note>11h ago</Text>
+                      <Text note>{this.state.latestPackageTimeStr}</Text>
                     </Body>
                     <Text style={styles.sectionTitle}>{this.state._10p}</Text>
                   </Left>
