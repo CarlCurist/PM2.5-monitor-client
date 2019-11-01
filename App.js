@@ -89,7 +89,7 @@ class HomeScreen extends React.Component {
       _2p5Set:[],
       _10pSet:[],
     }
-    //this.bluetoothReceiveData = [];
+    //this.bluetoothReceiveData = [];updateChart
     this.displayReceiveData = this.displayReceiveData.bind(this);
     this.getUTCString = this.getUTCString.bind(this);
     //this.loadDataFromDatabase = this.loadDataFromDatabase.bind(this); //annotation for debug
@@ -264,7 +264,7 @@ class HomeScreen extends React.Component {
       var b = JSON.parse(BLEStatus.connectedDevice);
       deviceMac = b[0]['id'];
 
-      this.updateChart(a);
+      //this.updateChart(a);
 
       /* annotation for debug
       Geolocation.getCurrentPosition(
@@ -411,14 +411,13 @@ class HomeScreen extends React.Component {
                   </Left>
 
                 </CardItem>
-                        
-                        <TouchableOpacity
+                       {/** 
+                      <TouchableOpacity
           onPress={() => Alert.alert(
             'Alert Title')}>
-
-          
                 <MyLineChart ref={instance => { this.temperatureChart = instance; }} />
                 </TouchableOpacity>
+                */} 
               </Card>
             </Content>
             
@@ -435,7 +434,7 @@ class HomeScreen extends React.Component {
                   </Left>
 
                 </CardItem>
-                <MyLineChart ref={instance => { this.humidityChart = instance; }} />
+                {/** <MyLineChart ref={instance => { this.humidityChart = instance; }} />*/} 
               </Card>
             </Content>
             
@@ -452,7 +451,7 @@ class HomeScreen extends React.Component {
                   </Left>
 
                 </CardItem>
-                <MyLineChart ref={instance => { this._1p0Chart = instance; }} />
+                {/** <MyLineChart ref={instance => { this._1p0Chart = instance; }} />*/} 
               </Card>
             </Content>
 
@@ -469,7 +468,7 @@ class HomeScreen extends React.Component {
                   </Left>
 
                 </CardItem>
-                <MyLineChart ref={instance => { this._2p5Chart = instance; }} />
+                {/** <MyLineChart ref={instance => { this._2p5Chart = instance; }} />*/} 
               </Card>
             </Content>
 
@@ -486,7 +485,7 @@ class HomeScreen extends React.Component {
                   </Left>
 
                 </CardItem>
-                <MyLineChart ref={instance => { this._10pChart = instance; }} />
+                {/**<MyLineChart ref={instance => { this._10pChart = instance; }} />*/} 
               </Card>
             </Content>
             

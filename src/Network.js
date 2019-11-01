@@ -7,7 +7,7 @@ export default class NetworkModule{
 
     async requestLogin(username,password){
         return new Promise(((resolve, reject) => {
-            fetch('http://129.211.88.168:8080/login',{
+            fetch('http://106.54.62.64:8080/login',{
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -30,7 +30,7 @@ export default class NetworkModule{
 
     async requestSession(){
         return new Promise(((resolve, reject) => {
-            fetch('http://129.211.88.168:8080/user/session')
+            fetch('http://106.54.62.64:8080/user/session')
         .then((response) => response.json())
         .then((responseJson) => {
          resolve(responseJson);
@@ -44,7 +44,7 @@ export default class NetworkModule{
 
     async requestLogout(){
         return new Promise(((resolve, reject) => {
-            fetch('http://129.211.88.168:8080/logout')
+            fetch('http://106.54.62.64:8080/logout')
         .then((response) => response.json())
         .then((responseJson) => {
          resolve(responseJson.code);
