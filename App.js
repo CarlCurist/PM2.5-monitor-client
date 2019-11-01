@@ -373,6 +373,7 @@ class HomeScreen extends React.Component {
           
           <ScrollView
             contentInsetAdjustmentBehavior="automatic"
+            
             style={styles.scrollView}>
             {/* 
             <View style={{flex:1,justifyContent:"space-between",flexDirection: 'row'}}>
@@ -399,7 +400,7 @@ class HomeScreen extends React.Component {
 
 
           <Content padder>
-              <Card style={styles.mb}>
+              <Card style={{marginBottom: 10}}>
                 <CardItem>
                   <Left>
                     <Thumbnail square source={require("./assets/temperature.png")} />
@@ -421,8 +422,8 @@ class HomeScreen extends React.Component {
               </Card>
             </Content>
             
-          <Content padder>
-              <Card style={styles.mb}>
+          <Content padder >
+              <Card style={{marginBottom: 10}}>
                 <CardItem>
                   <Left>
                     <Thumbnail square source={require("./assets/humidity.png")} />
@@ -473,7 +474,7 @@ class HomeScreen extends React.Component {
             </Content>
 
             <Content padder>
-              <Card style={{marginBottom: 40}}>
+              <Card style={{marginBottom: 50}}>
                 <CardItem>
                   <Left>
                     <Thumbnail square source={require("./assets/haze.png")} />

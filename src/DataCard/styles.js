@@ -7,6 +7,6 @@ export default {
     marginBottom: 7
   },
   mb: {
-    marginBottom: 30
+    marginBottom: 15
   }
 };

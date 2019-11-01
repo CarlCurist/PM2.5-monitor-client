@@ -59,7 +59,7 @@ export default class BleModule{
      * */
     scan() {
         return new Promise( (resolve, reject) =>{
-            BleManager.scan([], 5, true)
+            BleManager.scan([], 0, true)
                 .then( () => {
                     console.log('Scan started');
                     resolve();
@@ -261,6 +261,23 @@ export default class BleModule{
                         console.log('Notification error:',error);
                         reject(error);
                     });
+            });
+        }
+    }
+    stopNotificationUUID(ServiceUUID= 0,CharUUID=0){
+        if(ServiceUUID===0 || CharUUID === 0){
+            return null;
+        }else{
+            return new Promise( (resolve, reject) =>{
+                BleManager.stopNotification(this.peripheralId, ServiceUUID, CharUUID)
+                .then(() => {
+                    console.log('stopNotification success!');
+                    resolve();
+                })
+                .catch((error) => {
+                    console.log('stopNotification error:',error);
+                    reject(error);
+                });
             });
         }
     }

@@ -113,7 +113,7 @@ export default class BLEMonitor extends Component {
     handleDiscoverPeripheral=(data)=>{
         // console.log('BleManagerDiscoverPeripheral:', data);
         console.log('flame',data.id,data.name);
-        //if(data.name != null && data.name.startsWith('PM')){
+        if(data.name != null && data.name.startsWith('PM')){
             console.log(data.id,data.name);
             let id;  //蓝牙连接id
             let macAddress;  //蓝牙Mac地址           
@@ -128,7 +128,7 @@ export default class BLEMonitor extends Component {
             } 
             this.deviceMap.set(data.id,data);  //使用Map类型保存搜索到的蓝牙设备，确保列表不显示重复的设备
             this.setState({data:[...this.deviceMap.values()]});      
-        //}
+        }
          
     }
 
@@ -251,6 +251,18 @@ export default class BLEMonitor extends Component {
         BLEStatus.isConnected=false;
         BluetoothManager.disconnect();
     }   
+
+    stopNotifyAndDisconnect(){
+        BluetoothManager.stopNotificationUUID(RWServiceUUID,ReadUUID)
+        .then(()=>{
+            this.setState({
+                data:[...this.deviceMap.values()], 
+                //isConnected:false
+            });
+            BLEStatus.isConnected=false;
+            BluetoothManager.disconnect();
+        })
+    }
     
 
 
@@ -259,30 +271,32 @@ export default class BLEMonitor extends Component {
             BluetoothManager.stopScan();
             this.setState({scaning:false});
         }
-        if(BluetoothManager.bluetoothState == 'on'){
-            BluetoothManager.scan()
-                .then(()=>{
-                    this.setState({ scaning:true });
-                }).catch(err=>{
+        else{
+            if(BluetoothManager.bluetoothState == 'on'){
+                BluetoothManager.scan()
+                    .then(()=>{
+                        this.setState({ scaning:true });
+                    }).catch(err=>{
 
-                })
-        }else{
-            BluetoothManager.checkState();
-            if(Platform.OS == 'ios'){
-                this.alert('请开启手机蓝牙');
+                    })
             }else{
-                Alert.alert('提示','请开启手机蓝牙',[
-                    {
-                        text:'取消',
-                        onPress:()=>{ }    
-                    },
-                    {
-                        text:'打开',
-                        onPress:()=>{ BluetoothManager.enableBluetooth() }
-                    }                    
-                ]);
+                BluetoothManager.checkState();
+                if(Platform.OS == 'ios'){
+                    this.alert('请开启手机蓝牙');
+                }else{
+                    Alert.alert('提示','请开启手机蓝牙',[
+                        {
+                            text:'取消',
+                            onPress:()=>{ }    
+                        },
+                        {
+                            text:'打开',
+                            onPress:()=>{ BluetoothManager.enableBluetooth() }
+                        }                    
+                    ]);
+                }
+                
             }
-            
         }       
     }
 
@@ -388,7 +402,7 @@ export default class BLEMonitor extends Component {
                     activeOpacity={0.7}
                     style={[styles.buttonView,{marginHorizontal:10,height:40,alignItems:'center'}]}
                     onPress={BLEStatus.isConnected?this.disconnect.bind(this):this.scan.bind(this)}>
-                    <Text style={styles.buttonText}>{this.state.scaning?'scanning':BLEStatus.isConnected?'disconnect':'scan ble devices'}</Text>
+                    <Text style={styles.buttonText}>{this.state.scaning?'stop scanning':BLEStatus.isConnected?'disconnect':'scan ble devices'}</Text>
                 </TouchableOpacity>
                 
                 <Text style={{marginLeft:10,marginTop:10}}>
