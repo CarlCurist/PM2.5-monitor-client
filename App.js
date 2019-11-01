@@ -367,14 +367,10 @@ class HomeScreen extends React.Component {
         </Header>
 
 
-        
-        
-        <SafeAreaView>
-          
-          <ScrollView
+        <ScrollView
             contentInsetAdjustmentBehavior="automatic"
-            
             style={styles.scrollView}>
+        
             {/* 
             <View style={{flex:1,justifyContent:"space-between",flexDirection: 'row'}}>
               
@@ -400,7 +396,7 @@ class HomeScreen extends React.Component {
 
 
           <Content padder>
-              <Card style={{marginBottom: 10}}>
+              <Card >
                 <CardItem>
                   <Left>
                     <Thumbnail square source={require("./assets/temperature.png")} />
@@ -420,10 +416,9 @@ class HomeScreen extends React.Component {
                 </TouchableOpacity>
                 */} 
               </Card>
-            </Content>
-            
-          <Content padder >
-              <Card style={{marginBottom: 10}}>
+
+
+              <Card >
                 <CardItem>
                   <Left>
                     <Thumbnail square source={require("./assets/humidity.png")} />
@@ -437,10 +432,8 @@ class HomeScreen extends React.Component {
                 </CardItem>
                 {/** <MyLineChart ref={instance => { this.humidityChart = instance; }} />*/} 
               </Card>
-            </Content>
-            
-            <Content padder>
-              <Card style={styles.mb}>
+ 
+              <Card>
                 <CardItem>
                   <Left>
                     <Thumbnail square source={require("./assets/haze.png")} />
@@ -454,10 +447,8 @@ class HomeScreen extends React.Component {
                 </CardItem>
                 {/** <MyLineChart ref={instance => { this._1p0Chart = instance; }} />*/} 
               </Card>
-            </Content>
 
-            <Content padder>
-              <Card style={styles.mb}>
+              <Card>
                 <CardItem>
                   <Left>
                     <Thumbnail square source={require("./assets/haze.png")} />
@@ -471,10 +462,8 @@ class HomeScreen extends React.Component {
                 </CardItem>
                 {/** <MyLineChart ref={instance => { this._2p5Chart = instance; }} />*/} 
               </Card>
-            </Content>
 
-            <Content padder>
-              <Card style={{marginBottom: 50}}>
+              <Card style={{marginBottom: 30}}>
                 <CardItem>
                   <Left>
                     <Thumbnail square source={require("./assets/haze.png")} />
@@ -514,9 +503,7 @@ class HomeScreen extends React.Component {
               </View>
             </View>
             */}
-          </ScrollView>
-        </SafeAreaView>
-            
+            </ScrollView>
       </Container>
     );
   }
