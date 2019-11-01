@@ -55,12 +55,34 @@ export default class NetworkModule{
         });
     }))
     }
-
+/*
     async requestRegister(username,password){
 
     }
-
-    async postData(packegeJson){
-        
+*/
+    async postData(username,timestamp,data){
+        return new Promise(((resolve, reject) => {
+            fetch('http://129.211.88.168:8081/send/cluster-test',{
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'sendKey':'ksl-heart-disease-group'
+            },body: JSON.stringify({
+                "user": username,
+                "device": "PM",
+                "timestamp":timestamp,
+                "data":data
+              })
+            })
+        .then((response) => response.json())
+        .then((responseJson) => {
+         resolve(responseJson.code);
+        })
+        .catch((error) => {
+          console.error(error);
+          reject(error);
+        });
+    }))
     }
 }

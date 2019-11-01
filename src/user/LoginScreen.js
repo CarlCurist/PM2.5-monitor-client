@@ -116,6 +116,8 @@ class LoginScreen extends React.Component{
           login:false,
           username:''
         })
+        BLEStatus.login=false
+        BLEStatus.username = ''
       }
     })
     .catch((error)=>{
@@ -138,6 +140,8 @@ class LoginScreen extends React.Component{
               login:resultjson.login,
               username:resultjson.userName
             })
+            BLEStatus.login = true
+            BLEStatus.username = resultjson.userName
           }
         })
         .catch((error)=>{

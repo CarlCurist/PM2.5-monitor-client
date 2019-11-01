@@ -59,6 +59,7 @@ import { Grid, LineChart, XAxis, YAxis } from 'react-native-svg-charts'
 import LoginScreen from './src/user/LoginScreen'
 import UserScreen from './src/user/UserScreen'
 import RegisterScreen from './src/user/RegisterScreen'
+//import NetworkModule from './src/Network';
 //import DataCard from './src/DataCard/DataCard'
 //import NHCardShowcase from './src/DataCard/card-showcase'
 
@@ -97,6 +98,7 @@ class HomeScreen extends React.Component {
     this.loadDataFromDatabase = this.loadDataFromDatabase.bind(this); //annotation for debug
     this.updateChart = this.updateChart.bind(this);
     this.setLastReceiveDataFromNow = this.setLastReceiveDataFromNow.bind(this)
+    this.sendDataToServer = this.sendDataToServer.bind(this)
     
   }
 
@@ -269,6 +271,25 @@ class HomeScreen extends React.Component {
      //return year+"-"+month+"-"+date; 
   }
 
+  sendDataToServer(tdeviceMac,tlocation,tair,ttimestamp){
+    if(!BLEStatus.login){
+      return
+    }
+    data = {
+      date:ttimestamp,
+      device:tdeviceMac,
+      location:tlocation,
+      air:tair
+    }
+    NetworkManager.postData(BLEStatus.username,ttimestamp,JSON.stringify(data))
+    .then(()=>{
+      console.log("upload success")
+    })
+    .catch((error)=>{
+      console.error(error);
+    })
+  }
+
   displayReceiveData(data){
     this.package =  gParseData.handleUpdateValue(data);
 
@@ -310,6 +331,7 @@ class HomeScreen extends React.Component {
       delete a.sd;
       delete a.error;
       var b = JSON.parse(BLEStatus.connectedDevice);
+      ttimestamp = new Date()
       deviceMac = b[0]['id'];
 
       //this.updateChart(a);
@@ -327,7 +349,8 @@ class HomeScreen extends React.Component {
           console.log('flame connectedDevice ',deviceMac);
           //console.log("flame position "+position);
           console.log('flame position ',JSON.stringify(position['coords']));
-          DatabaseServices.saveDataFromJson(deviceMac,position['coords'],a);
+          DatabaseServices.saveDataFromJson(deviceMac,position['coords'],a,ttimestamp);
+          this.sendDataToServer(deviceMac,position['coords'],a,ttimestamp)
         },
         (error) => {
           var NullPosition = {
@@ -339,7 +362,8 @@ class HomeScreen extends React.Component {
             speed:0
           }
           
-          DatabaseServices.saveDataFromJson(deviceMac,NullPosition,a);
+          DatabaseServices.saveDataFromJson(deviceMac,NullPosition,a,ttimestamp);
+          this.sendDataToServer(deviceMac,NullPosition,a,ttimestamp)
             // See error code charts below.
             console.log("flame GPS can't find location ",error.code, error.message);
         },

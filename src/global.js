@@ -18,6 +18,8 @@ global.BLEStatus = {
     connectedDevice:'',
     isCharging:false,
     synchronizeClock:false,
+    login:false,
+    username:'',
 }
 
 global.RWServiceUUID = '0000fff0-0000-1000-8000-00805f9b34fb';

@@ -60,10 +60,10 @@ const AirSchema = {
         })
       },
 
-      saveDataFromJson: function(tdeviceMac,tlocation,tair,recordDate=null){
+      saveDataFromJson: function(tdeviceMac,tlocation,tair,recordDate){
         Database.write(()=>{
           var a ={
-            date:recordDate?recordDate:new Date(),
+            date:recordDate,
             device:deviceMac,
             location:tlocation,
             air:tair
