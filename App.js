@@ -428,7 +428,7 @@ class HomeScreen extends React.Component {
               <Text style={styles.sectionTitle}>Battery:{this.state.battery}</Text>
             </View>
               */}
-
+            
             <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
 
                 <ImageBackground  style={styles.drawerCover} source={require('./assets/logo.jpg')}>
@@ -439,7 +439,7 @@ class HomeScreen extends React.Component {
 
 
 
-          <Content padder>
+            <Content padder>
               <Card >
                 <CardItem>
                   <Left>
@@ -507,7 +507,7 @@ class HomeScreen extends React.Component {
                 {/** <MyLineChart ref={instance => { this._2p5Chart = instance; }} />*/} 
               </Card>
 
-              <Card style={{marginBottom: 30}}>
+              <Card style={{marginBottom: 10}}>
                 <CardItem>
                   <Left>
                     <Thumbnail square source={require("./assets/haze.png")} />
@@ -690,7 +690,7 @@ const styles = StyleSheet.create({
   },
   drawerCover: {
     alignSelf: "stretch",
-    height: deviceHeight / 3.5,
+    height: deviceHeight / 5,//deviceHeight / 3.5,
     width: null,
     position: "relative",
     marginBottom: 10
