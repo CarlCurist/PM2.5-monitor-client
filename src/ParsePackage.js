@@ -54,6 +54,7 @@ export default class ParsePackage{
         result.minute = this.BCDtoNum(data[7]);
         result.second = this.BCDtoNum(data [8]);
         result.cd = data[9]?true:false;
+        
 
         result.voltage = ((data[10]<<8)+data[11])*3.3/65535*1.5*1000;
         
@@ -84,6 +85,7 @@ export default class ParsePackage{
         result._1p0 = ((data[8]<<8)+data[9]);
         result._2p5 = ((data[10]<<8)+data[11]);
         result._10p = ((data[12]<<8)+data[13]);
+        result.raw = JSON.stringify(data)
 
         //result.temperature = result.temperature.toFixed(2); //this function will let number become string
         //result.humidity = result.humidity.toFixed(2);

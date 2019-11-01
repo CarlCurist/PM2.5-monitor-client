@@ -49,7 +49,7 @@ import {
 import BLEtest from './src/ble';
 import BLEMonitor from './src/BLEMonitor';
 import Geolocation from 'react-native-geolocation-service';
-//import DatabaseServices from './src/DatabaseHelper'; //annotation for debug
+import DatabaseServices from './src/DatabaseHelper'; //annotation for debug
 import {Global} from './src/global'
 import { isDeclareModuleExports } from '@babel/types';
 
@@ -94,7 +94,7 @@ class HomeScreen extends React.Component {
     //this.bluetoothReceiveData = [];updateChart
     this.displayReceiveData = this.displayReceiveData.bind(this);
     this.getUTCString = this.getUTCString.bind(this);
-    //this.loadDataFromDatabase = this.loadDataFromDatabase.bind(this); //annotation for debug
+    this.loadDataFromDatabase = this.loadDataFromDatabase.bind(this); //annotation for debug
     this.updateChart = this.updateChart.bind(this);
     this.setLastReceiveDataFromNow = this.setLastReceiveDataFromNow.bind(this)
     
@@ -107,7 +107,7 @@ class HomeScreen extends React.Component {
     }
     BLEStatus.updateValueListener=BluetoothManager.addListener('BleManagerDidUpdateValueForCharacteristic', this.displayReceiveData);
 
-    setInterval(() => {this.setLastReceiveDataFromNow()}, 1000);
+    setInterval(() => {this.setLastReceiveDataFromNow()}, 3000);//update per 30s
     /*
     var arr =[];
     arr.push(new Date("Thu Sep 26 2019 20:34:28 GMT+0800 (GMT+08:00)"));
@@ -127,7 +127,7 @@ class HomeScreen extends React.Component {
 
     //}
 
-    //this.loadDataFromDatabase();//annotation for debug
+    this.loadDataFromDatabase();//annotation for debug
 
     //console.log("flame4 temperatureSet "+JSON.stringify(this.state.temperatureSet));
 
@@ -187,7 +187,7 @@ class HomeScreen extends React.Component {
 
     //console.log("flame4 temperatureSet "+ JSON.stringify(this.state.temperatureSet));
   }
-/*annotation for debug
+//*annotation for debug
   loadDataFromDatabase(){
     var tmp = DatabaseServices.loadAll();
     if(tmp.length !== 0){
@@ -197,12 +197,15 @@ class HomeScreen extends React.Component {
       this.state._1p0Set = this.state.dataSet.map(a=>a._1p0);
       this.state._2p5Set = this.state.dataSet.map(a=>a._2p5);
       this.state._10pSet = this.state.dataSet.map(a=>a._10p);
+
+      /*
       this.temperatureChart.updateData(this.state.temperatureSet);
       this.humidityChart.updateData(this.state.humiditySet);
       this._1p0Chart.updateData(this.state._1p0Set);
       this._2p5Chart.updateData(this.state._2p5Set);
       this._10pChart.updateData(this.state._10pSet);
-  
+      */
+      var timestamp = tmp[tmp.length - 1].date
       var latestItem = tmp[tmp.length - 1].air;
       this.setState({
         temperature:latestItem.temperature.toFixed(2),
@@ -210,8 +213,9 @@ class HomeScreen extends React.Component {
         _1p0:latestItem._1p0,
         _2p5:latestItem._2p5,
         _10p:latestItem._10p,
+        latestPackageTime:timestamp,
       });
-  
+      this.setLastReceiveDataFromNow()
       //this.forceUpdate();
     }
 
@@ -310,7 +314,7 @@ class HomeScreen extends React.Component {
 
       //this.updateChart(a);
 
-      /* annotation for debug
+      //* annotation for debug
       Geolocation.getCurrentPosition(
         (position) => {
 

@@ -8,6 +8,7 @@ const AirSchema = {
       _1p0:     'double',
       _2p5:  'double', 
       _10p:     'double',
+      raw:'string',
     }
   };
   const LocationSchema = {

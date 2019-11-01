@@ -59,4 +59,8 @@ export default class NetworkModule{
     async requestRegister(username,password){
 
     }
+
+    async postData(packegeJson){
+        
+    }
 }
