@@ -35,6 +35,12 @@ const datas = [
     icon: "easel",
     bg: "#477EEA",
   },
+  {
+    name: "View Detail Data",
+    route: "Detail",
+    icon: "search",
+    bg: "#29783B"
+  },
 ];
 
 class SideBar extends Component {

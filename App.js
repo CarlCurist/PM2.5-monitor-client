@@ -46,7 +46,6 @@ import {
   DebugInstructions,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-import BLEtest from './src/ble';
 import BLEMonitor from './src/BLEMonitor';
 import Geolocation from 'react-native-geolocation-service';
 import DatabaseServices from './src/DatabaseHelper'; //annotation for debug
@@ -59,6 +58,7 @@ import { Grid, LineChart, XAxis, YAxis } from 'react-native-svg-charts'
 import LoginScreen from './src/user/LoginScreen'
 import UserScreen from './src/user/UserScreen'
 import RegisterScreen from './src/user/RegisterScreen'
+import ViewDetailData from './src/ViewDetailData'
 //import NetworkModule from './src/Network';
 //import DataCard from './src/DataCard/DataCard'
 //import NHCardShowcase from './src/DataCard/card-showcase'
@@ -629,6 +629,9 @@ const Drawer = createDrawerNavigator(
     },
     Scan:{
       screen:BLEMonitor,
+    },
+    Detail:{
+      screen:ViewDetailData,
     }
   },
   {
