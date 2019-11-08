@@ -65,8 +65,8 @@ import ViewDetailData from './src/ViewDetailData'
 
 
 var window_width = Dimensions.get('window').width;//得到屏幕宽度
-const deviceWidth = Dimensions.get("window").width;
-const deviceHeight = Dimensions.get("window").height;
+//const deviceWidth = Dimensions.get("window").width;
+//const deviceHeight = Dimensions.get("window").height;
 //const Realm = require('realm');
 
 
@@ -468,87 +468,101 @@ class HomeScreen extends React.Component {
 
 
             <Content padder>
-              <Card >
-                <CardItem>
-                  <Left>
-                    <Thumbnail square source={require("./assets/temperature.png")} />
-                    <Body>
-                      <Text>Temperature(°C)</Text>
-                      <Text note>{this.state.latestPackageTimeStr}</Text>
-                    </Body>
-                    <Text style={styles.sectionTitle}>{this.state.temperature}</Text>
-                  </Left>
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate('Detail',{typeOfData:1})}>
+                <Card >
+                  <CardItem>
+                    <Left>
+                      <Thumbnail square source={require("./assets/temperature.png")} />
+                      <Body>
+                        <Text>Temperature(°C)</Text>
+                        <Text note>{this.state.latestPackageTimeStr}</Text>
+                      </Body>
+                      <Text style={styles.sectionTitle}>{this.state.temperature}</Text>
+                    </Left>
 
-                </CardItem>
-                       {/** 
-                      <TouchableOpacity
-          onPress={() => Alert.alert(
-            'Alert Title')}>
-                <MyLineChart ref={instance => { this.temperatureChart = instance; }} />
-                </TouchableOpacity>
-                */} 
-              </Card>
+                  </CardItem>
+                        {/** 
+                        <TouchableOpacity
+            onPress={() => Alert.alert(
+              'Alert Title')}>
+                  <MyLineChart ref={instance => { this.temperatureChart = instance; }} />
+                  </TouchableOpacity>
+                  */} 
+                </Card>
+              </TouchableOpacity>
 
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate('Detail',{typeOfData:2})}>
+                <Card >
+                  <CardItem>
+                    <Left>
+                      <Thumbnail square source={require("./assets/humidity.png")} />
+                      <Body>
+                        <Text>Humidity(%)</Text>
+                        <Text note>{this.state.latestPackageTimeStr}</Text>
+                      </Body>
+                      <Text style={styles.sectionTitle}>{this.state.humidity}</Text>
+                    </Left>
 
-              <Card >
-                <CardItem>
-                  <Left>
-                    <Thumbnail square source={require("./assets/humidity.png")} />
-                    <Body>
-                      <Text>Humidity(%)</Text>
-                      <Text note>{this.state.latestPackageTimeStr}</Text>
-                    </Body>
-                    <Text style={styles.sectionTitle}>{this.state.humidity}</Text>
-                  </Left>
+                  </CardItem>
+                  {/** <MyLineChart ref={instance => { this.humidityChart = instance; }} />*/} 
+                </Card>
+              </TouchableOpacity>
 
-                </CardItem>
-                {/** <MyLineChart ref={instance => { this.humidityChart = instance; }} />*/} 
-              </Card>
- 
-              <Card>
-                <CardItem>
-                  <Left>
-                    <Thumbnail square source={require("./assets/haze.png")} />
-                    <Body>
-                      <Text>PM1.0(µg/m 3)</Text>
-                      <Text note>{this.state.latestPackageTimeStr}</Text>
-                    </Body>
-                    <Text style={styles.sectionTitle}>{this.state._1p0}</Text>
-                  </Left>
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate('Detail',{typeOfData:3})}>
+                <Card>
+                  <CardItem>
+                    <Left>
+                      <Thumbnail square source={require("./assets/haze.png")} />
+                      <Body>
+                        <Text>PM1.0(µg/m 3)</Text>
+                        <Text note>{this.state.latestPackageTimeStr}</Text>
+                      </Body>
+                      <Text style={styles.sectionTitle}>{this.state._1p0}</Text>
+                    </Left>
 
-                </CardItem>
-                {/** <MyLineChart ref={instance => { this._1p0Chart = instance; }} />*/} 
-              </Card>
+                  </CardItem>
+                  {/** <MyLineChart ref={instance => { this._1p0Chart = instance; }} />*/} 
+                </Card>
+              </TouchableOpacity>
 
-              <Card>
-                <CardItem>
-                  <Left>
-                    <Thumbnail square source={require("./assets/haze.png")} />
-                    <Body>
-                      <Text>PM2.5(µg/m 3)</Text>
-                      <Text note>{this.state.latestPackageTimeStr}</Text>
-                    </Body>
-                    <Text style={styles.sectionTitle}>{this.state._2p5}</Text>
-                  </Left>
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate('Detail',{typeOfData:4})}>
+                <Card>
+                  <CardItem>
+                    <Left>
+                      <Thumbnail square source={require("./assets/haze.png")} />
+                      <Body>
+                        <Text>PM2.5(µg/m 3)</Text>
+                        <Text note>{this.state.latestPackageTimeStr}</Text>
+                      </Body>
+                      <Text style={styles.sectionTitle}>{this.state._2p5}</Text>
+                    </Left>
 
-                </CardItem>
-                {/** <MyLineChart ref={instance => { this._2p5Chart = instance; }} />*/} 
-              </Card>
+                  </CardItem>
+                  {/** <MyLineChart ref={instance => { this._2p5Chart = instance; }} />*/} 
+                </Card>
+              </TouchableOpacity>
 
-              <Card style={{marginBottom: 10}}>
-                <CardItem>
-                  <Left>
-                    <Thumbnail square source={require("./assets/haze.png")} />
-                    <Body>
-                      <Text>PM10(µg/m 3)</Text>
-                      <Text note>{this.state.latestPackageTimeStr}</Text>
-                    </Body>
-                    <Text style={styles.sectionTitle}>{this.state._10p}</Text>
-                  </Left>
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate('Detail',{typeOfData:5})}>
+                <Card style={{marginBottom: 10}}>
+                  <CardItem>
+                    <Left>
+                      <Thumbnail square source={require("./assets/haze.png")} />
+                      <Body>
+                        <Text>PM10(µg/m 3)</Text>
+                        <Text note>{this.state.latestPackageTimeStr}</Text>
+                      </Body>
+                      <Text style={styles.sectionTitle}>{this.state._10p}</Text>
+                    </Left>
 
-                </CardItem>
-                {/**<MyLineChart ref={instance => { this._10pChart = instance; }} />*/} 
-              </Card>
+                  </CardItem>
+                  {/**<MyLineChart ref={instance => { this._10pChart = instance; }} />*/} 
+                </Card>
+              </TouchableOpacity>
             </Content>
             
             {/** 
