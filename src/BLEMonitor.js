@@ -20,7 +20,8 @@ import {
   FooterTab,
   Left,
   Right,
-  Body
+    Body,
+  Toast
 } from "native-base";
 import { DrawerActions } from 'react-navigation';
 import {Global} from './global'
@@ -158,10 +159,14 @@ export default class BLEMonitor extends Component {
     handleUpdateValue=(data)=>{
         //ios接收到的是小写的16进制，android接收的是大写的16进制，统一转化为大写16进制
         //let value = data.value.toUpperCase();	
+
+        /* test receive data
         value = data.value;
+        
         this.bluetoothReceiveData.push(value);			
         console.log('BluetoothUpdateValue', value);
         this.setState({receiveData:this.bluetoothReceiveData.join('')})
+        */
         //BLEStatus.data = this.state.receiveData;
     }
 
@@ -230,15 +235,23 @@ export default class BLEMonitor extends Component {
                 console.log("flame connectedDevice",BLEStatus.connectedDevice);
 
                 BLEStatus.isConnected=true;
-                this.notifyUUID(RWServiceUUID,ReadUUID)
+                this.notifyUUID(RWServiceUUID, ReadUUID)
+                Toast.show({
+                    text: "Connected successfully",
+                    type: "success"
+                })
             })
             //.then()
-            .catch(err=>{                
+            .catch(err => {      
                 let newData = [...this.state.data];
                 newData[item.index].isConnecting = false;                
                 this.setState({data:newData});
-                this.alert('连接失败');
-                console.log('flame',error);
+                //this.alert('连接失败');
+                console.log('flame-debug connect fails', error);
+                Toast.show({
+                    text: "Connected Fails",
+                    type: "danger"
+                })
             })
     } 
 
@@ -535,8 +548,8 @@ export default class BLEMonitor extends Component {
                     renderItem={this.renderItem}
                     
                     ListHeaderComponent={this.renderHeader}
-                    ListFooterComponent={this.renderFooter}
-                    ListFooterComponent={this.testRenderNotify}
+                    //ListFooterComponent={this.renderFooter}
+                    //ListFooterComponent={this.testRenderNotify}
                     keyExtractor={item=>item.id}
                     data={this.state.data}
                     extraData={[BLEStatus.isConnected,this.state.text,this.state.receiveData,this.state.readData,this.state.writeData,this.state.isMonitoring,this.state.scaning]}

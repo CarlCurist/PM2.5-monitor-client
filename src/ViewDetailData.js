@@ -27,18 +27,76 @@ import {
 
   export default class ViewDetailData extends Component {
     constructor(props) {
-        super(props);   
-        this.state={
-            data: [],
-            startTime:"",
-            endTime:"",
-            typeOfData:1,//temperature=1 humidity=2 pm1.0=3 pm2.5=4 pm10=5
-            bar1Active:true,
-            bar2Active:false,
-            bar3Active:false,
-            bar4Active:false,
-            bar5Active:false,
+        super(props);
+        //initalize state
+        switch (props.navigation.getParam('typeOfData')) {
+            case 1:
+                this.state = {
+                    data: [],
+                    startTime: new Date(),
+                    endTime: new Date(),
+                    typeOfData: 1,//temperature=1 humidity=2 pm1.0=3 pm2.5=4 pm10=5
+                    bar1Active: true,
+                    bar2Active: false,
+                    bar3Active: false,
+                    bar4Active: false,
+                    bar5Active: false,
+                }
+                break
+            case 2:
+                this.state = {
+                    data: [],
+                    startTime: new Date(),
+                    endTime: new Date(),
+                    typeOfData: 2,//temperature=1 humidity=2 pm1.0=3 pm2.5=4 pm10=5
+                    bar1Active: false,
+                    bar2Active: true,
+                    bar3Active: false,
+                    bar4Active: false,
+                    bar5Active: false,
+                }
+                break
+            case 3:
+                this.state = {
+                    data: [],
+                    startTime: new Date(),
+                    endTime: new Date(),
+                    typeOfData: 3,//temperature=1 humidity=2 pm1.0=3 pm2.5=4 pm10=5
+                    bar1Active: false,
+                    bar2Active: false,
+                    bar3Active: true,
+                    bar4Active: false,
+                    bar5Active: false,
+                }
+                break
+            case 4:
+                this.state = {
+                    data: [],
+                    startTime: new Date(),
+                    endTime: new Date(),
+                    typeOfData: 4,//temperature=1 humidity=2 pm1.0=3 pm2.5=4 pm10=5
+                    bar1Active: false,
+                    bar2Active: false,
+                    bar3Active: false,
+                    bar4Active: true,
+                    bar5Active: false,
+                }
+                break
+            case 5:
+                this.state = {
+                    data: [],
+                    startTime: new Date(),
+                    endTime: new Date(),
+                    typeOfData: 5,//temperature=1 humidity=2 pm1.0=3 pm2.5=4 pm10=5
+                    bar1Active: false,
+                    bar2Active: false,
+                    bar3Active: false,
+                    bar4Active: false,
+                    bar5Active: true,
+                }
+                break
         }
+
         this.sampleData = [
             {x: '2018-01-01', y: 30},
             {x: '2018-01-02', y: 200},
@@ -67,42 +125,42 @@ import {
             {x: '2018-01-05', y: 10},
         ]
         this.allData=[]
-        this.chartData=[]
+        this.chartData = []
+
+        this.state.startTime.setTime(this.state.startTime.getTime() - 24 * 60 * 60 * 1000)
     }
 
-    componentDidMount(){
-        type =this.props.navigation.getParam('typeOfData')
-        this.setTypeOfData(type)
-
+      componentWillMount() {
+        /*
         var s = new Date()
         var e = new Date()
         this.setState({endTime:s})
         e.setTime(e.getTime()-24*60*60*1000);
         this.setState({startTime:e})
-
-        this.loadData()
+        */
+        type = this.props.navigation.getParam('typeOfData')
+        this.setTypeOfData(type)
+        
+        //this.loadData()
     }
 
     componentWillReceiveProps(nextProps){
         //type =this.props.navigation.getParam('typeOfData')
         type =nextProps.navigation.getParam('typeOfData')
         this.setTypeOfData(type)
+        
     }
 
-    loadData(start,end){
-        var tmp = DatabaseServices.loadAll();
+    loadData(start,end,data_type){
+        //var tmp = DatabaseServices.loadAll();
+        var tmp = DatabaseServices.loadDateFromUTC(start,end)
         if(tmp.length !== 0){
-            this.allData = tmp.map(a=>a.air);
-            var temperatureSet = this.allData.map(a=>a.temperature);
-            var timeset = tmp.map(a=>a.date);
-            var humiditySet = this.allData.map(a=>a.humidity);
+            //this.allData = tmp.map(a=>a.air);
+            //var temperatureSet = this.allData.map(a=>a.temperature);
+            //var timeset = tmp.map(a=>a.date);
+            //var humiditySet = this.allData.map(a=>a.humidity);
 
-            this.chartData = tmp.map(a=>{
-                return {
-                    x:a.date.getMonth()+'/'+a.date.getDate()+' '+a.date.getHours()+':'+a.date.getMinutes(),
-                    y:a.air.temperature
-                }
-            })
+            this.chartData = this.chooseData(tmp, data_type)
             for(var i=0;i<this.chartData.length;i++){
                 this.chartData[i].y = Number(this.chartData[i].y.toFixed(2))
             }
@@ -113,18 +171,63 @@ import {
             //console.log("flame-debug humiditySet "+ JSON.stringify(humiditySet))
 
         }
+      }
+      
+      chooseData(air_set,data_type) {
+          if (data_type==1) {
+              return air_set.map(a => {
+                  return {
+                      x: a.date.getMonth() + 1 + '/' + a.date.getDate() + ' ' + a.date.getHours() + ':' + a.date.getMinutes(),
+                      y: a.air.temperature
+                  }
+              })
+          }
+
+          if (data_type==2) {
+              return air_set.map(a => {
+                  return {
+                      x: a.date.getMonth()+1 + '/' + a.date.getDate() + ' ' + a.date.getHours() + ':' + a.date.getMinutes(),
+                      y: a.air.humidity
+                  }
+              })
+          }
+
+          if (data_type == 3) {
+              return air_set.map(a => {
+                  return {
+                      x: a.date.getMonth() + 1 + '/' + a.date.getDate() + ' ' + a.date.getHours() + ':' + a.date.getMinutes(),
+                      y: a.air._1p0
+                  }
+              })
+          }
+          if (data_type == 4) {
+              return air_set.map(a => {
+                  return {
+                      x: a.date.getMonth() + 1 + '/' + a.date.getDate() + ' ' + a.date.getHours() + ':' + a.date.getMinutes(),
+                      y: a.air._2p5
+                  }
+              })
+          }
+          if (data_type == 5) {
+              return air_set.map(a => {
+                  return {
+                      x: a.date.getMonth() + 1 + '/' + a.date.getDate() + ' ' + a.date.getHours() + ':' + a.date.getMinutes(),
+                      y: a.air._10p
+                  }
+              })
+          }
     }
     
-    setTypeOfData(i){
+      setTypeOfData(i) {
+        this.refresh(i)
         this.setState({
-            typeOfData:i,
-            bar1Active:false,
-            bar2Active:false,
-            bar3Active:false,
-            bar4Active:false,
-            bar5Active:false,
+            typeOfData: i,
+            bar1Active: false,
+            bar2Active: false,
+            bar3Active: false,
+            bar4Active: false,
+            bar5Active: false,
         })
-        
 
         switch(i){
             case 1:
@@ -143,7 +246,41 @@ import {
                 this.setState({bar5Active:true})
                 break
         }
-    }
+
+        
+        //this.setState({typeOfData:1})
+      }
+      
+      getUTCString(date = null) {
+          // it will return last 24H by default
+          if (date === null) {
+              date = new Date();
+              date.setTime(date.getTime() - 24 * 60 * 60 * 1000); // get yesterday
+          }
+          //console.log("flame-debug ViewDetail "+date)
+          if (typeof date == "string") {
+              //new Date(date) fails in normal time but run normally when debugging
+              //get more information https://www.jianshu.com/p/dfdd86796ab3
+              date = new Date(Date.parse(date.replace(/-/g, "/"))) 
+              //console.log("flame-debug ViewDetail convert date succeed! " + date)
+          }
+          
+          //var t1 = date.getUTCMonth();
+          //var t2 = date.getUTCDate();
+          // getUTCMounth() return 0-11
+          return date.getUTCFullYear() + '-' + (date.getUTCMonth() + 1) + '-' + date.getUTCDate() + '@' + date.getUTCHours() + ':' + date.getUTCMinutes() + ':' + date.getUTCSeconds();
+      }
+
+      refresh(data_type) {
+          UTC_start_time = ""
+          UTC_end_time = ""
+          if (this.state.startTime != "" && this.state.endTime != "") {
+              UTC_start_time = this.getUTCString(this.state.startTime)
+              UTC_end_time = this.getUTCString(this.state.endTime)
+          }
+          this.loadData(UTC_start_time, UTC_end_time, data_type)
+          //this.forceUpdate()
+      }
 
     render () {
         return (
@@ -229,13 +366,13 @@ import {
 
             </View>
 
-            <Button full primary style={{marginBottom: 20}}>
+                <Button full primary style={{ marginBottom: 20 }} onPress={() => this.setTypeOfData(this.state.typeOfData)}>
                     <Text>refresh</Text>
             </Button>
             
             <Footer>
                 <FooterTab>
-                    <Button active={this.state.bar1Active} onPress={() => this.setTypeOfData(1)}>
+                        <Button active={this.state.bar1Active} onPress={() => this.setTypeOfData(1)}>
                     <Text>Temperature</Text>
                     </Button>
                     <Button active={this.state.bar2Active} onPress={() => this.setTypeOfData(2)}>

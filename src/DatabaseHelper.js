@@ -76,8 +76,11 @@ const AirSchema = {
         return Database.objects("Item");
       },
 
-      loadDateFromUTC: function(utcdate_string){
-        return Database.objects("Item").filtered('date > '+ utcdate_string);
+    loadDateFromUTC: function (start_date, end_date) {//date_string must be UTC string
+      if (start_date == "" && end_date == "")
+        return this.loadAll()
+      else
+        return Database.objects("Item").filtered('date > ' + start_date + ' && date <= ' + end_date);
       },
 
       deleteAllData: function(){
