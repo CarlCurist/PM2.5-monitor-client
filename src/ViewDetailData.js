@@ -30,6 +30,7 @@ import {
         super(props);
         //initalize state
         switch (props.navigation.getParam('typeOfData')) {
+            case 0:
             case 1:
                 this.state = {
                     data: [],
@@ -97,33 +98,6 @@ import {
                 break
         }
 
-        this.sampleData = [
-            {x: '2018-01-01', y: 30},
-            {x: '2018-01-02', y: 200},
-            {x: '2018-01-03', y: 170},
-            {x: '2018-01-04', y: 287},
-            {x: '2018-01-05', y: 10},
-            {x: '2018-01-01', y: 30},
-            {x: '2018-01-02', y: 200},
-            {x: '2018-01-03', y: 170},
-            {x: '2018-01-04', y: 250},
-            {x: '2018-01-05', y: 10},
-            {x: '2018-01-01', y: 30},
-            {x: '2018-01-02', y: 200},
-            {x: '2018-01-03', y: 170},
-            {x: '2018-01-04', y: 250},
-            {x: '2018-01-05', y: 10},
-            {x: '2018-01-01', y: 30},
-            {x: '2018-01-02', y: 200},
-            {x: '2018-01-03', y: 170},
-            {x: '2018-01-04', y: 250},
-            {x: '2018-01-05', y: 10},
-            {x: '2018-01-01', y: 30},
-            {x: '2018-01-02', y: 608},
-            {x: '2018-01-03', y: 170},
-            {x: '2018-01-04', y: 250},
-            {x: '2018-01-05', y: 10},
-        ]
         this.allData=[]
         this.chartData = []
 
@@ -139,16 +113,20 @@ import {
         this.setState({startTime:e})
         */
         type = this.props.navigation.getParam('typeOfData')
-        this.setTypeOfData(type)
+          if (type != 0) { 
+              this.setTypeOfData(type)
+          }
+        
         
         //this.loadData()
     }
 
     componentWillReceiveProps(nextProps){
         //type =this.props.navigation.getParam('typeOfData')
-        type =nextProps.navigation.getParam('typeOfData')
-        this.setTypeOfData(type)
-        
+        type = nextProps.navigation.getParam('typeOfData')
+        if (type != 0) {
+            this.setTypeOfData(type)
+        }
     }
 
     loadData(start,end,data_type){
