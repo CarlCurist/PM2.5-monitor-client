@@ -460,7 +460,7 @@ class HomeScreen extends React.Component {
             <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
 
                 <ImageBackground  style={styles.drawerCover} source={require('./assets/logo.jpg')}>
-              {/*<Text style={styles.BatteryText}>Battery:{this.state.battery}</Text>*/}
+                <Text style={styles.BatteryText}>Battery:{this.state.battery}</Text>
                 </ImageBackground >
               
             </View>

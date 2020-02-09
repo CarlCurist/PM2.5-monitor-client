@@ -70,7 +70,7 @@ class SideBar extends Component {
               <ListItem
                 button
                 noBorder
-                onPress={() => this.props.navigation.navigate(data.route, { typeOfData: 0 })}
+                onPress={() => this.props.navigation.navigate(data.route, { typeOfData: 1 })}
               >
                 <Left>
                   <Icon
