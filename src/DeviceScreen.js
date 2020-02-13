@@ -65,6 +65,10 @@ export default class DeviceScreen extends React.Component {
     handleBLEReceiveData=(data)=> {
         var  charging = false , gif = 0, voltage = 'N/A',RTC = 'N/A'
         this.package = gParseData.handleUpdateValue(data);
+        if (this.package.type !== 3) {
+            voltage = this.state.BatteryVoltage
+            RTC = this.state.RTCTime
+        }
         if ("battery" in this.package) { 
             if (this.package.battery === "charging" || this.package.battery === "Full") {
                 batt_status = '5'
