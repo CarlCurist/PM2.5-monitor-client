@@ -49,7 +49,7 @@ export default class ParsePackage{
         result.type = 3;
         result.year = 2000+ this.BCDtoNum(data[3]);
         result.month = this.BCDtoNum(data[4]);
-        result.data = this.BCDtoNum(data[5]);
+        result.date = this.BCDtoNum(data[5]);
         result.hour = this.BCDtoNum(data[6]);
         result.minute = this.BCDtoNum(data[7]);
         result.second = this.BCDtoNum(data [8]);
@@ -61,7 +61,7 @@ export default class ParsePackage{
         if(result.voltage>=3900){
             result.battery = 'high';
         }else if(result.voltage>=3600 && result.voltage<3900){
-            result.battery = 'midium';
+            result.battery = 'medium';
         }else if(result.voltage>=3300 && result.voltage < 3600){
             result.battery = 'low';
         }else{

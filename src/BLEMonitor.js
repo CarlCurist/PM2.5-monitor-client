@@ -231,8 +231,14 @@ export default class BLEMonitor extends Component {
                     //isConnected:true
                 });
                 
-                BLEStatus.connectedDevice =  JSON.stringify(this.state.data);
-                console.log("flame connectedDevice",BLEStatus.connectedDevice);
+                //BLEStatus.connectedDevice = JSON.stringify(this.state.data);
+                //console.log("flame connectedDevice", BLEStatus.connectedDevice);
+                BLEStatus.connectedDevice = this.state.data;
+                //console.log("flame connectedDevice", this.state.data[0]['id']);
+                //console.log("flame connectedDevice", this.state.data[0]['name']);
+                //console.log("flame connectedDevice 2", BLEStatus.connectedDevice[0]['id']);
+                //console.log("flame connectedDevice", JSON.stringify(BLEStatus.connectedDevice));
+                
 
                 BLEStatus.isConnected=true;
                 this.notifyUUID(RWServiceUUID, ReadUUID)
