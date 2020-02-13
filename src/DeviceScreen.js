@@ -10,9 +10,9 @@ export default class DeviceScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            headerBLEStatue : '0',
-            headerSDStatus : '0',
-            headerBATTStatus: '0',
+            //headerBLEStatue : '0',
+            //headerSDStatus : '0',
+            //headerBATTStatus: '0',
             
             gif_display_offset: 4,
 
@@ -41,7 +41,7 @@ export default class DeviceScreen extends React.Component {
             require('../assets/gif/not_connect_480.gif'),
             require('../assets/gif/pair_instruction_10fps_480.gif'),]
         this.UpdateReceiveDataListener = BluetoothManager.addListener('BleManagerDidUpdateValueForCharacteristic', this.handleBLEReceiveData);
-        this.UpdateStateListener = BluetoothManager.addListener('BleManagerDidUpdateState', this.handleBLEUpdateState);
+        //this.UpdateStateListener = BluetoothManager.addListener('BleManagerDidUpdateState', this.handleBLEUpdateState);
         this.connectPeripheralListener = BluetoothManager.addListener('BleManagerConnectPeripheral', this.handleConnectPeripheral);
         this.disconnectPeripheralListener = BluetoothManager.addListener('BleManagerDisconnectPeripheral', this.handleDisconnectPeripheral);
         BluetoothManager.checkState();
@@ -54,25 +54,16 @@ export default class DeviceScreen extends React.Component {
     }
     componentWillUnmount() {
         this.UpdateReceiveDataListener.remove();
-        this.UpdateStateListener.remove();
+        //this.UpdateStateListener.remove();
         this.connectPeripheralListener.remove();
         this.disconnectPeripheralListener.remove()
     }
 
-    //蓝牙状态改变
-    handleBLEUpdateState=(args)=>{
-        //console.log('BleManagerDidUpdateStatea:', args);
-        BluetoothManager.bluetoothState = args.state;
-        if (args.state == 'on') {  //蓝牙打开时自动搜索
-            this.setState({headerBLEStatue:'1'})
-        } else {
-            this.setState({ headerBLEStatue: '0' })
-        }
-    }
+
 
     //接受蓝牙传输的数据
     handleBLEReceiveData=(data)=> {
-        var sd_status = '0', batt_status = '0', charging = false , gif = 0, voltage = 'N/A',RTC = 'N/A'
+        var  charging = false , gif = 0, voltage = 'N/A',RTC = 'N/A'
         this.package = gParseData.handleUpdateValue(data);
         if ("battery" in this.package) { 
             if (this.package.battery === "charging" || this.package.battery === "Full") {
@@ -82,27 +73,21 @@ export default class DeviceScreen extends React.Component {
                 //TODO update charing current
             }
             if (this.package.battery === "high") {
-                batt_status = '4'
+                //batt_status = '4'
             }
             if (this.package.battery === "medium") {
-                batt_status = '3'
+                //batt_status = '3'
             }
             if (this.package.battery === "low") {
-                batt_status = '2'
+                //batt_status = '2'
                 gif = 2
             }
             if (this.package.battery === "critical") {
-                batt_status = '1'
+                //batt_status = '1'
                 gif = 2
             }
         }
-        if ("cd" in this.package) { 
-            if (this.package.cd) {
-                sd_status='1'
-            } else {
-                sd_status='0'
-            }
-        }
+
         if ("voltage" in this.package) {
             voltage = (this.package.voltage/1000).toFixed(2)+' (V)'
         }
@@ -120,8 +105,8 @@ export default class DeviceScreen extends React.Component {
 
 
         this.setState({
-            headerSDStatus: sd_status,
-            headerBATTStatus: batt_status,
+            //headerSDStatus: sd_status,
+            //headerBATTStatus: batt_status,
             device_charging: charging,
             DeviceName: BLEStatus.connectedDevice[0]['name'],
             MACAddress: BLEStatus.connectedDevice[0]['id'],
@@ -166,8 +151,6 @@ export default class DeviceScreen extends React.Component {
     handleDisconnectPeripheral = (args) => {
         this.setState({
             device_disconnected: true,
-            headerSDStatus: '0',
-            headerBATTStatus: '0',
             gif_display_offset: 3,
         })
     }
@@ -306,7 +289,7 @@ export default class DeviceScreen extends React.Component {
     render() {
         return (
             <Container>
-                <MyHeader title="Device" bluetooth={this.state.headerBLEStatue} sdcard={this.state.headerSDStatus} battery={this.state.headerBATTStatus} />
+                <MyHeader title="Device" bluetooth='0' sdcard='0' battery='0' />
                 <View>
                     <Image
                         style={styles.gif_style}
