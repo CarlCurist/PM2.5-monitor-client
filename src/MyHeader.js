@@ -60,6 +60,9 @@ export default class MyHeader extends React.Component {
     handleBLEReceiveData = (data) => { 
         var sd_status = '0', batt_status = '0'
         this.package = gParseData.handleUpdateValue(data);
+        if (this.package.type !== 3) {
+            return
+        }
         if ("cd" in this.package) {
             if (this.package.cd) {
                 sd_status = '1'
