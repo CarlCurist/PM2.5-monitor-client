@@ -60,15 +60,14 @@ export default class MyHeader extends React.Component {
     handleBLEReceiveData = (data) => { 
         var sd_status = '0', batt_status = '0'
         this.package = gParseData.handleUpdateValue(data);
-        if (this.package.type !== 3) {
-            return
-        }
         if ("cd" in this.package) {
             if (this.package.cd) {
                 sd_status = '1'
             } else {
                 sd_status = '0'
             }
+        } else {
+            sd_status = this.state.sdcard
         }
         if ("battery" in this.package) {
             if (this.package.battery === "charging" || this.package.battery === "Full") {
@@ -87,6 +86,8 @@ export default class MyHeader extends React.Component {
             if (this.package.battery === "critical") {
                 batt_status = '1'
             }
+        } else {
+            batt_status = this.state.battery
         }
         this.setState({
             sdcard: sd_status,
