@@ -32,7 +32,8 @@ export default class DeviceScreen extends React.Component {
             ChargingTime: 'N/A',
             ChargingCurrent: 'N/A',
 
-            StartSensingDate:null,
+            StartSensingDate: null,
+            StartChargingDate:null,
         };
         this.gif_set = [
             require('../assets/gif/motion_ble_connect_led_10fps_480.gif'),
@@ -105,25 +106,55 @@ export default class DeviceScreen extends React.Component {
 
             RTC = `${year}-${month}-${date} ${hour}:${minute}:${second}`
         }
-        
 
+        //handle charging package
+        if (this.package.type===1) {
+            current = (this.package.current).toFixed(2) + ' (mA)'
+            if (this.state.StartChargingDate === null) {
+                this.setState({
+                    StartChargingDate: new Date(),
+                    StartSensingDate:null,
+                })
+            }
+            if (this.package.battery === "charging") {
+                chargingt = this.calcConsumingTime(this.state.StartChargingDate)
+            } else {
+                chargingt = "Charge complete"
+            }
 
-        this.setState({
-            //headerSDStatus: sd_status,
-            //headerBATTStatus: batt_status,
-            device_charging: charging,
-            DeviceName: BLEStatus.connectedDevice[0]['name'],
-            MACAddress: BLEStatus.connectedDevice[0]['id'],
-            gif_display_offset: gif,
-            BatteryVoltage: voltage,
-            RTCTime: RTC,
-            SensingTime:this.calcSensingTime(),
-        })
+            this.setState({
+                device_charging: charging,
+                gif_display_offset: gif,
+                ChargingCurrent: current,
+                ChargingTime: chargingt,
+            })
+
+        } else {
+            if (this.state.StartSensingDate === null) {
+                this.setState({
+                    StartChargingDate: null,
+                    StartSensingDate: new Date(),
+                })
+            }
+
+            this.setState({
+                //headerSDStatus: sd_status,
+                //headerBATTStatus: batt_status,
+                device_charging: charging,
+                DeviceName: BLEStatus.connectedDevice[0]['name'],
+                MACAddress: BLEStatus.connectedDevice[0]['id'],
+                gif_display_offset: gif,
+                BatteryVoltage: voltage,
+                RTCTime: RTC,
+                SensingTime: this.calcConsumingTime(this.state.StartSensingDate),
+                StartChargingDate: null,
+            })
+        }
     }
 
-    //calc sensing time
-    calcSensingTime() {
-        startDate = (this.state.StartSensingDate).valueOf();
+    //计算消耗的时间
+    calcConsumingTime(date) {
+        startDate = (date).valueOf();
         nowDate = (new Date()).valueOf();
 
         difference = nowDate - startDate
