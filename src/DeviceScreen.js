@@ -184,10 +184,12 @@ export default class DeviceScreen extends React.Component {
     }
     //蓝牙设备已断开连接
     handleDisconnectPeripheral = (args) => {
-        this.setState({
-            device_disconnected: true,
-            gif_display_offset: 3,
-        })
+        if (!this.state.device_unpair) {
+            this.setState({
+                device_disconnected: true,
+                gif_display_offset: 3,
+            })
+        }
     }
 
 
@@ -195,6 +197,16 @@ export default class DeviceScreen extends React.Component {
         this.setState({
             button_state:!this.state.button_state
         })
+    }
+
+    unpair_device() {
+        this.setState({
+            device_unpair: true,
+            device_disconnected: false,
+            device_charging: false,
+            gif_display_offset: 4,
+        })
+        BluetoothManager.disconnect();
     }
 
     render_item_unpair() {
@@ -262,11 +274,7 @@ export default class DeviceScreen extends React.Component {
                 </Grid>
                 <Button bordered full warning style={styles.button_style}
                     onPress={() => {
-                        this.setState({
-                            device_unpair: true,
-                            device_disconnected: false,
-                            device_charging: false,
-                            gif_display_offset: 4,})
+                        this.unpair_device()
                     }}>
                     <Text style={styles.font_orange}>Unpair Device</Text>
                 </Button>

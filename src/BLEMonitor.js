@@ -57,17 +57,17 @@ export default class BLEMonitor extends Component {
             BLEStatus.isStart = true
             BluetoothManager.start();
        }
-       BLEStatus.updateStateListener=BluetoothManager.addListener('BleManagerDidUpdateState',this.handleUpdateState);
-       BLEStatus.stopScanListener=BluetoothManager.addListener('BleManagerStopScan',this.handleStopScan);	   
-       BLEStatus.discoverPeripheralListener=BluetoothManager.addListener('BleManagerDiscoverPeripheral',this.handleDiscoverPeripheral);
-       BLEStatus.connectPeripheralListener=BluetoothManager.addListener('BleManagerConnectPeripheral',this.handleConnectPeripheral);
-       BLEStatus.disconnectPeripheralListener=BluetoothManager.addListener('BleManagerDisconnectPeripheral',this.handleDisconnectPeripheral);
-       BLEStatus.updateValueListener=BluetoothManager.addListener('BleManagerDidUpdateValueForCharacteristic', this.handleUpdateValue);  
+       this.updateStateListener=BluetoothManager.addListener('BleManagerDidUpdateState',this.handleUpdateState);
+        this.stopScanListener=BluetoothManager.addListener('BleManagerStopScan',this.handleStopScan);	   
+        this.discoverPeripheralListener=BluetoothManager.addListener('BleManagerDiscoverPeripheral',this.handleDiscoverPeripheral);
+        this.connectPeripheralListener=BluetoothManager.addListener('BleManagerConnectPeripheral',this.handleConnectPeripheral);
+        this.disconnectPeripheralListener=BluetoothManager.addListener('BleManagerDisconnectPeripheral',this.handleDisconnectPeripheral);
+        this.updateValueListener=BluetoothManager.addListener('BleManagerDidUpdateValueForCharacteristic', this.handleUpdateValue);  
        
        BluetoothManager.checkState();
 
        if(BLEStatus.isConnected){
-        this.setState({data:JSON.parse(BLEStatus.connectedDevice)});
+        this.setState({data:BLEStatus.connectedDevice});
         }
         console.log("flame2",this.state.data);
     }   
@@ -84,13 +84,15 @@ export default class BLEMonitor extends Component {
             BluetoothManager.disconnect();  //退出时断开蓝牙连接
         }
         */
-       BLEStatus.updateStateListener.remove();
-       BLEStatus.stopScanListener.remove();
-       BLEStatus.discoverPeripheralListener.remove();       
-       BLEStatus.connectPeripheralListener.remove();
-       BLEStatus.disconnectPeripheralListener.remove();
-       BLEStatus.updateValueListener.remove();  
-       
+        
+        /*
+        this.updateStateListener.remove();
+        this.stopScanListener.remove();
+        this.discoverPeripheralListener.remove();       
+        this.connectPeripheralListener.remove();
+        this.disconnectPeripheralListener.remove();
+        this.updateValueListener.remove();  
+       */
 
 
     }
@@ -113,7 +115,7 @@ export default class BLEMonitor extends Component {
      //搜索到一个新设备监听
     handleDiscoverPeripheral=(data)=>{
         // console.log('BleManagerDiscoverPeripheral:', data);
-        console.log('flame',data.id,data.name);
+        console.log('flame DiscoverPeripheral',data.id,data.name);
         if(data.name != null && data.name.startsWith('PM')){
             console.log(data.id,data.name);
             let id;  //蓝牙连接id
