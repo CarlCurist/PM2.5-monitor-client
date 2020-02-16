@@ -58,14 +58,14 @@ export default class ParsePackage{
 
         result.voltage = ((data[10]<<8)+data[11])*3.3/65535*1.5*1000;
         
-        if(result.voltage>=3900){
+        if (result.voltage >= 3975){
             result.battery = 'high';
-        }else if(result.voltage>=3600 && result.voltage<3900){
+        } else if (result.voltage >= 3750 && result.voltage < 3975){
             result.battery = 'medium';
-        }else if(result.voltage>=3300 && result.voltage < 3600){
+        } else if (result.voltage >= 3525 && result.voltage < 3750){
             result.battery = 'low';
         }else{
-            result.battery = 'critical';
+            result.battery = 'critical'; //3300-3525
         }
 
         console.log("flame parse BATT_PACKAGE ",JSON.stringify(result));
