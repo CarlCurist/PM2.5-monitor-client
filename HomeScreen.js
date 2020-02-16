@@ -91,9 +91,8 @@ export default class HomeScreen extends React.Component {
       latestPackageTime:null,
       latestPackageTimeStr: 'N/A',
       
-      headerBLEStatue: '0',
-      headerSDStatus: '0',
-      headerBATTStatus: '0',
+
+      device_connected:false,
     }
     //this.bluetoothReceiveData = [];updateChart
     this.displayReceiveData = this.displayReceiveData.bind(this);
@@ -111,7 +110,8 @@ export default class HomeScreen extends React.Component {
       BluetoothManager.start();
     }
     BLEStatus.updateValueListener = BluetoothManager.addListener('BleManagerDidUpdateValueForCharacteristic', this.displayReceiveData);
-    this.UpdateStateListener = BluetoothManager.addListener('BleManagerDidUpdateState', this.handleBLEUpdateState);
+    this.connectPeripheralListener = BluetoothManager.addListener('BleManagerConnectPeripheral', this.handleConnectPeripheral);
+    this.disconnectPeripheralListener = BluetoothManager.addListener('BleManagerDisconnectPeripheral', this.handleDisconnectPeripheral);
     BluetoothManager.checkState();
 
     this.timer = setInterval(() => {this.setLastReceiveDataFromNow()}, 3000);//update per 30s
@@ -177,17 +177,21 @@ export default class HomeScreen extends React.Component {
       BluetoothManager.disconnect();  //退出时断开蓝牙连接
     }
     this.timer && clearTimeout(this.timer);
+    this.connectPeripheralListener.remove();
+    this.disconnectPeripheralListener.remove()
   }
 
-  //蓝牙状态改变
-  handleBLEUpdateState = (args) => {
-    //console.log('BleManagerDidUpdateStatea:', args);
-    BluetoothManager.bluetoothState = args.state;
-    if (args.state == 'on') {  //蓝牙打开时自动搜索
-      this.setState({ headerBLEStatue: '1' })
-    } else {
-      this.setState({ headerBLEStatue: '0' })
-    }
+  //蓝牙设备已连接 
+  handleConnectPeripheral = (args) => {
+    this.setState({
+      device_connected:true,
+    })
+  }
+  //蓝牙设备已断开连接
+  handleDisconnectPeripheral = (args) => {
+    this.setState({
+      device_connected: false,
+    })
   }
 
   updateChart(a){
@@ -466,12 +470,189 @@ export default class HomeScreen extends React.Component {
     }
   }
   
+  render_activated_card() {
+    return (
+      <Content padder>
+        <TouchableOpacity
+          onPress={() => this.props.navigation.navigate('Detail', { typeOfData: 1 })}>
+          <Card >
+            <CardItem>
+              <Left>
+                <Thumbnail square source={require("./assets/icon/temperature_icon_orange.png")} />
+                <Body>
+                  <Text style={styles.font_orange}>Temperature(°C)</Text>
+                  <Text note style={styles.font_orange}>{this.state.latestPackageTimeStr}</Text>
+                </Body>
+                <Text style={styles.indice_orange}>{this.state.temperature}</Text>
+              </Left>
+
+            </CardItem>
+            {/** 
+                        <TouchableOpacity
+            onPress={() => Alert.alert(
+              'Alert Title')}>
+                  <MyLineChart ref={instance => { this.temperatureChart = instance; }} />
+                  </TouchableOpacity>
+                  */}
+          </Card>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => this.props.navigation.navigate('Detail', { typeOfData: 2 })}>
+          <Card >
+            <CardItem>
+              <Left>
+                <Thumbnail square source={require("./assets/icon/humidity_icon_orange.png")} />
+                <Body>
+                  <Text style={styles.font_orange}>Humidity(%)</Text>
+                  <Text note style={styles.font_orange}>{this.state.latestPackageTimeStr}</Text>
+                </Body>
+                <Text style={styles.indice_orange}>{this.state.humidity}</Text>
+              </Left>
+
+            </CardItem>
+            {/** <MyLineChart ref={instance => { this.humidityChart = instance; }} />*/}
+          </Card>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => this.props.navigation.navigate('Detail', { typeOfData: 3 })}>
+          <Card>
+            <CardItem>
+              <Left>
+                <Thumbnail square source={require("./assets/icon/pm1p0_icon_orange.png")} />
+                <Body>
+                  <Text style={styles.font_orange}>PM1.0(µg/m 3)</Text>
+                  <Text note style={styles.font_orange}>{this.state.latestPackageTimeStr}</Text>
+                </Body>
+                <Text style={styles.indice_orange}>{this.state._1p0}</Text>
+              </Left>
+
+            </CardItem>
+            {/** <MyLineChart ref={instance => { this._1p0Chart = instance; }} />*/}
+          </Card>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => this.props.navigation.navigate('Detail', { typeOfData: 4 })}>
+          <Card>
+            <CardItem>
+              <Left>
+                <Thumbnail square source={require("./assets/icon/pm2p5_icon_orange.png")} />
+                <Body>
+                  <Text style={styles.font_orange}>PM2.5(µg/m 3)</Text>
+                  <Text note style={styles.font_orange}>{this.state.latestPackageTimeStr}</Text>
+                </Body>
+                <Text style={styles.indice_orange}>{this.state._2p5}</Text>
+              </Left>
+
+            </CardItem>
+            {/** <MyLineChart ref={instance => { this._2p5Chart = instance; }} />*/}
+          </Card>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => this.props.navigation.navigate('Detail', { typeOfData: 5 })}>
+          <Card style={{ marginBottom: 10 }}>
+            <CardItem>
+              <Left>
+                <Thumbnail square source={require("./assets/icon/pm10p_icon_orange.png")} />
+                <Body>
+                  <Text style={styles.font_orange}>PM10(µg/m 3)</Text>
+                  <Text note style={styles.font_orange}>{this.state.latestPackageTimeStr}</Text>
+                </Body>
+                <Text style={styles.indice_orange}>{this.state._10p}</Text>
+              </Left>
+
+            </CardItem>
+            {/**<MyLineChart ref={instance => { this._10pChart = instance; }} />*/}
+          </Card>
+        </TouchableOpacity>
+      </Content>
+    )
+  }
+
+  render_inactivated_card() { 
+    return (
+      <Content padder>
+          <Card >
+            <CardItem>
+              <Left>
+              <Thumbnail square source={require("./assets/icon/pm10p_icon_gray.png")} />
+                <Body>
+                  <Text style={styles.font_grey}>Temperature(°C)</Text>
+                <Text note style={styles.font_grey}>{this.state.latestPackageTimeStr}</Text>
+                </Body>
+              <Text style={styles.indice_grey}>{this.state.temperature}</Text>
+              </Left>
+            </CardItem>
+          </Card>
+
+          <Card >
+            <CardItem>
+              <Left>
+              <Thumbnail square source={require("./assets/icon/humidity_icon_gray.png")} />
+                <Body>
+                <Text style={styles.font_grey}>Humidity(%)</Text>
+                <Text note style={styles.font_grey}>{this.state.latestPackageTimeStr}</Text>
+                </Body>
+              <Text style={styles.indice_grey}>{this.state.humidity}</Text>
+              </Left>
+
+            </CardItem>
+          </Card>
+
+
+          <Card>
+            <CardItem>
+              <Left>
+              <Thumbnail square source={require("./assets/icon/pm1p0_icon_gray.png")} />
+                <Body>
+                <Text style={styles.font_grey}>PM1.0(µg/m 3)</Text>
+                <Text note style={styles.font_grey}>{this.state.latestPackageTimeStr}</Text>
+                </Body>
+              <Text style={styles.indice_grey}>{this.state._1p0}</Text>
+              </Left>
+
+            </CardItem>
+          </Card>
+
+          <Card>
+            <CardItem>
+              <Left>
+              <Thumbnail square source={require("./assets/icon/pm2p5_icon_gray.png")} />
+                <Body>
+                <Text style={styles.font_grey}>PM2.5(µg/m 3)</Text>
+                <Text note style={styles.font_grey}>{this.state.latestPackageTimeStr}</Text>
+                </Body>
+              <Text style={styles.indice_grey}>{this.state._2p5}</Text>
+              </Left>
+
+            </CardItem>
+          </Card>
+
+          <Card style={{ marginBottom: 10 }}>
+            <CardItem>
+              <Left>
+              <Thumbnail square source={require("./assets/icon/pm10p_icon_gray.png")} />
+                <Body>
+                <Text style={styles.font_grey}>PM10(µg/m 3)</Text>
+                <Text note style={styles.font_grey}>{this.state.latestPackageTimeStr}</Text>
+                </Body>
+              <Text style={styles.indice_grey}>{this.state._10p}</Text>
+              </Left>
+
+            </CardItem>
+          </Card>
+      </Content>
+    )
+  }
 
   render() {
     
     return (
       <Container style={{ backgroundColor: "#FFF" }}>
-        <MyHeader title="WePIN" bluetooth={this.state.headerBLEStatue} sdcard={this.state.headerSDStatus} battery={this.state.headerBATTStatus} />
+        <MyHeader title="WePIN"/>
         {/** 
         <StatusBar barStyle="light-content" />
         <Header>
@@ -517,105 +698,9 @@ export default class HomeScreen extends React.Component {
               
             </View>
 
+          {this.state.device_connected ? this.render_activated_card() : this.render_inactivated_card()}
+            
 
-
-            <Content padder>
-              <TouchableOpacity
-                onPress={() => this.props.navigation.navigate('Detail',{typeOfData:1})}>
-                <Card >
-                  <CardItem>
-                    <Left>
-                      <Thumbnail square source={require("./assets/temperature.png")} />
-                      <Body>
-                        <Text>Temperature(°C)</Text>
-                        <Text note>{this.state.latestPackageTimeStr}</Text>
-                      </Body>
-                      <Text style={styles.sectionTitle}>{this.state.temperature}</Text>
-                    </Left>
-
-                  </CardItem>
-                        {/** 
-                        <TouchableOpacity
-            onPress={() => Alert.alert(
-              'Alert Title')}>
-                  <MyLineChart ref={instance => { this.temperatureChart = instance; }} />
-                  </TouchableOpacity>
-                  */} 
-                </Card>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => this.props.navigation.navigate('Detail',{typeOfData:2})}>
-                <Card >
-                  <CardItem>
-                    <Left>
-                      <Thumbnail square source={require("./assets/humidity.png")} />
-                      <Body>
-                        <Text>Humidity(%)</Text>
-                        <Text note>{this.state.latestPackageTimeStr}</Text>
-                      </Body>
-                      <Text style={styles.sectionTitle}>{this.state.humidity}</Text>
-                    </Left>
-
-                  </CardItem>
-                  {/** <MyLineChart ref={instance => { this.humidityChart = instance; }} />*/} 
-                </Card>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => this.props.navigation.navigate('Detail',{typeOfData:3})}>
-                <Card>
-                  <CardItem>
-                    <Left>
-                      <Thumbnail square source={require("./assets/haze.png")} />
-                      <Body>
-                        <Text>PM1.0(µg/m 3)</Text>
-                        <Text note>{this.state.latestPackageTimeStr}</Text>
-                      </Body>
-                      <Text style={styles.sectionTitle}>{this.state._1p0}</Text>
-                    </Left>
-
-                  </CardItem>
-                  {/** <MyLineChart ref={instance => { this._1p0Chart = instance; }} />*/} 
-                </Card>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => this.props.navigation.navigate('Detail',{typeOfData:4})}>
-                <Card>
-                  <CardItem>
-                    <Left>
-                      <Thumbnail square source={require("./assets/haze.png")} />
-                      <Body>
-                        <Text>PM2.5(µg/m 3)</Text>
-                        <Text note>{this.state.latestPackageTimeStr}</Text>
-                      </Body>
-                      <Text style={styles.sectionTitle}>{this.state._2p5}</Text>
-                    </Left>
-
-                  </CardItem>
-                  {/** <MyLineChart ref={instance => { this._2p5Chart = instance; }} />*/} 
-                </Card>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => this.props.navigation.navigate('Detail',{typeOfData:5})}>
-                <Card style={{marginBottom: 10}}>
-                  <CardItem>
-                    <Left>
-                      <Thumbnail square source={require("./assets/haze.png")} />
-                      <Body>
-                        <Text>PM10(µg/m 3)</Text>
-                        <Text note>{this.state.latestPackageTimeStr}</Text>
-                      </Body>
-                      <Text style={styles.sectionTitle}>{this.state._10p}</Text>
-                    </Left>
-
-                  </CardItem>
-                  {/**<MyLineChart ref={instance => { this._10pChart = instance; }} />*/} 
-                </Card>
-              </TouchableOpacity>
-            </Content>
             
             {/** 
             <View style={styles.body}>
@@ -753,10 +838,22 @@ const styles = StyleSheet.create({
     marginTop: 32,
     paddingHorizontal: 24,
   },
-  sectionTitle: {
+  indice_orange: {
     fontSize: 24,
     fontWeight: '600',
-    color: Colors.black,
+    //color: Colors.black,
+    color: '#F5802A',
+  },
+  font_orange: {
+    color: '#F5802A',
+  },
+  indice_grey: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#CDCDCD',
+  },
+  font_grey: {
+    color: '#CDCDCD',
   },
   sectionDescription: {
     marginTop: 8,

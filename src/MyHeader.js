@@ -9,9 +9,9 @@ export default class MyHeader extends React.Component {
         super(props);
         this.state = {
             title: this.props.title,
-            bluetooth: this.props.bluetooth,
-            sdcard: this.props.sdcard,
-            battery: this.props.battery,
+            bluetooth: '0',//this.props.bluetooth,
+            sdcard: '0',//this.props.sdcard,
+            battery: '0',//this.props.battery,
         };
         //this.setIconPath()
         this.BLE_icon_set = [
