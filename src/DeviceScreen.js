@@ -332,7 +332,7 @@ export default class DeviceScreen extends React.Component {
     render() {
         return (
             <Container>
-                <MyHeader title="Device" bluetooth='0' sdcard='0' battery='0' />
+                <MyHeader title="Device" hide_icon={false} />
                 <View>
                     <Image
                         style={styles.gif_style}

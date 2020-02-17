@@ -9,6 +9,7 @@ export default class MyHeader extends React.Component {
         super(props);
         this.state = {
             title: this.props.title,
+            hide_icon:this.props.hide_icon,
             bluetooth: '0',//this.props.bluetooth,
             sdcard: '0',//this.props.sdcard,
             battery: '0',//this.props.battery,
@@ -114,33 +115,39 @@ export default class MyHeader extends React.Component {
         })
     }
 
+    render_iconbar() {
+        return (
+            <Header style={{ backgroundColor: "white", height: 30 }}>
+                <Right>
+                    <Image
+                        style={{ resizeMode: 'contain', height: 30, width: 30 }}
+                        source={this.BLE_icon_set[parseInt(this.state.bluetooth)]}
+                    />
+                    <Image
+                        style={{ resizeMode: 'contain', height: 30, width: 30 }}
+                        source={this.SD_icon_set[parseInt(this.state.sdcard)]}
+                    />
+                    <Image
+                        style={{ resizeMode: 'contain', height: 30, width: 30 }}
+                        source={this.BATT_icon_set[parseInt(this.state.battery)]}
+                    />
+                </Right>
+            </Header>
+        )
+    }
+
     render() {
         let { height, width } = Dimensions.get('window');
         return (
             <View>
                 <Header style={{ backgroundColor: "transparent" }}>
-                    <ImageBackground source={require("../assets/image/bg.gif")} style={{ width, height: 64}}>
+                    <ImageBackground source={require("../assets/image/bg.gif")} style={{ width, height: 56}}>
                         <Body style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                             <Title /*style={{ color: "#F5802A" }}*/> {this.state.title}</Title>
                         </Body>
                     </ImageBackground>
                 </Header>
-                <Header style={{ backgroundColor: "white", height: 30 }}>
-                    <Right>
-                        <Image
-                            style={{ resizeMode: 'contain', height: 30, width: 30 }}
-                            source={this.BLE_icon_set[parseInt(this.state.bluetooth)]}
-                        />
-                        <Image
-                            style={{ resizeMode: 'contain', height: 30, width: 30 }}
-                            source={this.SD_icon_set[parseInt(this.state.sdcard)]}
-                        />
-                        <Image
-                            style={{ resizeMode: 'contain', height: 30, width: 30 }}
-                            source={this.BATT_icon_set[parseInt(this.state.battery)]}
-                        />
-                    </Right>
-                </Header>
+                {this.state.hide_icon?null:this.render_iconbar()}
             </View>
         )
     }

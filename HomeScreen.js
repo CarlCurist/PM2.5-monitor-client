@@ -652,7 +652,7 @@ export default class HomeScreen extends React.Component {
     
     return (
       <Container style={{ backgroundColor: "#FFF" }}>
-        <MyHeader title="WePIN"/>
+        <MyHeader title="WePIN" hide_icon={false}/>
         {/** 
         <StatusBar barStyle="light-content" />
         <Header>

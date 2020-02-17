@@ -55,7 +55,7 @@ function ProfileScreen() {
   return (
 
     <View style={{ flex: 1}}>
-      <MyHeader title="123" bluetooth='0' sdcard="0" battery="0" />
+      <MyHeader title="123" hide_icon={true} />
       
       </View>
 
