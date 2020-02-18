@@ -26,18 +26,24 @@ class FeedScreen extends React.Component {
   }
 }
 
+/*
 const HomeStack = createStackNavigator();
-function HomeStackScreen() {
+function HomeStackScreen({ navigation, route }) {
+
+
   return (
     <HomeStack.Navigator
       screenOptions={{
-        headerShown: false
-      }}>
+        headerShown: false,
+      }}
+      
+    >
       <HomeStack.Screen name="DeviceHome" component={DeviceScreen} />
-      <HomeStack.Screen name="Scan" component={BLEMonitor} />
+      <HomeStack.Screen name="Scan" component={BLEMonitor}/>
     </HomeStack.Navigator>
   );
 }
+*/
 
 function NotificationsScreen() {
   
@@ -73,7 +79,7 @@ function MyTabs() {
         labelStyle: { fontSize: 12 },
         style: { backgroundColor: '#FAFAFA' },
         showIcon: true,
-        showLabel:false,
+        showLabel: false,
       }}
       tabBarPosition='bottom'
       screenOptions={({ route }) => ({
@@ -143,10 +149,11 @@ function MyTabs() {
       })}
     >
       <Tab.Screen
-        name="Sensor"
-        component={HomeStackScreen}
+        name="Sensor" 
+        component={DeviceScreen}//HomeStackScreen
         options={{
           //tabBarLabel: 'Sensor',
+          
         }}
       />
       <Tab.Screen
@@ -163,11 +170,20 @@ function MyTabs() {
     </Tab.Navigator>
   );
 }
+const RootStack = createStackNavigator();
+
 export default function App() {
   return (
     <NavigationContainer>
       <Root>
-        <MyTabs />
+        {/*<MyTabs />*/}
+        <RootStack.Navigator
+          screenOptions={{
+          headerShown: false,
+        }}>
+          <RootStack.Screen name="Home" component={MyTabs} />
+          <RootStack.Screen name="Scan" component={BLEMonitor} />
+        </RootStack.Navigator>
       </Root>
     </NavigationContainer>
   );

@@ -16,11 +16,14 @@ global.BLEStatus = {
     connectPeripheralListener:null,
     disconnectPeripheralListener:null,
     updateValueListener:null,
-    connectedDevice:'',
+    connectedDevice: '',
+    connectedDeviceName: '',
+    connectedDeviceMAC:'',
     isCharging:false,
     synchronizeClock:false,
     login:false,
-    username:'',
+    username: '',
+    password:'',
 }
 
 global.RWServiceUUID = '0000fff0-0000-1000-8000-00805f9b34fb';
