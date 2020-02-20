@@ -76,11 +76,11 @@ export default class HomeScreen extends React.Component {
     this.state={
       //receiveData:'',
       battery : '',
-      temperature : 0,
-      humidity : 0,
-      _1p0 : 0,
-      _2p5 : 0,
-      _10p : 0,
+      temperature: 'N/A',
+      humidity: 'N/A',
+      _1p0: 'N/A',
+      _2p5: 'N/A',
+      _10p: 'N/A',
 
       dataSet :[],
       temperatureSet : [],
