@@ -9,7 +9,7 @@ import HomeScreen from './HomeScreen'
 import MyHeader from './src/MyHeader'
 import DeviceScreen from './src/DeviceScreen'
 import BLEMonitor from './src/BLEMonitor';
-
+import UserProfileScreen from './src/UserProfileScreen'
 
 class FeedScreen extends React.Component {
   render() {
@@ -63,7 +63,7 @@ function ProfileScreen() {
     <View style={{ flex: 1}}>
       <MyHeader title="123" hide_icon={true} />
       
-      </View>
+    </View>
 
   );
 }
@@ -164,7 +164,7 @@ function MyTabs() {
       <Tab.Screen
         name="User"
         //component={MyHeader}
-        component={ProfileScreen}
+        component={UserProfileScreen}
         //options={{ tabBarLabel: 'User' }}
       />
     </Tab.Navigator>
@@ -181,7 +181,7 @@ export default function App() {
           screenOptions={{
           headerShown: false,
         }}>
-          <RootStack.Screen name="Home" component={MyTabs} />
+          <RootStack.Screen name="TabHome" component={MyTabs} />
           <RootStack.Screen name="Scan" component={BLEMonitor} />
         </RootStack.Navigator>
       </Root>

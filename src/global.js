@@ -22,7 +22,7 @@ global.BLEStatus = {
     isCharging:false,
     synchronizeClock:false,
     login:false,
-    username: '',
+    username: 'anonymous@unknown.com',
     password:'',
 }
 

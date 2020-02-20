@@ -700,7 +700,7 @@ export default class HomeScreen extends React.Component {
               
             </View>
 
-          {this.state.device_connected ? this.render_activated_card() : this.render_inactivated_card()}
+          {this.state.device_connected && !BLEStatus.isCharging ? this.render_activated_card() : this.render_inactivated_card()}
             
 
             
