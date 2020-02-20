@@ -10,6 +10,7 @@ import MyHeader from './src/MyHeader'
 import DeviceScreen from './src/DeviceScreen'
 import BLEMonitor from './src/BLEMonitor';
 import UserProfileScreen from './src/UserProfileScreen'
+import LoginRegisterScreen from './src/LoginRegisterScreen'
 
 class FeedScreen extends React.Component {
   render() {
@@ -178,11 +179,13 @@ export default function App() {
       <Root>
         {/*<MyTabs />*/}
         <RootStack.Navigator
+          initialRouteName="Login"
           screenOptions={{
           headerShown: false,
         }}>
           <RootStack.Screen name="TabHome" component={MyTabs} />
           <RootStack.Screen name="Scan" component={BLEMonitor} />
+          <RootStack.Screen name="Login" component={LoginRegisterScreen} />
         </RootStack.Navigator>
       </Root>
     </NavigationContainer>

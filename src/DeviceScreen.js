@@ -1,6 +1,6 @@
 import { Text, View, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import React from 'react';
-import { Container, Header, Title, Body, Right, StyleProvider,Button } from "native-base";
+import { Container, Toast, Title, Body, Right, StyleProvider,Button } from "native-base";
 import MyHeader from './MyHeader'
 import { Global } from './global'
 import BLEMonitor from './BLEMonitor';
@@ -210,14 +210,23 @@ export default class DeviceScreen extends React.Component {
 
 
     start_pairing() {
+        /*
         this.setState({
             pairing:true
-        })
+        })*/
+        BluetoothManager.enableBluetooth()
         BluetoothManager.scan([], 20, true) //如果想长期保持扫描状态就不设置任何参数，这里设置扫描5秒,但好像没用..手动设置时钟关闭
             .then(() => {
-                this.setState({ scaning: true });
+                this.setState({ pairing: true });
                 this.timer = setTimeout(() => {
                     BluetoothManager.stopScan();
+                    this.setState({ pairing: false });
+                    if (!BLEStatus.isConnected) {
+                        Toast.show({
+                            text: "No Devices Found ",
+                            type: "danger"
+                        })
+                    }
                 }, 20000);
             }).catch(err => {
 
