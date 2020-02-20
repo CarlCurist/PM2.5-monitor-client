@@ -4,7 +4,8 @@ import { Container, Header, Title, Body, Right, StyleProvider,Button } from "nat
 import MyHeader from './MyHeader'
 import { Global } from './global'
 import BLEMonitor from './BLEMonitor';
-import { Grid, Col,Row } from "react-native-easy-grid";
+import { Grid, Col, Row } from "react-native-easy-grid";
+import { AutoConnect} from './AutoConnectUtil'
 
 export default class DeviceScreen extends React.Component {
     constructor(props) {
@@ -16,7 +17,7 @@ export default class DeviceScreen extends React.Component {
             
             gif_display_offset: 4,
 
-            button_state: true,
+            pairing: false,
             device_unpair:true,
             device_disconnected: false,
             device_charging: false,
@@ -41,12 +42,17 @@ export default class DeviceScreen extends React.Component {
             require('../assets/gif/motion_insert_charge_10fps_480.gif'),
             require('../assets/gif/not_connect_480.gif'),
             require('../assets/gif/pair_instruction_10fps_480.gif'),]
+        if (BLEStatus.isStart == false) {
+            BLEStatus.isStart = true
+            BluetoothManager.start();
+        }
         this.UpdateReceiveDataListener = BluetoothManager.addListener('BleManagerDidUpdateValueForCharacteristic', this.handleBLEReceiveData);
         //this.UpdateStateListener = BluetoothManager.addListener('BleManagerDidUpdateState', this.handleBLEUpdateState);
         this.connectPeripheralListener = BluetoothManager.addListener('BleManagerConnectPeripheral', this.handleConnectPeripheral);
+        this.discoverPeripheralListener = BluetoothManager.addListener('BleManagerDiscoverPeripheral', this.handleDiscoverPeripheral);
         this.disconnectPeripheralListener = BluetoothManager.addListener('BleManagerDisconnectPeripheral', this.handleDisconnectPeripheral);
         BluetoothManager.checkState();
-
+        this.timer = null;
 
     }
 
@@ -58,9 +64,18 @@ export default class DeviceScreen extends React.Component {
         //this.UpdateStateListener.remove();
         this.connectPeripheralListener.remove();
         this.disconnectPeripheralListener.remove()
+        this.handleDiscoverPeripheral.remove()
+        this.timer && clearTimeout(this.timer);
     }
 
-
+    //发现设备
+    handleDiscoverPeripheral = (data) => {
+        //console.log('flame DiscoverPeripheral', data.id, data.name);
+        if (data.name != null && data.name.startsWith('PM')) {
+            BluetoothManager.stopScan();
+            AutoConnect(data.name, data.id)
+        }
+    }
 
     //接受蓝牙传输的数据
     handleBLEReceiveData=(data)=> {
@@ -141,8 +156,8 @@ export default class DeviceScreen extends React.Component {
                 //headerSDStatus: sd_status,
                 //headerBATTStatus: batt_status,
                 device_charging: charging,
-                DeviceName: BLEStatus.connectedDevice[0]['name'],
-                MACAddress: BLEStatus.connectedDevice[0]['id'],
+                DeviceName: BLEStatus.connectedDeviceName,//BLEStatus.connectedDevice[0]['name'],
+                MACAddress: BLEStatus.connectedDeviceMAC, //BLEStatus.connectedDevice[0]['id'],
                 gif_display_offset: gif,
                 BatteryVoltage: voltage,
                 RTCTime: RTC,
@@ -177,7 +192,8 @@ export default class DeviceScreen extends React.Component {
             device_unpair: false,
             device_disconnected: false,
             gif_display_offset: 0,
-            StartSensingDate:new Date(),
+            StartSensingDate: new Date(),
+            pairing:false,
             //DeviceName: BLEStatus.connectedDevice[0]['name'], //不能在这里访问BLEStatus.connectedDevice的数据，因为这函数调用时它还是空的
             //MACAddress: BLEStatus.connectedDevice[0]['id'],
         })
@@ -193,10 +209,20 @@ export default class DeviceScreen extends React.Component {
     }
 
 
-    change_button_state() {
+    start_pairing() {
         this.setState({
-            button_state:!this.state.button_state
+            pairing:true
         })
+        BluetoothManager.scan([], 20, true) //如果想长期保持扫描状态就不设置任何参数，这里设置扫描5秒,但好像没用..手动设置时钟关闭
+            .then(() => {
+                this.setState({ scaning: true });
+                this.timer = setTimeout(() => {
+                    BluetoothManager.stopScan();
+                }, 20000);
+            }).catch(err => {
+
+            })
+        //AutoConnect("PM-66C7FDD131E3", "E3:31:D1:FD:C7:66")
     }
 
     unpair_device() {
@@ -206,6 +232,7 @@ export default class DeviceScreen extends React.Component {
             device_charging: false,
             gif_display_offset: 4,
         })
+        BLEStatus.isConnected = false
         BluetoothManager.disconnect();
     }
 
@@ -231,10 +258,10 @@ export default class DeviceScreen extends React.Component {
                 </View>
 
                 <View style={{ flex: 1, flexDirection: "column-reverse" }}>
-                    {this.state.button_state ?
+                    {!this.state.pairing ?
                         <Button bordered full warning style={styles.button_style}
                             onPress={() => {
-                                this.change_button_state()
+                                this.start_pairing()
                             }}>
                             <Text style={styles.font_orange}>Pair Device</Text>
                         </Button>

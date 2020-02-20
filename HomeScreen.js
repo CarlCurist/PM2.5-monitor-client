@@ -383,9 +383,11 @@ export default class HomeScreen extends React.Component {
       delete a.sd;
       delete a.error;
       //var b = JSON.parse(BLEStatus.connectedDevice);
-      b = BLEStatus.connectedDevice
+     
       ttimestamp = new Date()
-      deviceMac = b[0]['id'];
+      //b = BLEStatus.connectedDevice
+      //deviceMac = b[0]['id'];
+      deviceMac = BLEStatus.connectedDeviceMAC
 
       //this.updateChart(a);
 

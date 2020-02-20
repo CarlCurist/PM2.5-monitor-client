@@ -245,6 +245,9 @@ export default class BLEMonitor extends Component {
                 //BLEStatus.connectedDevice = JSON.stringify(this.state.data);
                 //console.log("flame connectedDevice", BLEStatus.connectedDevice);
                 BLEStatus.connectedDevice = this.state.data;
+                BLEStatus.connectedDeviceName = (BLEStatus.connectedDevice)[0]['name']
+                BLEStatus.connectedDeviceMAC = (BLEStatus.connectedDevice)[0]['id']
+                    
                 //console.log("flame connectedDevice", this.state.data[0]['id']);
                 //console.log("flame connectedDevice", this.state.data[0]['name']);
                 //console.log("flame connectedDevice 2", BLEStatus.connectedDevice[0]['id']);
@@ -310,7 +313,7 @@ export default class BLEMonitor extends Component {
                             BluetoothManager.stopScan();
                             this.setState({ scaning: false });
                             console.log("flame-debug8 ", JSON.stringify(this.state.data));
-                        }, 10000);
+                        }, 20000);
                     }).catch(err => {
 
                     })
