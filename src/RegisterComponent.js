@@ -8,13 +8,71 @@ export default class RegisterComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            codesent:false
+            codesent: false,
+            username: '',
+            password: '',
+            v_code:'',
         }
     }
 
     sendCode() {
         this.setState({ codesent: true })
-        Alert.alert("The verification code has been sent to your mailbox.");
+        //Alert.alert("The verification code has been sent to your mailbox.");
+        Toast.show({
+            text: "The verification code has been sent to your mailbox.",
+            type: "success"
+        })
+    }
+
+
+    register() {
+        /*
+        if (this.state.password1 !== this.state.password2) {
+            Toast.show({
+                text: "The two passwords you typed do not match.",
+                type: "danger"
+            })
+            return
+        }
+        */
+        fetch('http://106.54.62.64:8080/user/register', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            }, body: JSON.stringify({
+                "userName": this.state.username,
+                "password": this.state.password,
+            })
+        })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                if (responseJson.code === '-1') {
+                    Toast.show({
+                        text: "The username already exists.",
+                        type: "danger"
+                    })
+                }
+                if (responseJson.code === '0') {
+                    Toast.show({
+                        text: "Registered successfully",
+                        type: "success"
+                    })
+                    //this.props.navigation.navigate('Login')
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+
+
+    forgot_password() {
+        //Alert.alert("forgot_password");
+        Toast.show({
+            text: "forgot_password",
+            type: "success"
+        })
     }
 
     render_item_no_send() {
@@ -43,7 +101,9 @@ export default class RegisterComponent extends React.Component {
                                 style={styles.icon_style}
                                 source={require("../assets/icon/verification_icon_gray.png")}
                             />
-                            <Input placeholder="Verification Code" />
+                            <Input
+                                placeholder="Verification Code"
+                                onChangeText={(text) => this.setState({ v_code: text })}/>
                         </Item>
                     </Form>
                 </View>
@@ -59,7 +119,12 @@ export default class RegisterComponent extends React.Component {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        //onPress={() => this.props.navigation.goBack()}
+                        onPress={() => {
+                            if (this.props.register)
+                                this.register()
+                            else
+                                this.forgot_password()
+                        }}
                     >
                         <Image
                             style={styles.go_button}
@@ -83,7 +148,9 @@ export default class RegisterComponent extends React.Component {
                                     style={styles.icon_style}
                                     source={require("../assets/icon/user_icon_gray.png")}
                                 />
-                                <Input placeholder="Email Address" />
+                                <Input
+                                    placeholder="Email Address"
+                                    onChangeText={(text) => this.setState({ username: text })}/>
                             </Item>
                         </Form>
                     </View>
@@ -95,7 +162,9 @@ export default class RegisterComponent extends React.Component {
                                     style={styles.icon_style}
                                     source={require("../assets/icon/password_gray.png")}
                                 />
-                                <Input placeholder="Password" secureTextEntry/>
+                                <Input
+                                    placeholder={this.props.register ? "Password" : "New Password"} secureTextEntry
+                                    onChangeText={(text) => this.setState({ password: text })}/>
                             </Item>
                         </Form>
                     </View>

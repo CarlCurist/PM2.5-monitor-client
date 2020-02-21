@@ -64,7 +64,7 @@ export default class DeviceScreen extends React.Component {
         //this.UpdateStateListener.remove();
         this.connectPeripheralListener.remove();
         this.disconnectPeripheralListener.remove()
-        this.handleDiscoverPeripheral.remove()
+        this.discoverPeripheralListener.remove()
         this.timer && clearTimeout(this.timer);
     }
 

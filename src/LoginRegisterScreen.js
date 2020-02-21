@@ -8,6 +8,7 @@ import LoginComponent from './LoginComponent'
 export default class LoginRegisterScreen extends React.Component {
     constructor(props) {
         super(props);
+
     }
 
 
@@ -36,7 +37,7 @@ export default class LoginRegisterScreen extends React.Component {
                                 tabStyle={{ backgroundColor: '#D9D9D9' }}
                                 activeTextStyle={{ color: '#F5802A', fontWeight: 'bold' }}
                                 textStyle={{ color: '#C7C7C7' }}>
-                                <RegisterComponent navigate={this.props.navigation.navigate}/>
+                                <RegisterComponent navigate={this.props.navigation.navigate} register={true}/>
                             </Tab>
                         </Tabs>
 

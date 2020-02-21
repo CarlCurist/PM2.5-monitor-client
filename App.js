@@ -11,6 +11,7 @@ import DeviceScreen from './src/DeviceScreen'
 import BLEMonitor from './src/BLEMonitor';
 import UserProfileScreen from './src/UserProfileScreen'
 import LoginRegisterScreen from './src/LoginRegisterScreen'
+import ForgotPasswordScreen from './src/ForgotPasswordScreen'
 
 class FeedScreen extends React.Component {
   render() {
@@ -186,6 +187,7 @@ export default function App() {
           <RootStack.Screen name="TabHome" component={MyTabs} />
           <RootStack.Screen name="Scan" component={BLEMonitor} />
           <RootStack.Screen name="Login" component={LoginRegisterScreen} />
+          <RootStack.Screen name="Forgot" component={ForgotPasswordScreen} />
         </RootStack.Navigator>
       </Root>
     </NavigationContainer>

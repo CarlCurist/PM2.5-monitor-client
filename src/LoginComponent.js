@@ -9,13 +9,53 @@ export default class LoginComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            
+            username: '',
+            password: '',
         }
     }
 
     Login() {
-        //Alert.alert("Login");
-        this.props.navigate('TabHome')
+        NetworkManager.requestLogin(this.state.username, this.state.password)
+            .then((tmp) => {
+                if (tmp === '0') {
+                    Toast.show({
+                        text: "Login success",
+                        //buttonText: "Okay",
+                        type: "success"
+                    })
+                    NetworkManager.requestSession()
+                        .then((resultjson) => {
+                            if (resultjson.login === true) {
+                                this.setState({
+                                    login: resultjson.login,
+                                    username: resultjson.userName
+                                })
+                                BLEStatus.login = true
+                                BLEStatus.username = resultjson.userName
+                                BLEStatus.password = this.state.password
+                                this.props.navigate('TabHome')
+                            }
+                        })
+                        .catch((error) => {
+                            console.error(error);
+                        })
+                }
+                if (tmp === '-1') {
+                    Toast.show({
+                        text: "Login fails. Please check your username and password",
+                        //buttonText: "Okay",
+                        type: "danger"
+                    })
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+            })
+
+    }
+
+    Forgot() {
+        this.props.navigate('Forgot')
     }
 
 
@@ -30,7 +70,9 @@ export default class LoginComponent extends React.Component {
                                     style={styles.icon_style}
                                     source={require("../assets/icon/user_icon_gray.png")}
                                 />
-                                <Input placeholder="Email Address" />
+                                <Input
+                                    placeholder="Email Address"
+                                    onChangeText={(text) => this.setState({ username: text })} />
                             </Item>
                         </Form>
                     </View>
@@ -42,7 +84,9 @@ export default class LoginComponent extends React.Component {
                                     style={styles.icon_style}
                                     source={require("../assets/icon/password_gray.png")}
                                 />
-                                <Input placeholder="Password" secureTextEntry/>
+                                <Input
+                                    placeholder="Password" secureTextEntry
+                                    onChangeText={(text) => this.setState({ password: text })}/>
                             </Item>
                         </Form>
                     </View>
@@ -50,7 +94,7 @@ export default class LoginComponent extends React.Component {
                     <View style={{ paddingTop: 20, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
 
                         <TouchableOpacity
-                            onPress={() => this.Login()}
+                            onPress={() => this.Forgot()}
                         >
                             <Text style={styles.font_white_underline}>Forgot password?</Text>
                         </TouchableOpacity>
@@ -63,6 +107,18 @@ export default class LoginComponent extends React.Component {
                                 source={require('../assets/icon/login_icon_white.png')}
                             />
                         </TouchableOpacity>
+
+
+
+                        <TouchableOpacity
+                            onPress={() => this.props.navigate('TabHome')}
+                        >
+                            <Image
+                                style={styles.go_button}
+                                source={require('../assets/icon/login_icon_white.png')}
+                            />
+                        </TouchableOpacity>
+
                     </View>
 
                 </Content>
