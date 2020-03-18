@@ -90,7 +90,8 @@ export default class NewDetailScreen extends Component {
             p25_icon_type: 3,
             p10_icon_type: 4,
 
-            data_displaly_type: 0, //0==raw 1==hourly 2==daily 3==monthly
+            //data_displaly_type: 0, //type 0==temp 1==hum 2==pm1 3==pm2.5 4==pm10
+            //data_displaly_mode: 0,//0==raw 1==hourly 2==daily 3==monthly
             display_hourly_icon_focused: false,
             display_daily_icon_focused: false,
             display_monthly_icon_focused: false,
@@ -131,16 +132,48 @@ export default class NewDetailScreen extends Component {
                 },
             ]
         };
-        this.diaplay_data_type = 0
+
+        this.display_scrollline_dataSource = {
+            chart: {
+                //caption: "Deaths reported because of mosquito bites in India",
+                //subcaption: "(As per government records)",
+                showvalues: "0",
+                numvisibleplot: "12",
+                //plottooltext:
+                //    "<b>$dataValue</b> people died because of mosquito bites in $label",
+                theme: "fusion"
+            },
+            categories: [
+                {
+                    category: []
+                }
+            ],
+            dataset: [
+                {
+                    "color": "F5802A",
+                    data: []
+                }
+            ]
+        };
+        this.data_displaly_type = 0, //type 0==temp 1==hum 2==pm1 3==pm2.5 4==pm10
+        this.data_displaly_mode = 0,//0==raw 1==hourly 2==daily 3==monthly
+        //this.diaplay_data_type = 0
         this.raw_data_set = []
         this.display_raw_data_off = 0
-        //this.change_data_set(0)
-        this.refresh()
+        
+        this.hourly_timestamp_set = []
+        this.hourly_data_set = []
+        this.daily_timestamp_set = []
+        this.daily_data_set = []
+        this.monthly_timestamp_set = []
+        this.monthly_data_set = []
+        
     }
 
     componentDidMount() {
         //type = this.props.navigation.getParam('typeOfData')
         //type = this.props.navigation.state.params
+        this.refresh()
         this.change_data_set(0)
     }
     
@@ -176,7 +209,7 @@ export default class NewDetailScreen extends Component {
         if (tmp.length !== 0) {
             //console.log("flame-debug DetailScreen ", JSON.stringify(tmp))
             
-            //raw data
+            //calc raw data
             raw_data_item_timestamp = ""
             raw_data_category = []
             raw_temp_dataset = []
@@ -227,11 +260,122 @@ export default class NewDetailScreen extends Component {
             }) 
             this.display_raw_data_off = this.raw_data_set.length - 1
             //console.log("flame-debug DetailScreen ", JSON.stringify(this.raw_data_set[0]))
+
+            //calc hourly daily monthly data
+            hourly_data_set = {}
+            daily_data_set = {}
+            monthly_data_set = {}
+            for (var item of tmp) {
+                hourlyTimestamp = item.date.getFullYear() + '-' + (parseInt(item.date.getMonth()) + 1) + '-' + item.date.getDate() + ' ' + item.date.getHours() + ':00'
+                dailyTimestamp = item.date.getFullYear() + '-' + (parseInt(item.date.getMonth()) + 1) + '-' + item.date.getDate()
+                monthlyTimestamp = item.date.getFullYear() + '-' + (parseInt(item.date.getMonth()) + 1)
+                if (!(hourlyTimestamp in hourly_data_set)) {
+                    hourly_data_set[hourlyTimestamp] = []
+                }
+                if (!(dailyTimestamp in daily_data_set)) {
+                    daily_data_set[dailyTimestamp] = []
+                }
+                if (!(monthlyTimestamp in monthly_data_set)) {
+                    monthly_data_set[monthlyTimestamp] = []
+                }
+
+                hourly_data_set[hourlyTimestamp].push({
+                    "temp": item.air.temperature.toFixed(2),
+                    "hum": item.air.humidity.toFixed(2),
+                    "1p0": item.air._1p0.toFixed(2) ,
+                    "2p5": item.air._2p5.toFixed(2),
+                    "p10": item.air._10p.toFixed(2),
+                })
+                daily_data_set[dailyTimestamp].push({
+                    "temp": item.air.temperature.toFixed(2),
+                    "hum": item.air.humidity.toFixed(2),
+                    "1p0": item.air._1p0.toFixed(2),
+                    "2p5": item.air._2p5.toFixed(2),
+                    "p10": item.air._10p.toFixed(2),
+                })
+                monthly_data_set[monthlyTimestamp].push({
+                    "temp": item.air.temperature.toFixed(2),
+                    "hum": item.air.humidity.toFixed(2),
+                    "1p0": item.air._1p0.toFixed(2),
+                    "2p5": item.air._2p5.toFixed(2),
+                    "p10": item.air._10p.toFixed(2),
+                })
+            }
+
+            t = this.calcAverage(hourly_data_set)
+            this.hourly_timestamp_set = t["timestamp"]
+            this.hourly_data_set = t["data"]
+
+            t = this.calcAverage(daily_data_set)
+            this.daily_timestamp_set = t["timestamp"]
+            this.daily_data_set = t["data"]
+
+            t = this.calcAverage(monthly_data_set)
+            this.monthly_timestamp_set = t["timestamp"]
+            this.monthly_data_set = t["data"]
+            
+
+            //console.log("flame-debug DetailScreen hourly_timestamp", JSON.stringify(hourly_keys))
+            //console.log("flame-debug DetailScreen hourly_data_set", JSON.stringify(hourly_data_set))
+            //console.log("flame-debug DetailScreen daily_data_set", JSON.stringify(daily_data_set))
+            //console.log("flame-debug DetailScreen monthly_data_set", JSON.stringify(monthly_data_set))
         } else {
             this.raw_data_set=[]
         }
 
         this.updateChart()
+    }
+
+    calcAverage(all_data_set) {
+        keys = Object.keys(all_data_set)
+        timestamp_set = []
+        temp_dataset = []
+        hum_dataset = []
+        _1p0_dataset = []
+        _2p5_dataset = []
+        _p10_dataset = []
+        console.log("flame-debug DetailScreen hourly_timestamp", JSON.stringify(keys))
+        for (var key of keys) {
+            timestamp_set.push({ "label": key })
+            //console.log("flame-debug DetailScreen hourly_timestamp", JSON.stringify(hourly_data_set[key]))
+            t_temp = 0
+            t_hum = 0
+            t_1p0 = 0
+            t_2p5 = 0
+            t_p10 = 0
+            for (var item of all_data_set[key]) {
+                t_temp += Number(item["temp"])
+                t_hum += Number(item["hum"])
+                t_1p0 += Number(item["1p0"])
+                t_2p5 += Number(item["2p5"])
+                t_p10 += Number(item["p10"])
+            }
+            t_temp /= all_data_set[key].length
+            t_hum /= all_data_set[key].length
+            t_1p0 /= all_data_set[key].length
+            t_2p5 /= all_data_set[key].length
+            t_p10 /= all_data_set[key].length
+
+            temp_dataset.push({ "value": t_temp.toFixed(2) })
+            hum_dataset.push({ "value": t_hum.toFixed(2) })
+            _1p0_dataset.push({ "value": t_1p0.toFixed(2) })
+            _2p5_dataset.push({ "value": t_2p5.toFixed(2) })
+            _p10_dataset.push({ "value": t_p10.toFixed(2) })
+
+            //console.log("flame-debug DetailScreen length ", all_data_set[key].length)
+            //console.log("flame-debug DetailScreen temp ", t_temp)
+            //console.log("flame-debug DetailScreen t_hum ", t_hum)
+        }
+        return {
+            "timestamp": timestamp_set,
+            "data": {
+                "temp": temp_dataset,
+                "hum": hum_dataset,
+                "1p0": _1p0_dataset,
+                "2p5": _2p5_dataset,
+                "p10": _p10_dataset
+            }
+        }
     }
 
 
@@ -246,6 +390,7 @@ export default class NewDetailScreen extends Component {
                     p1_icon_type: 2,
                     p25_icon_type: 3,
                     p10_icon_type: 4,
+                    //data_displaly_type:0
                 })
                 this.updateChart()
                 break
@@ -257,7 +402,7 @@ export default class NewDetailScreen extends Component {
                     p1_icon_type: 2,
                     p25_icon_type: 3,
                     p10_icon_type: 4,
-                    
+                    //data_displaly_type:1
                 })
                 this.updateChart()
                 break
@@ -269,6 +414,7 @@ export default class NewDetailScreen extends Component {
                     p1_icon_type: 2+5,
                     p25_icon_type: 3,
                     p10_icon_type: 4,
+                    //data_displaly_type:2
                 })
                 this.updateChart()
                 break
@@ -280,6 +426,7 @@ export default class NewDetailScreen extends Component {
                     p1_icon_type: 2,
                     p25_icon_type: 3+5,
                     p10_icon_type: 4,
+                    //data_displaly_type:3
                 })
                 this.updateChart()
                 break
@@ -290,46 +437,55 @@ export default class NewDetailScreen extends Component {
                     hum_icon_type: 1,
                     p1_icon_type: 2,
                     p25_icon_type: 3,
-                    p10_icon_type: 4+5,
+                    p10_icon_type: 4 + 5,
+                    //data_displaly_type:4
                 })
                 this.updateChart()
                 break
         }
     }
 
-    change_data_display_type(type) {
-        if (type == this.state.data_displaly_type) {
+    change_data_display_mode(mode) {
+        if (mode == this.data_displaly_mode) {
+            this.data_displaly_mode = 0
             this.setState({
-                data_displaly_type: 0,
+                //data_displaly_mode: 0,
                 display_hourly_icon_focused: false,
                 display_daily_icon_focused: false,
                 display_monthly_icon_focused: false,
             })
+            this.updateChart()
         } else {
-            switch (type) {
+            switch (mode) {
                 case 1:
+                    this.data_displaly_mode=1
                     this.setState({
-                        data_displaly_type: 1,
+                        //data_displaly_mode: 1,
                         display_hourly_icon_focused: true,
                         display_daily_icon_focused: false,
                         display_monthly_icon_focused: false,
                     })
+                    this.updateChart()
                     break
                 case 2:
+                    this.data_displaly_mode=2
                     this.setState({
-                        data_displaly_type: 2,
+                        //data_displaly_mode: 2,
                         display_hourly_icon_focused: false,
                         display_daily_icon_focused: true,
                         display_monthly_icon_focused: false,
                     })
+                    this.updateChart()
                     break
                 case 3:
+                    this.data_displaly_mode=3
                     this.setState({
-                        data_displaly_type: 3,
+                        //data_displaly_mode: 3,
                         display_hourly_icon_focused: false,
                         display_daily_icon_focused: false,
                         display_monthly_icon_focused: true,
                     })
+                    this.updateChart()
                     break
             }
         }
@@ -337,34 +493,166 @@ export default class NewDetailScreen extends Component {
     }
 
     updateChart() {
-        if (this.raw_data_set.length === 0) {
-            this.display_raw_dataSource["categories"][0]["category"] = []
-            this.display_raw_dataSource["dataset"][0]["data"] = []
+        if (this.data_displaly_mode === 0) {
+            if (this.raw_data_set.length === 0) {
+                this.display_raw_dataSource["categories"][0]["category"] = []
+                this.display_raw_dataSource["dataset"][0]["data"] = []
+                this.forceUpdate()
+                return
+            }
+            if (this.data_displaly_type === 0) {
+                this.display_raw_dataSource["categories"][0]["category"] = this.raw_data_set[this.display_raw_data_off]["category"]
+                this.display_raw_dataSource["dataset"][0]["data"] = this.raw_data_set[this.display_raw_data_off]["temp"]
+            }
+            if (this.data_displaly_type === 1) {
+                this.display_raw_dataSource["categories"][0]["category"] = this.raw_data_set[this.display_raw_data_off]["category"]
+                this.display_raw_dataSource["dataset"][0]["data"] = this.raw_data_set[this.display_raw_data_off]["hum"]
+            }
+            if (this.data_displaly_type === 2) {
+                this.display_raw_dataSource["categories"][0]["category"] = this.raw_data_set[this.display_raw_data_off]["category"]
+                this.display_raw_dataSource["dataset"][0]["data"] = this.raw_data_set[this.display_raw_data_off]["1p0"]
+            }
+            if (this.data_displaly_type === 3) {
+                this.display_raw_dataSource["categories"][0]["category"] = this.raw_data_set[this.display_raw_data_off]["category"]
+                this.display_raw_dataSource["dataset"][0]["data"] = this.raw_data_set[this.display_raw_data_off]["2p5"]
+            }
+            if (this.data_displaly_type === 4) {
+                this.display_raw_dataSource["categories"][0]["category"] = this.raw_data_set[this.display_raw_data_off]["category"]
+                this.display_raw_dataSource["dataset"][0]["data"] = this.raw_data_set[this.display_raw_data_off]["p10"]
+            }
             this.forceUpdate()
-            return 
         }
-        if (this.data_displaly_type === 0) {
-            this.display_raw_dataSource["categories"][0]["category"] = this.raw_data_set[this.display_raw_data_off]["category"]
-            this.display_raw_dataSource["dataset"][0]["data"] = this.raw_data_set[this.display_raw_data_off]["temp"]
+
+        if (this.data_displaly_mode === 1) { 
+            if (this.hourly_data_set.length === 0) {
+                this.display_scrollline_dataSource["categories"][0]["category"] = []
+                this.display_scrollline_dataSource["dataset"][0]["data"] = []
+                this.forceUpdate()
+                return
+            }
+            this.display_scrollline_dataSource["categories"][0]["category"] = this.hourly_timestamp_set
+            if (this.data_displaly_type === 0) {
+                this.display_scrollline_dataSource["dataset"][0]["data"] = this.hourly_data_set["temp"]
+            }
+            if (this.data_displaly_type === 1) {
+                this.display_scrollline_dataSource["dataset"][0]["data"] = this.hourly_data_set["hum"]
+            }
+            if (this.data_displaly_type === 2) {
+                this.display_scrollline_dataSource["dataset"][0]["data"] = this.hourly_data_set["1p0"]
+            }
+            if (this.data_displaly_type === 3) {
+                this.display_scrollline_dataSource["dataset"][0]["data"] = this.hourly_data_set["2p5"]
+            }
+            if (this.data_displaly_type === 4) {
+                this.display_scrollline_dataSource["dataset"][0]["data"] = this.hourly_data_set["p10"]
+            }
+            
         }
-        if (this.data_displaly_type === 1) {
-            this.display_raw_dataSource["categories"][0]["category"] = this.raw_data_set[this.display_raw_data_off]["category"]
-            this.display_raw_dataSource["dataset"][0]["data"] = this.raw_data_set[this.display_raw_data_off]["hum"]
+
+        if (this.data_displaly_mode === 2) {
+            if (this.hourly_data_set.length === 0) {
+                this.display_scrollline_dataSource["categories"][0]["category"] = []
+                this.display_scrollline_dataSource["dataset"][0]["data"] = []
+                this.forceUpdate()
+                return
+            }
+            this.display_scrollline_dataSource["categories"][0]["category"] = this.daily_timestamp_set
+            if (this.data_displaly_type === 0) {
+                this.display_scrollline_dataSource["dataset"][0]["data"] = this.daily_data_set["temp"]
+            }
+            if (this.data_displaly_type === 1) {
+                this.display_scrollline_dataSource["dataset"][0]["data"] = this.daily_data_set["hum"]
+            }
+            if (this.data_displaly_type === 2) {
+                this.display_scrollline_dataSource["dataset"][0]["data"] = this.daily_data_set["1p0"]
+            }
+            if (this.data_displaly_type === 3) {
+                this.display_scrollline_dataSource["dataset"][0]["data"] = this.daily_data_set["2p5"]
+            }
+            if (this.data_displaly_type === 4) {
+                this.display_scrollline_dataSource["dataset"][0]["data"] = this.daily_data_set["p10"]
+            }
         }
-        if (this.data_displaly_type === 2) {
-            this.display_raw_dataSource["categories"][0]["category"] = this.raw_data_set[this.display_raw_data_off]["category"]
-            this.display_raw_dataSource["dataset"][0]["data"] = this.raw_data_set[this.display_raw_data_off]["1p0"]
-        }
-        if (this.data_displaly_type === 3) {
-            this.display_raw_dataSource["categories"][0]["category"] = this.raw_data_set[this.display_raw_data_off]["category"]
-            this.display_raw_dataSource["dataset"][0]["data"] = this.raw_data_set[this.display_raw_data_off]["2p5"]
-        }
-        if (this.data_displaly_type === 4) {
-            this.display_raw_dataSource["categories"][0]["category"] = this.raw_data_set[this.display_raw_data_off]["category"]
-            this.display_raw_dataSource["dataset"][0]["data"] = this.raw_data_set[this.display_raw_data_off]["p10"]
+
+        if (this.data_displaly_mode === 3) {
+            if (this.hourly_data_set.length === 0) {
+                this.display_scrollline_dataSource["categories"][0]["category"] = []
+                this.display_scrollline_dataSource["dataset"][0]["data"] = []
+                this.forceUpdate()
+                return
+            }
+            this.display_scrollline_dataSource["categories"][0]["category"] = this.monthly_timestamp_set
+            if (this.data_displaly_type === 0) {
+                this.display_scrollline_dataSource["dataset"][0]["data"] = this.monthly_data_set["temp"]
+            }
+            if (this.data_displaly_type === 1) {
+                this.display_scrollline_dataSource["dataset"][0]["data"] = this.monthly_data_set["hum"]
+            }
+            if (this.data_displaly_type === 2) {
+                this.display_scrollline_dataSource["dataset"][0]["data"] = this.monthly_data_set["1p0"]
+            }
+            if (this.data_displaly_type === 3) {
+                this.display_scrollline_dataSource["dataset"][0]["data"] = this.monthly_data_set["2p5"]
+            }
+            if (this.data_displaly_type === 4) {
+                this.display_scrollline_dataSource["dataset"][0]["data"] = this.monthly_data_set["p10"]
+            }
+            /**
+             *         this.hourly_timestamp_set = []
+        this.hourly_data_set = []
+        this.daily_timestamp_set = []
+        this.daily_data_set = []
+        this.monthly_timestamp_set = []
+        this.monthly_data_set = []
+             */
         }
         this.forceUpdate()
+
     }
+    render_chart() {
+        if (this.data_displaly_mode === 0) {
+            return (
+                <View style={styles.container}>
+                    {this.raw_data_set.length !== 0 ?
+                        <Text style={styles.font_grey_center}>
+                            Datetime: {this.raw_data_set[this.display_raw_data_off]["datetime"]}
+                        </Text>
+                        :
+                        null
+                    }
+
+                    <View style={{ flex: 1 }}>
+                        <FusionCharts
+                            type="zoomline"
+                            width="100%"
+                            height="100%"
+                            dataFormat="JSON"
+                            dataSource={this.display_raw_dataSource}
+                            libraryPath={this.libraryPath} // set the libraryPath property
+                            //baseChartMessageColor="#F5802A"
+                            events={this.state.events}
+                        />
+                    </View>
+                </View>
+            )
+        } else {
+            return (
+                <View style={styles.container}>
+                    <View style={{ flex: 1 }}>
+                        <FusionCharts
+                            type="scrollline2d"
+                            width="100%"
+                            height="100%"
+                            dataFormat="JSON"
+                            dataSource={this.display_scrollline_dataSource}
+                            libraryPath={this.libraryPath} // set the libraryPath property
+                        />
+                    </View>
+                </View>
+            )
+        }
+    }
+    
     render() {
         return (
             <Container style={{ backgroundColor: "#FFF" }}>
@@ -416,28 +704,7 @@ export default class NewDetailScreen extends Component {
 
                 </View>
                 
-                <View style={styles.container}>
-                    {this.raw_data_set.length !== 0 ?
-                        <Text style={styles.font_grey_center}>
-                            Datetime: {this.raw_data_set[this.display_raw_data_off]["datetime"]}
-                        </Text>
-                        :
-                        null
-                    }
-                    
-                    <View style={{flex:1}}>
-                        <FusionCharts
-                            type="zoomline"
-                            width="100%"
-                            height="100%"
-                            dataFormat="JSON"
-                            dataSource={this.display_raw_dataSource}
-                            libraryPath={this.libraryPath} // set the libraryPath property
-                            //baseChartMessageColor="#F5802A"
-                            events={this.state.events}
-                        />
-                    </View>
-                </View>
+                {this.render_chart()}
 
                 <View style={{ flexDirection: "row"}}>
                     <View>
@@ -503,15 +770,15 @@ export default class NewDetailScreen extends Component {
                     padding: 10
                 }}>
                     <TouchableOpacity
-                        onPress={() => this.change_data_display_type(1)}>
+                        onPress={() => this.change_data_display_mode(1)}>
                         <RectangleButton focused={this.state.display_hourly_icon_focused} button_text="Hourly"/>
                     </TouchableOpacity >
                     <TouchableOpacity
-                        onPress={() => this.change_data_display_type(2)}>
+                        onPress={() => this.change_data_display_mode(2)}>
                         <RectangleButton focused={this.state.display_daily_icon_focused} button_text="Daily" />
                     </TouchableOpacity >
                     <TouchableOpacity
-                        onPress={() => this.change_data_display_type(3)}>
+                        onPress={() => this.change_data_display_mode(3)}>
                         <RectangleButton focused={this.state.display_monthly_icon_focused} button_text="Monthly" />
                     </TouchableOpacity >
                 </View>

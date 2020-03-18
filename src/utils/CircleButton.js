@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFF',
         borderColor: "#F5802A",
         borderStyle: 'solid',
-        borderWidth: 3,
+        borderWidth: 1,
         borderRadius: deviceWidth / 5.5,
         
     },

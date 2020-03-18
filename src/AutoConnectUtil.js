@@ -1,3 +1,4 @@
+import { Toast} from "native-base";
 import { Global } from './global'
 
 export const AutoConnect = (Name,MACAddr) => {
