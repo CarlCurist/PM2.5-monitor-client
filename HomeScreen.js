@@ -59,6 +59,7 @@ import LoginScreen from './src/user/LoginScreen'
 import UserScreen from './src/user/UserScreen'
 import RegisterScreen from './src/user/RegisterScreen'
 import ViewDetailData from './src/ViewDetailData'
+//import NewDetailScreen from './src/NewDetailScreen'
 //import NetworkModule from './src/Network';
 //import DataCard from './src/DataCard/DataCard'
 //import NHCardShowcase from './src/DataCard/card-showcase'
@@ -92,7 +93,7 @@ export default class HomeScreen extends React.Component {
       latestPackageTimeStr: 'N/A',
       
 
-      device_connected:false,
+      device_connected:true, // TODO true for test
     }
     //this.bluetoothReceiveData = [];updateChart
     this.displayReceiveData = this.displayReceiveData.bind(this);

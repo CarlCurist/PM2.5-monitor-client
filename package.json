@@ -5,7 +5,9 @@
   "scripts": {
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "clean:build:android": "rm -rf android/app/build",
+    "prod:android": "npm run clean:build:android  && react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res"
   },
   "dependencies": {
     "@react-native-community/masked-view": "^0.1.7",
@@ -14,11 +16,13 @@
     "@react-navigation/native": "^5.0.9",
     "@react-navigation/stack": "^5.1.1",
     "create-react-class": "^15.6.3",
+    "fusioncharts": "^3.15.1-sr.1",
     "native-base": "^2.13.8",
     "react": "16.8.6",
     "react-native": "0.60.5",
     "react-native-ble-manager": "^6.6.9",
     "react-native-datepicker": "^1.7.2",
+    "react-native-fusioncharts": "^4.1.2",
     "react-native-geolocation-service": "^3.1.0",
     "react-native-gesture-handler": "^1.6.0",
     "react-native-pure-chart": "0.0.24",
@@ -29,7 +33,7 @@
     "react-native-svg": "^9.11.1",
     "react-native-svg-charts": "^5.3.0",
     "react-native-tab-view": "^2.13.0",
-    "react-native-webview": "^8.1.2",
+    "react-native-webview": "^8.2.0",
     "react-navigation": "^4.0.5",
     "react-navigation-drawer": "^2.2.1",
     "react-navigation-stack": "^1.7.3",
