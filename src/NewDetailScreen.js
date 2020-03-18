@@ -17,6 +17,8 @@ import {
 } from "native-base";
 import { Global } from './global'
 import CircleButton from './utils/CircleButton'
+import RectangleButton from './utils/RectangleButton'
+import DatePicker from 'react-native-datepicker'
 
 const dataSource = {
     chart: {
@@ -86,6 +88,14 @@ export default class NewDetailScreen extends Component {
             p1_icon_type: 2,
             p25_icon_type: 3,
             p10_icon_type: 4,
+
+            data_displaly_type: 0, //0==raw 1==hourly 2==daily 3==monthly
+            display_hourly_icon_focused: false,
+            display_daily_icon_focused: false,
+            display_monthly_icon_focused: false,
+
+            startTime: new Date(),
+            endTime: new Date(),
         };
 
         this.libraryPath = Platform.select({
@@ -96,7 +106,7 @@ export default class NewDetailScreen extends Component {
     }
 
     //type 0==temp 1==hum 2==pm1 3==pm2.5 4==pm10
-    change_data_type(type) { 
+    change_data_set(type) { 
         switch(type){
             case 0:
                 this.setState({
@@ -145,6 +155,45 @@ export default class NewDetailScreen extends Component {
                 break
         }
     }
+
+    change_data_display_type(type) {
+        if (type == this.state.data_displaly_type) {
+            this.setState({
+                data_displaly_type: 0,
+                display_hourly_icon_focused: false,
+                display_daily_icon_focused: false,
+                display_monthly_icon_focused: false,
+            })
+        } else {
+            switch (type) {
+                case 1:
+                    this.setState({
+                        data_displaly_type: 1,
+                        display_hourly_icon_focused: true,
+                        display_daily_icon_focused: false,
+                        display_monthly_icon_focused: false,
+                    })
+                    break
+                case 2:
+                    this.setState({
+                        data_displaly_type: 2,
+                        display_hourly_icon_focused: false,
+                        display_daily_icon_focused: true,
+                        display_monthly_icon_focused: false,
+                    })
+                    break
+                case 3:
+                    this.setState({
+                        data_displaly_type: 3,
+                        display_hourly_icon_focused: false,
+                        display_daily_icon_focused: false,
+                        display_monthly_icon_focused: true,
+                    })
+                    break
+            }
+        }
+
+    }
     render() {
         return (
             <Container style={{ backgroundColor: "#FFF" }}>
@@ -170,27 +219,27 @@ export default class NewDetailScreen extends Component {
                     padding: 10
                 }}>
                     <TouchableOpacity
-                        onPress={() => this.change_data_type(0)}>
+                        onPress={() => this.change_data_set(0)}>
                         <CircleButton icon_type={this.state.temp_icon_type} />
                     </TouchableOpacity >
 
                     <TouchableOpacity
-                        onPress={() => this.change_data_type(1)}>
+                        onPress={() => this.change_data_set(1)}>
                         <CircleButton icon_type={this.state.hum_icon_type} />
                     </TouchableOpacity >
 
                     <TouchableOpacity
-                        onPress={() => this.change_data_type(2)}>
+                        onPress={() => this.change_data_set(2)}>
                         <CircleButton icon_type={this.state.p1_icon_type} />
                     </TouchableOpacity >
 
                     <TouchableOpacity
-                        onPress={() => this.change_data_type(3)}>
+                        onPress={() => this.change_data_set(3)}>
                         <CircleButton icon_type={this.state.p25_icon_type} />
                     </TouchableOpacity >
 
                     <TouchableOpacity
-                        onPress={() => this.change_data_type(4)}>
+                        onPress={() => this.change_data_set(4)}>
                         <CircleButton icon_type={this.state.p10_icon_type} />
                     </TouchableOpacity >
 
@@ -198,8 +247,8 @@ export default class NewDetailScreen extends Component {
                 
                 <View style={styles.container}>
 
-                    <Text style={styles.heading}>
-                        FusionCharts Integration with React Native
+                    <Text style={styles.font_grey_center}>
+                        Datetime: 2020-01-07 
                     </Text>
                     <View style={{flex:1}}>
                         <FusionCharts
@@ -215,8 +264,78 @@ export default class NewDetailScreen extends Component {
                     </View>
                 </View>
 
+                <View style={{ flexDirection: "row"}}>
+                    <View>
+                        <Text>Start from:</Text>
+                        <DatePicker
+                            style={{ width: deviceWidth / 2 }}
+                            date={this.state.startTime}
+                            mode="datetime"
+                            placeholder="select date"
+                            confirmBtnText="Confirm"
+                            cancelBtnText="Cancel"
+                            customStyles={{
+                                dateIcon: {
+                                    position: 'absolute',
+                                    left: 0,
+                                    top: 4,
+                                    marginLeft: 0
+                                },
+                                dateInput: {
+                                    marginLeft: 36
+                                }
+                                // ... You can check the source to find the other keys.
+                            }}
+                            onDateChange={(date) => { this.setState({ startTime: date }) }}
+                        />
+                    </View>
 
+                    <View>
+                        <Text>End at:</Text>
+                        <DatePicker
+                            style={{ width: deviceWidth / 2 }}
+                            date={this.state.endTime}
+                            mode="datetime"
+                            placeholder="select date"
+                            confirmBtnText="Confirm"
+                            cancelBtnText="Cancel"
+                            customStyles={{
+                                dateIcon: {
+                                    position: 'absolute',
+                                    left: 0,
+                                    top: 4,
+                                    marginLeft: 0
+                                },
+                                dateInput: {
+                                    marginLeft: 36
+                                }
+                                // ... You can check the source to find the other keys.
+                            }}
+                            onDateChange={(date) => { this.setState({ endTime: date }) }}
+                        />
+                    </View>
+                </View>
 
+                <View style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-around',
+                    padding: 10
+                }}>
+                    <TouchableOpacity
+                        onPress={() => this.change_data_display_type(1)}>
+                        <RectangleButton focused={this.state.display_hourly_icon_focused} button_text="Hourly"/>
+                    </TouchableOpacity >
+                    <TouchableOpacity
+                        onPress={() => this.change_data_display_type(2)}>
+                        <RectangleButton focused={this.state.display_daily_icon_focused} button_text="Daily" />
+                    </TouchableOpacity >
+                    <TouchableOpacity
+                        onPress={() => this.change_data_display_type(3)}>
+                        <RectangleButton focused={this.state.display_monthly_icon_focused} button_text="Monthly" />
+                    </TouchableOpacity >
+                </View>
+
+                
                 <View style={{
                     flexDirection: 'row',
                     justifyContent: 'space-around'
@@ -253,14 +372,18 @@ const styles = StyleSheet.create({
         textAlign: "center",
         marginBottom: 10
     },
-    chartContainer: {
-        height: 500
-    },
+
     bottom_button: {
         height: 40,
         width: deviceWidth / 2.2,
         marginBottom: 20,
         justifyContent: "center",
         alignItems: 'center' 
-    }
+    },
+    font_grey_center: {
+        color: '#CDCDCD',
+        fontSize: 15,
+        textAlign: 'center',
+        textAlignVertical: 'center',
+    },
 });
