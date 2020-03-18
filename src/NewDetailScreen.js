@@ -175,7 +175,7 @@ export default class NewDetailScreen extends Component {
         var tmp = DatabaseServices.loadDateFromUTC(start, end)
         if (tmp.length !== 0) {
             //console.log("flame-debug DetailScreen ", JSON.stringify(tmp))
-
+            
             //raw data
             raw_data_item_timestamp = ""
             raw_data_category = []
@@ -226,8 +226,12 @@ export default class NewDetailScreen extends Component {
                 "p10": raw_p10_dataset,
             }) 
             this.display_raw_data_off = this.raw_data_set.length - 1
-            console.log("flame-debug DetailScreen ", JSON.stringify(this.raw_data_set[0]))
+            //console.log("flame-debug DetailScreen ", JSON.stringify(this.raw_data_set[0]))
+        } else {
+            this.raw_data_set=[]
         }
+
+        this.updateChart()
     }
 
 
@@ -243,8 +247,7 @@ export default class NewDetailScreen extends Component {
                     p25_icon_type: 3,
                     p10_icon_type: 4,
                 })
-                this.display_raw_dataSource["categories"][0]["category"] = this.raw_data_set[this.display_raw_data_off]["category"]
-                this.display_raw_dataSource["dataset"][0]["data"] = this.raw_data_set[this.display_raw_data_off]["temp"]
+                this.updateChart()
                 break
             case 1:
                 this.data_displaly_type = 1
@@ -256,8 +259,7 @@ export default class NewDetailScreen extends Component {
                     p10_icon_type: 4,
                     
                 })
-                this.display_raw_dataSource["categories"][0]["category"] = this.raw_data_set[this.display_raw_data_off]["category"]
-                this.display_raw_dataSource["dataset"][0]["data"] = this.raw_data_set[this.display_raw_data_off]["hum"]
+                this.updateChart()
                 break
             case 2:
                 this.data_displaly_type = 2
@@ -268,8 +270,7 @@ export default class NewDetailScreen extends Component {
                     p25_icon_type: 3,
                     p10_icon_type: 4,
                 })
-                this.display_raw_dataSource["categories"][0]["category"] = this.raw_data_set[this.display_raw_data_off]["category"]
-                this.display_raw_dataSource["dataset"][0]["data"] = this.raw_data_set[this.display_raw_data_off]["1p0"]
+                this.updateChart()
                 break
             case 3:
                 this.data_displaly_type = 3
@@ -280,8 +281,7 @@ export default class NewDetailScreen extends Component {
                     p25_icon_type: 3+5,
                     p10_icon_type: 4,
                 })
-                this.display_raw_dataSource["categories"][0]["category"] = this.raw_data_set[this.display_raw_data_off]["category"]
-                this.display_raw_dataSource["dataset"][0]["data"] = this.raw_data_set[this.display_raw_data_off]["2p5"]
+                this.updateChart()
                 break
             case 4:
                 this.data_displaly_type = 4
@@ -292,8 +292,7 @@ export default class NewDetailScreen extends Component {
                     p25_icon_type: 3,
                     p10_icon_type: 4+5,
                 })
-                this.display_raw_dataSource["categories"][0]["category"] = this.raw_data_set[this.display_raw_data_off]["category"]
-                this.display_raw_dataSource["dataset"][0]["data"] = this.raw_data_set[this.display_raw_data_off]["p10"]
+                this.updateChart()
                 break
         }
     }
@@ -335,6 +334,36 @@ export default class NewDetailScreen extends Component {
             }
         }
 
+    }
+
+    updateChart() {
+        if (this.raw_data_set.length === 0) {
+            this.display_raw_dataSource["categories"][0]["category"] = []
+            this.display_raw_dataSource["dataset"][0]["data"] = []
+            this.forceUpdate()
+            return 
+        }
+        if (this.data_displaly_type === 0) {
+            this.display_raw_dataSource["categories"][0]["category"] = this.raw_data_set[this.display_raw_data_off]["category"]
+            this.display_raw_dataSource["dataset"][0]["data"] = this.raw_data_set[this.display_raw_data_off]["temp"]
+        }
+        if (this.data_displaly_type === 1) {
+            this.display_raw_dataSource["categories"][0]["category"] = this.raw_data_set[this.display_raw_data_off]["category"]
+            this.display_raw_dataSource["dataset"][0]["data"] = this.raw_data_set[this.display_raw_data_off]["hum"]
+        }
+        if (this.data_displaly_type === 2) {
+            this.display_raw_dataSource["categories"][0]["category"] = this.raw_data_set[this.display_raw_data_off]["category"]
+            this.display_raw_dataSource["dataset"][0]["data"] = this.raw_data_set[this.display_raw_data_off]["1p0"]
+        }
+        if (this.data_displaly_type === 3) {
+            this.display_raw_dataSource["categories"][0]["category"] = this.raw_data_set[this.display_raw_data_off]["category"]
+            this.display_raw_dataSource["dataset"][0]["data"] = this.raw_data_set[this.display_raw_data_off]["2p5"]
+        }
+        if (this.data_displaly_type === 4) {
+            this.display_raw_dataSource["categories"][0]["category"] = this.raw_data_set[this.display_raw_data_off]["category"]
+            this.display_raw_dataSource["dataset"][0]["data"] = this.raw_data_set[this.display_raw_data_off]["p10"]
+        }
+        this.forceUpdate()
     }
     render() {
         return (
@@ -388,10 +417,14 @@ export default class NewDetailScreen extends Component {
                 </View>
                 
                 <View style={styles.container}>
-
-                    <Text style={styles.font_grey_center}>
-                        Datetime: {this.raw_data_set[this.display_raw_data_off]["datetime"]}
-                    </Text>
+                    {this.raw_data_set.length !== 0 ?
+                        <Text style={styles.font_grey_center}>
+                            Datetime: {this.raw_data_set[this.display_raw_data_off]["datetime"]}
+                        </Text>
+                        :
+                        null
+                    }
+                    
                     <View style={{flex:1}}>
                         <FusionCharts
                             type="zoomline"
@@ -428,7 +461,10 @@ export default class NewDetailScreen extends Component {
                                 }
                                 // ... You can check the source to find the other keys.
                             }}
-                            onDateChange={(date) => { this.setState({ startTime: date }) }}
+                            onDateChange={(date) => {
+                                this.setState({ startTime: date })
+                                this.refresh()
+                            }}
                         />
                     </View>
 
@@ -453,7 +489,10 @@ export default class NewDetailScreen extends Component {
                                 }
                                 // ... You can check the source to find the other keys.
                             }}
-                            onDateChange={(date) => { this.setState({ endTime: date }) }}
+                            onDateChange={(date) => {
+                                this.setState({ endTime: date })
+                                this.refresh()
+                            }}
                         />
                     </View>
                 </View>
@@ -482,7 +521,7 @@ export default class NewDetailScreen extends Component {
                     flexDirection: 'row',
                     justifyContent: 'space-around'
                 }}>
-                    {this.display_raw_data_off !== 0 ?
+                    {this.raw_data_set.length !== 0 && this.display_raw_data_off !== 0 ?
                         <Button bordered warning
                             style={styles.bottom_button}
                             onPress={() => {
@@ -502,15 +541,7 @@ export default class NewDetailScreen extends Component {
                         </Button>
                 }
 
-                    {this.display_raw_data_off === this.raw_data_set.length - 1 ?
-                        <Button bordered warning disabled
-                            style={styles.bottom_button}>
-                            <Image
-                                source={require('../assets/icon/right_icon_gray.png')}
-                                style={{ height: 30, width: 30 }}
-                            />
-                        </Button>
-                        :
+                    {this.raw_data_set.length!==0 && this.display_raw_data_off !== this.raw_data_set.length - 1 ?
                         <Button bordered warning
                             style={styles.bottom_button}
                             onPress={() => {
@@ -519,6 +550,14 @@ export default class NewDetailScreen extends Component {
                             }}>
                             <Image
                                 source={require('../assets/icon/right_icon_orange.png')}
+                                style={{ height: 30, width: 30 }}
+                            />
+                        </Button>
+                        :
+                        <Button bordered warning disabled
+                            style={styles.bottom_button}>
+                            <Image
+                                source={require('../assets/icon/right_icon_gray.png')}
                                 style={{ height: 30, width: 30 }}
                             />
                         </Button>
