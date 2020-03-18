@@ -19,6 +19,7 @@ import { Global } from './global'
 import CircleButton from './utils/CircleButton'
 import RectangleButton from './utils/RectangleButton'
 import DatePicker from 'react-native-datepicker'
+import DatabaseServices from './DatabaseHelper';
 
 const dataSource = {
     chart: {
@@ -30,7 +31,7 @@ const dataSource = {
         pixelsperpoint: "0",
         pixelsperlabel: "30",
         compactdatamode: "1",
-        dataseparator: "|",
+        //dataseparator: "|",
         theme: "fusion",
 
         //toolTipBgColor: "#F5802A",
@@ -96,6 +97,8 @@ export default class NewDetailScreen extends Component {
 
             startTime: new Date(),
             endTime: new Date(),
+
+            
         };
 
         this.libraryPath = Platform.select({
@@ -103,12 +106,136 @@ export default class NewDetailScreen extends Component {
             //ios: require("./assets/fusioncharts.html"),
             android: { uri: "file:///android_asset/fusioncharts.html" }
         });
+        //start from 6 days ago
+        this.state.startTime.setHours(0, 0, 0, 0)
+        this.state.startTime.setTime(this.state.startTime.getTime() - 86400000 * 6)
+
+        this.display_raw_dataSource = {
+            chart: {
+                forceaxislimits: "1",
+                pixelsperpoint: "0",
+                pixelsperlabel: "30",
+                compactdatamode: "1",
+                theme: "fusion",
+            },
+            categories: [
+                {
+                    category:[]
+                }
+            ],
+            dataset: [
+                {
+                    "color": "F5802A",
+                    //seriesname: "Sold",
+                    data:[]
+                },
+            ]
+        };
+        this.diaplay_data_type = 0
+        this.raw_data_set = []
+        this.display_raw_data_off = 0
+        //this.change_data_set(0)
+        this.refresh()
     }
+
+    componentDidMount() {
+        //type = this.props.navigation.getParam('typeOfData')
+        //type = this.props.navigation.state.params
+        this.change_data_set(0)
+    }
+    
+    getUTCString(date = null) {
+        // it will return last 24H by default
+        if (date === null) {
+            date = new Date();
+            date.setTime(date.getTime() - 24 * 60 * 60 * 1000); // get yesterday
+        }
+        //console.log("flame-debug ViewDetail "+date)
+        if (typeof date == "string") {
+            //new Date(date) fails in normal time but run normally when debugging
+            //get more information https://www.jianshu.com/p/dfdd86796ab3
+            date = new Date(Date.parse(date.replace(/-/g, "/")))
+        }
+        return date.getUTCFullYear() + '-' + (date.getUTCMonth() + 1) + '-' + date.getUTCDate() + '@' + date.getUTCHours() + ':' + date.getUTCMinutes() + ':' + date.getUTCSeconds();
+    }
+
+    refresh() {
+        UTC_start_time = ""
+        UTC_end_time = ""
+        if (this.state.startTime != "" && this.state.endTime != "") {
+            UTC_start_time = this.getUTCString(this.state.startTime)
+            UTC_end_time = this.getUTCString(this.state.endTime)
+        }
+        this.loadData(UTC_start_time, UTC_end_time)
+        //this.forceUpdate()
+    }
+
+    loadData(start, end) {
+        this.raw_data_set = []
+        var tmp = DatabaseServices.loadDateFromUTC(start, end)
+        if (tmp.length !== 0) {
+            //console.log("flame-debug DetailScreen ", JSON.stringify(tmp))
+
+            //raw data
+            raw_data_item_timestamp = ""
+            raw_data_category = []
+            raw_temp_dataset = []
+            raw_hum_dataset = []
+            raw_1p0_dataset = []
+            raw_2p5_dataset = []
+            raw_p10_dataset = []
+            for (var item of tmp) {
+                datetime = item.date.getFullYear() + '-' + (parseInt(item.date.getMonth()) + 1) + '-' + item.date.getDate()
+                if (datetime !== raw_data_item_timestamp) {
+                    if (raw_data_item_timestamp !== "") {
+                        this.raw_data_set.push({
+                            "datetime": raw_data_item_timestamp,
+                            "category": raw_data_category,
+                            "temp": raw_temp_dataset,
+                            "hum": raw_hum_dataset,
+                            "1p0": raw_1p0_dataset,
+                            "2p5": raw_2p5_dataset,
+                            "p10": raw_p10_dataset,
+                        })   
+                    }
+                    raw_data_item_timestamp = datetime
+                    raw_data_category = []
+                    raw_temp_dataset = []
+                    raw_hum_dataset = []
+                    raw_1p0_dataset = []
+                    raw_2p5_dataset = []
+                    raw_p10_dataset = []
+                }
+                //console.log("flame-debug DetailScreen ", item.date.getMonth() + 1 + '-' + item.date.getDate() + ' ' + item.date.getHours() + ':' + item.date.getMinutes())
+                preciseTime = item.date.getHours() + ':' + item.date.getMinutes()
+                raw_data_category.push({ "label": preciseTime })
+                raw_temp_dataset.push({ "value": item.air.temperature.toFixed(2) })
+                raw_hum_dataset.push({ "value": item.air.humidity.toFixed(2) })
+                raw_1p0_dataset.push({ "value": item.air._1p0.toFixed(2) })
+                raw_2p5_dataset.push({ "value": item.air._2p5.toFixed(2) })
+                raw_p10_dataset.push({ "value": item.air._10p.toFixed(2) })
+
+            }
+            this.raw_data_set.push({
+                "datetime": raw_data_item_timestamp,
+                "category": raw_data_category,
+                "temp": raw_temp_dataset,
+                "hum": raw_hum_dataset,
+                "1p0": raw_1p0_dataset,
+                "2p5": raw_2p5_dataset,
+                "p10": raw_p10_dataset,
+            }) 
+            this.display_raw_data_off = this.raw_data_set.length - 1
+            console.log("flame-debug DetailScreen ", JSON.stringify(this.raw_data_set[0]))
+        }
+    }
+
 
     //type 0==temp 1==hum 2==pm1 3==pm2.5 4==pm10
     change_data_set(type) { 
         switch(type){
             case 0:
+                this.data_displaly_type = 0
                 this.setState({
                     temp_icon_type: 0+5,
                     hum_icon_type: 1,
@@ -116,17 +243,24 @@ export default class NewDetailScreen extends Component {
                     p25_icon_type: 3,
                     p10_icon_type: 4,
                 })
+                this.display_raw_dataSource["categories"][0]["category"] = this.raw_data_set[this.display_raw_data_off]["category"]
+                this.display_raw_dataSource["dataset"][0]["data"] = this.raw_data_set[this.display_raw_data_off]["temp"]
                 break
             case 1:
+                this.data_displaly_type = 1
                 this.setState({
                     temp_icon_type: 0,
                     hum_icon_type: 1+5,
                     p1_icon_type: 2,
                     p25_icon_type: 3,
                     p10_icon_type: 4,
+                    
                 })
+                this.display_raw_dataSource["categories"][0]["category"] = this.raw_data_set[this.display_raw_data_off]["category"]
+                this.display_raw_dataSource["dataset"][0]["data"] = this.raw_data_set[this.display_raw_data_off]["hum"]
                 break
             case 2:
+                this.data_displaly_type = 2
                 this.setState({
                     temp_icon_type: 0,
                     hum_icon_type: 1,
@@ -134,8 +268,11 @@ export default class NewDetailScreen extends Component {
                     p25_icon_type: 3,
                     p10_icon_type: 4,
                 })
+                this.display_raw_dataSource["categories"][0]["category"] = this.raw_data_set[this.display_raw_data_off]["category"]
+                this.display_raw_dataSource["dataset"][0]["data"] = this.raw_data_set[this.display_raw_data_off]["1p0"]
                 break
             case 3:
+                this.data_displaly_type = 3
                 this.setState({
                     temp_icon_type: 0,
                     hum_icon_type: 1,
@@ -143,8 +280,11 @@ export default class NewDetailScreen extends Component {
                     p25_icon_type: 3+5,
                     p10_icon_type: 4,
                 })
+                this.display_raw_dataSource["categories"][0]["category"] = this.raw_data_set[this.display_raw_data_off]["category"]
+                this.display_raw_dataSource["dataset"][0]["data"] = this.raw_data_set[this.display_raw_data_off]["2p5"]
                 break
             case 4:
+                this.data_displaly_type = 4
                 this.setState({
                     temp_icon_type: 0,
                     hum_icon_type: 1,
@@ -152,6 +292,8 @@ export default class NewDetailScreen extends Component {
                     p25_icon_type: 3,
                     p10_icon_type: 4+5,
                 })
+                this.display_raw_dataSource["categories"][0]["category"] = this.raw_data_set[this.display_raw_data_off]["category"]
+                this.display_raw_dataSource["dataset"][0]["data"] = this.raw_data_set[this.display_raw_data_off]["p10"]
                 break
         }
     }
@@ -248,7 +390,7 @@ export default class NewDetailScreen extends Component {
                 <View style={styles.container}>
 
                     <Text style={styles.font_grey_center}>
-                        Datetime: 2020-01-07 
+                        Datetime: {this.raw_data_set[this.display_raw_data_off]["datetime"]}
                     </Text>
                     <View style={{flex:1}}>
                         <FusionCharts
@@ -256,7 +398,7 @@ export default class NewDetailScreen extends Component {
                             width="100%"
                             height="100%"
                             dataFormat="JSON"
-                            dataSource={dataSource}
+                            dataSource={this.display_raw_dataSource}
                             libraryPath={this.libraryPath} // set the libraryPath property
                             //baseChartMessageColor="#F5802A"
                             events={this.state.events}
@@ -340,21 +482,50 @@ export default class NewDetailScreen extends Component {
                     flexDirection: 'row',
                     justifyContent: 'space-around'
                 }}>
-                    <Button bordered warning
-                        style={styles.bottom_button}
-                        onPress={() => Alert.alert('Button with adjusted color pressed')}>
-                        <Image
-                            source={require('../assets/icon/left_icon_orange.png')}
-                            style={{ height: 30, width: 30 }} />
-                    </Button>
-                    <Button bordered warning
-                        style={styles.bottom_button}
-                        onPress={() => Alert.alert('Button with adjusted color pressed')}>
-                        <Image
-                            source={require('../assets/icon/right_icon_orange.png')}
-                            style={{ height: 30, width: 30 }}
+                    {this.display_raw_data_off !== 0 ?
+                        <Button bordered warning
+                            style={styles.bottom_button}
+                            onPress={() => {
+                                this.display_raw_data_off -= 1
+                                this.change_data_set(this.data_displaly_type)
+                            }}>
+                            <Image
+                                source={require('../assets/icon/left_icon_orange.png')}
+                                style={{ height: 30, width: 30 }} />
+                        </Button>
+                        :
+                        <Button bordered warning disabled
+                            style={styles.bottom_button}>
+                            <Image
+                                source={require('../assets/icon/left_icon_gray.png')}
+                                style={{ height: 30, width: 30 }} />
+                        </Button>
+                }
+
+                    {this.display_raw_data_off === this.raw_data_set.length - 1 ?
+                        <Button bordered warning disabled
+                            style={styles.bottom_button}>
+                            <Image
+                                source={require('../assets/icon/right_icon_gray.png')}
+                                style={{ height: 30, width: 30 }}
                             />
-                    </Button>
+                        </Button>
+                        :
+                        <Button bordered warning
+                            style={styles.bottom_button}
+                            onPress={() => {
+                                this.display_raw_data_off += 1
+                                this.change_data_set(this.data_displaly_type)
+                            }}>
+                            <Image
+                                source={require('../assets/icon/right_icon_orange.png')}
+                                style={{ height: 30, width: 30 }}
+                            />
+                        </Button>
+                        
+
+                }
+
                 </View>
             </Container>
 
