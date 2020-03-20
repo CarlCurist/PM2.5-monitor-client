@@ -23,7 +23,8 @@ global.BLEStatus = {
     synchronizeClock:false,
     login:false,
     username: 'anonymous@unknown.com',
-    password:'',
+    password: '',
+    autoConnectMode:true
 }
 
 global.RWServiceUUID = '0000fff0-0000-1000-8000-00805f9b34fb';

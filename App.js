@@ -181,7 +181,7 @@ export default function App() {
       <Root>
         {/*<MyTabs />*/}
         <RootStack.Navigator
-          initialRouteName="TabHome"
+          initialRouteName="Login"
           screenOptions={{
           headerShown: false,
         }}>

@@ -1,7 +1,7 @@
 import { Toast} from "native-base";
 import { Global } from './global'
 
-export const AutoConnect = (Name,MACAddr) => {
+export const AutoConnect = (Name, MACAddr) => {
     if (BLEStatus.isStart == false) {
         BLEStatus.isStart = true
         BluetoothManager.start();

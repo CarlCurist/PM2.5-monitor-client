@@ -66,12 +66,18 @@ export default class DeviceScreen extends React.Component {
         this.disconnectPeripheralListener.remove()
         this.discoverPeripheralListener.remove()
         this.timer && clearTimeout(this.timer);
+        //console.log("flame-debug DeviceScreen componentWillUnmount")
     }
+    /*
+    componentDidUpdate() {
+        console.log("flame-debug DeviceScreen componentDidUpdate")
+    }
+    */
 
     //发现设备
     handleDiscoverPeripheral = (data) => {
         //console.log('flame DiscoverPeripheral', data.id, data.name);
-        if (data.name != null && data.name.startsWith('PM')) {
+        if (BLEStatus.autoConnectMode && data.name != null && data.name.startsWith('PM')) {
             BluetoothManager.stopScan();
             AutoConnect(data.name, data.id)
         }
@@ -100,7 +106,7 @@ export default class DeviceScreen extends React.Component {
             }
             if (this.package.battery === "low") {
                 //batt_status = '2'
-                gif = 2
+                //gif = 2
             }
             if (this.package.battery === "critical") {
                 //batt_status = '1'
@@ -261,7 +267,11 @@ export default class DeviceScreen extends React.Component {
 
                 <View style={{ justifyContent: 'center', alignItems: 'center', paddingTop: 20 }}>
                     <TouchableOpacity
-                        onPress={() => this.props.navigation.navigate('Scan')}>
+                        onPress={() => {
+                            BLEStatus.autoConnectMode = false
+                            this.props.navigation.navigate('Scan')
+                        }
+                        }>
                         <Text style={styles.font_underline}>Can not pair a PM device?</Text>
                     </TouchableOpacity>
                 </View>
@@ -366,6 +376,7 @@ export default class DeviceScreen extends React.Component {
 
 
     render() {
+        //console.log("flame-debug DeviceScreen render")
         return (
             <Container>
                 <MyHeader title="Device" hide_icon={false} />

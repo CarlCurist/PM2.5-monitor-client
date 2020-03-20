@@ -87,14 +87,15 @@ export default class BLEMonitor extends Component {
         }
         */
 
-        /*
+        
         this.updateStateListener.remove();
         this.stopScanListener.remove();
         this.discoverPeripheralListener.remove();       
         this.connectPeripheralListener.remove();
         this.disconnectPeripheralListener.remove();
-        this.updateValueListener.remove();  
-       */
+        this.updateValueListener.remove();
+        BLEStatus.autoConnectMode = true
+       
 
         if (this.state.scaning) {  //退出时停止扫描
             BluetoothManager.stopScan();
