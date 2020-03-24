@@ -261,6 +261,18 @@ export default class BLEMonitor extends Component {
                     text: "Connected successfully",
                     type: "success"
                 })
+
+                device_storage.save({
+                    key: 'device', // Note: Do not use underscore("_") in key!
+                    data: {
+                        name: BLEStatus.connectedDeviceName,
+                        mac: BLEStatus.connectedDeviceMAC,
+                    },
+
+                    // if expires not specified, the defaultExpires will be applied instead.
+                    // if set to null, then it will never expire.
+                    expires: null
+                });
             })
             //.then()
             .catch(err => {

@@ -5,7 +5,8 @@ import MyHeader from './MyHeader'
 import { Global } from './global'
 import BLEMonitor from './BLEMonitor';
 import { Grid, Col, Row } from "react-native-easy-grid";
-import { AutoConnect} from './AutoConnectUtil'
+import { AutoConnect } from './AutoConnectUtil'
+import './Storage'
 
 export default class DeviceScreen extends React.Component {
     constructor(props) {
@@ -56,8 +57,9 @@ export default class DeviceScreen extends React.Component {
 
     }
 
-    componentWillReceiveProps(nextProps) {
-        
+    componentDidMount() { 
+        //BluetoothManager.enableBluetooth()
+        this.load_storage_data()
     }
     componentWillUnmount() {
         this.UpdateReceiveDataListener.remove();
@@ -73,6 +75,50 @@ export default class DeviceScreen extends React.Component {
         console.log("flame-debug DeviceScreen componentDidUpdate")
     }
     */
+    load_storage_data() {
+        device_storage
+            .load({
+                key: 'device',
+
+                // autoSync (default: true) means if data is not found or has expired,
+                // then invoke the corresponding sync method
+                autoSync: false,
+
+                // syncInBackground (default: true) means if data expired,
+                // return the outdated data first while invoking the sync method.
+                // If syncInBackground is set to false, and there is expired data,
+                // it will wait for the new data and return only after the sync completed.
+                // (This, of course, is slower)
+                syncInBackground: true,
+
+                // you can pass extra params to the sync method
+                // see sync example below
+                syncParams: {
+                    extraFetchOptions: {
+                        // blahblah
+                    },
+                    someFlag: true
+                }
+            })
+            .then(ret => {
+                // found data go to then()
+                //console.log("flame-debug storage ", ret.name, ret.mac);
+                AutoConnect(ret.name, ret.mac)
+            })
+            .catch(err => {
+                // any exception including data not found
+                // goes to catch()
+                console.warn(err.message);
+                switch (err.name) {
+                    case 'NotFoundError':
+                        // TODO;
+                        break;
+                    case 'ExpiredError':
+                        // TODO
+                        break;
+                }
+            });
+    }
 
     //发现设备
     handleDiscoverPeripheral = (data) => {
@@ -203,6 +249,8 @@ export default class DeviceScreen extends React.Component {
             //DeviceName: BLEStatus.connectedDevice[0]['name'], //不能在这里访问BLEStatus.connectedDevice的数据，因为这函数调用时它还是空的
             //MACAddress: BLEStatus.connectedDevice[0]['id'],
         })
+        //console.log("flame-debug storage save ", BLEStatus.connectedDeviceName, BLEStatus.connectedDeviceMAC)
+
     }
     //蓝牙设备已断开连接
     handleDisconnectPeripheral = (args) => {
@@ -249,6 +297,9 @@ export default class DeviceScreen extends React.Component {
         })
         BLEStatus.isConnected = false
         BluetoothManager.disconnect();
+        device_storage.remove({
+            key: 'device'
+        })
     }
 
     render_item_unpair() {

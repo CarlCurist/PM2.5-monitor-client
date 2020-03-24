@@ -93,7 +93,7 @@ export default class HomeScreen extends React.Component {
       latestPackageTimeStr: 'N/A',
       
 
-      device_connected:true, // TODO true for test
+      device_connected:false, // TODO true for test
     }
     //this.bluetoothReceiveData = [];updateChart
     this.displayReceiveData = this.displayReceiveData.bind(this);
