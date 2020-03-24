@@ -10,7 +10,7 @@ export default class UserProfileScreen extends React.Component {
     }
 
     logout() {
-        this.props.navigation.navigate("Scan")
+        this.props.navigation.navigate("Login")
     }
 
     render() {
