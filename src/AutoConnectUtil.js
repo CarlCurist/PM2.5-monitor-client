@@ -55,7 +55,7 @@ export const AutoConnect = (Name, MACAddr) => {
         })
         //.then()
         .catch(err => {
-            BLEStatus.isConnected = false;
+            console.log("flame-debug auto connect fail ",err)
             Toast.show({
                 text: "Connected Fails",
                 type: "danger"

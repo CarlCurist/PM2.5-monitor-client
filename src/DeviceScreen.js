@@ -127,6 +127,7 @@ export default class DeviceScreen extends React.Component {
         if (BLEStatus.autoConnectMode && data.name != null && data.name.startsWith('PM')) {
             BluetoothManager.stopScan();
             AutoConnect(data.name, data.id)
+            console.log("flame-debug found device ", data.name, data.id,data.rssi)
         }
     }
 
@@ -254,6 +255,9 @@ export default class DeviceScreen extends React.Component {
         this.autoReconnectTimer && clearInterval(this.autoReconnectTimer);
         this.autoReconnectTimer = null
 
+        this.timer && clearTimeout(this.timer);
+        this.timer = null
+
     }
     //蓝牙设备已断开连接
     handleDisconnectPeripheral = (args) => {
@@ -310,6 +314,8 @@ export default class DeviceScreen extends React.Component {
             gif_display_offset: 4,
         })
         BLEStatus.isConnected = false
+        BLEStatus.connectedDeviceName = ''
+        BLEStatus.connectedDeviceMAC = ''
         BluetoothManager.disconnect();
         device_storage.remove({
             key: 'device'
