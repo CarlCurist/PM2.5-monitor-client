@@ -30,10 +30,10 @@ export default class MyHeader extends React.Component {
             require('../assets/icon/battery_charge_icon_orange.png')]//charging = 5
         
         this.UpdateReceiveDataListener = BluetoothManager.addListener('BleManagerDidUpdateValueForCharacteristic', this.handleBLEReceiveData);
-        this.UpdateStateListener = BluetoothManager.addListener('BleManagerDidUpdateState', this.handleBLEUpdateState);
+        //this.UpdateStateListener = BluetoothManager.addListener('BleManagerDidUpdateState', this.handleBLEUpdateState);
         this.connectPeripheralListener = BluetoothManager.addListener('BleManagerConnectPeripheral', this.handleConnectPeripheral);
         this.disconnectPeripheralListener = BluetoothManager.addListener('BleManagerDisconnectPeripheral', this.handleDisconnectPeripheral);
-        BluetoothManager.checkState();
+        //BluetoothManager.checkState();
     }
 
     componentDidMount() {
@@ -52,7 +52,7 @@ export default class MyHeader extends React.Component {
 
     componentWillUnmount() {
         this.UpdateReceiveDataListener.remove();
-        this.UpdateStateListener.remove();
+        //this.UpdateStateListener.remove();
         this.connectPeripheralListener.remove();
         this.disconnectPeripheralListener.remove()
     }
@@ -95,7 +95,7 @@ export default class MyHeader extends React.Component {
             battery:batt_status,
         })
     }
-
+    /*
     //蓝牙状态改变
     handleBLEUpdateState = (args) => {
         //console.log('BleManagerDidUpdateStatea:', args);
@@ -106,12 +106,20 @@ export default class MyHeader extends React.Component {
             this.setState({ bluetooth: '0' })
         }
     }
-
+    */
     //蓝牙设备已断开连接
     handleDisconnectPeripheral = (args) => {
         this.setState({
             sdcard: '0',
             battery: '0',
+            bluetooth: '0'
+        })
+    }
+
+    //建立连接 
+    handleConnectPeripheral = (args) => {
+        this.setState({
+            bluetooth: '1'
         })
     }
 
