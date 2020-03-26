@@ -54,7 +54,7 @@ export default class DeviceScreen extends React.Component {
         this.disconnectPeripheralListener = BluetoothManager.addListener('BleManagerDisconnectPeripheral', this.handleDisconnectPeripheral);
         BluetoothManager.checkState();
         this.timer = null;
-
+        this.autoReconnectTimer = null
     }
 
     componentDidMount() { 
@@ -68,6 +68,7 @@ export default class DeviceScreen extends React.Component {
         this.disconnectPeripheralListener.remove()
         this.discoverPeripheralListener.remove()
         this.timer && clearTimeout(this.timer);
+        this.autoReconnectTimer && clearInterval(this.autoReconnectTimer);
         //console.log("flame-debug DeviceScreen componentWillUnmount")
     }
     /*
@@ -250,6 +251,8 @@ export default class DeviceScreen extends React.Component {
             //MACAddress: BLEStatus.connectedDevice[0]['id'],
         })
         //console.log("flame-debug storage save ", BLEStatus.connectedDeviceName, BLEStatus.connectedDeviceMAC)
+        this.autoReconnectTimer && clearInterval(this.autoReconnectTimer);
+        this.autoReconnectTimer = null
 
     }
     //蓝牙设备已断开连接
@@ -260,6 +263,17 @@ export default class DeviceScreen extends React.Component {
                 gif_display_offset: 3,
             })
         }
+        if (BLEStatus.connectedDeviceMAC !== '' && this.autoReconnectTimer === null) {
+            this.autoReconnectTimer = setInterval(
+                () => {
+                    AutoConnect(BLEStatus.connectedDeviceName, BLEStatus.connectedDeviceMAC)
+                    //console.log("flame-debug autoReconnectTimer")
+                },
+                3000,
+            );
+        }
+
+
     }
 
 

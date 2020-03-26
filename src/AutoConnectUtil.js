@@ -10,9 +10,10 @@ export const AutoConnect = (Name, MACAddr) => {
 
     //当前蓝牙正在连接时不能打开另一个连接进程
     if (BluetoothManager.isConnecting) {
-        //console.log('当前蓝牙正在连接时不能打开另一个连接进程');
+        //console.log('flame-debug 当前蓝牙正在连接时不能打开另一个连接进程');
         return;
     }
+
     //console.log('flame-debug9 start connect')
     BluetoothManager.connect(MACAddr)
         .then(peripheralInfo => {
@@ -54,6 +55,7 @@ export const AutoConnect = (Name, MACAddr) => {
         })
         //.then()
         .catch(err => {
+            BLEStatus.isConnected = false;
             Toast.show({
                 text: "Connected Fails",
                 type: "danger"
