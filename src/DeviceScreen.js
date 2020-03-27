@@ -35,7 +35,8 @@ export default class DeviceScreen extends React.Component {
             ChargingCurrent: 'N/A',
 
             StartSensingDate: null,
-            StartChargingDate:null,
+            StartChargingDate: null,
+            //countdown : 0
         };
         this.gif_set = [
             require('../assets/gif/motion_ble_connect_led_10fps_480.gif'),
@@ -55,6 +56,7 @@ export default class DeviceScreen extends React.Component {
         BluetoothManager.checkState();
         this.timer = null;
         this.autoReconnectTimer = null
+        //this.countdownTimer = null
     }
 
     componentDidMount() { 
@@ -69,6 +71,7 @@ export default class DeviceScreen extends React.Component {
         this.discoverPeripheralListener.remove()
         this.timer && clearTimeout(this.timer);
         this.autoReconnectTimer && clearInterval(this.autoReconnectTimer);
+        //this.countdownTimer && clearInterval(this.countdownTimer);
         //console.log("flame-debug DeviceScreen componentWillUnmount")
     }
     /*
@@ -124,7 +127,7 @@ export default class DeviceScreen extends React.Component {
     //发现设备
     handleDiscoverPeripheral = (data) => {
         //console.log('flame DiscoverPeripheral', data.id, data.name);
-        if (BLEStatus.autoConnectMode && data.name != null && data.name.startsWith('PM')) {
+        if (BLEStatus.autoConnectMode && data.name != null && data.name.startsWith('PM') && parseInt(data.rssi) > -65) {
             BluetoothManager.stopScan();
             AutoConnect(data.name, data.id)
             console.log("flame-debug found device ", data.name, data.id,data.rssi)
@@ -289,7 +292,10 @@ export default class DeviceScreen extends React.Component {
         BluetoothManager.enableBluetooth()
         BluetoothManager.scan([], 20, true) //如果想长期保持扫描状态就不设置任何参数，这里设置扫描5秒,但好像没用..手动设置时钟关闭
             .then(() => {
-                this.setState({ pairing: true });
+                this.setState({
+                    pairing: true,
+                    //countdown:20
+                });
                 this.timer = setTimeout(() => {
                     BluetoothManager.stopScan();
                     this.setState({ pairing: false });
@@ -300,6 +306,16 @@ export default class DeviceScreen extends React.Component {
                         })
                     }
                 }, 20000);
+                /*
+                this.countdownTimer = setInterval(
+                    () => {
+                        this.setState({
+                            countdown: countdown - 1
+                        })
+                    },
+                    1000,
+                );
+                */
             }).catch(err => {
 
             })
