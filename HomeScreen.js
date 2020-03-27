@@ -477,7 +477,10 @@ export default class HomeScreen extends React.Component {
     return (
       <Content padder>
         <TouchableOpacity
-          onPress={() => this.props.navigation.navigate('Detail', { typeOfData: 1 })}>
+          onPress={() => {
+            DetailScreenIconType = 0
+            this.props.navigation.navigate('Detail')
+          }}>
           <Card >
             <CardItem>
               <Left>
@@ -501,7 +504,10 @@ export default class HomeScreen extends React.Component {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => this.props.navigation.navigate('Detail', { typeOfData: 2 })}>
+          onPress={() => {
+            DetailScreenIconType = 1
+            this.props.navigation.navigate('Detail')
+          }}>
           <Card >
             <CardItem>
               <Left>
@@ -519,7 +525,10 @@ export default class HomeScreen extends React.Component {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => this.props.navigation.navigate('Detail', { typeOfData: 3 })}>
+          onPress={() => {
+            DetailScreenIconType = 2
+            this.props.navigation.navigate('Detail')
+          }}>
           <Card>
             <CardItem>
               <Left>
@@ -537,7 +546,10 @@ export default class HomeScreen extends React.Component {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => this.props.navigation.navigate('Detail', { typeOfData: 4 })}>
+          onPress={() => {
+            DetailScreenIconType = 3
+            this.props.navigation.navigate('Detail')
+          }}>
           <Card>
             <CardItem>
               <Left>
@@ -555,7 +567,10 @@ export default class HomeScreen extends React.Component {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => this.props.navigation.navigate('Detail', { typeOfData: 5 })}>
+          onPress={() => {
+            DetailScreenIconType = 4
+            this.props.navigation.navigate('Detail')
+          }}>
           <Card style={{ marginBottom: 10 }}>
             <CardItem>
               <Left>

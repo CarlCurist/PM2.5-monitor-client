@@ -33,3 +33,5 @@ global.WriteUUID = '0000fff2-0000-1000-8000-00805f9b34fb';
 
 global.deviceWidth = Dimensions.get("window").width;
 global.deviceHeight = Dimensions.get("window").height;
+
+global.DetailScreenIconType = 0

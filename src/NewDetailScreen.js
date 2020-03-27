@@ -136,7 +136,8 @@ export default class NewDetailScreen extends Component {
         //type = this.props.navigation.getParam('typeOfData')
         //type = this.props.navigation.state.params
         this.refresh()
-        this.change_data_set(0)
+        this.change_data_set(DetailScreenIconType)
+        //this.change_data_set(0)
     }
     
     
