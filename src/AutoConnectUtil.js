@@ -2,7 +2,7 @@ import { Toast} from "native-base";
 import { Global } from './global'
 import './Storage'
 
-export const AutoConnect = (Name, MACAddr) => {
+export const AutoConnect = (Name, MACAddr,showToast) => {
     if (BLEStatus.isStart == false) {
         BLEStatus.isStart = true
         BluetoothManager.start();
@@ -24,11 +24,12 @@ export const AutoConnect = (Name, MACAddr) => {
             BLEStatus.isConnected = true;
             BluetoothManager.startNotificationUUID(RWServiceUUID, ReadUUID)
                 .then(() => {
-                    Toast.show({
-                        text: "Connected successfully",
-                        type: "success"
-                    })
-
+                    if (showToast) {
+                        Toast.show({
+                            text: "Connected successfully",
+                            type: "success"
+                        })
+                    }
                     device_storage.save({
                         key: 'device', // Note: Do not use underscore("_") in key!
                         data: {
@@ -46,20 +47,25 @@ export const AutoConnect = (Name, MACAddr) => {
                 .catch(err => {
                     //console.log('flame-debug9 startNotificationUUID fails', err);
                     BluetoothManager.disconnect();
-                    Toast.show({
-                        text: "Start Notification Fails",
-                        type: "danger"
-                    })
+                    if (showToast) {
+                        Toast.show({
+                            text: "Start Notification Fails",
+                            type: "danger"
+                        })
+                    }
+
                 })
 
         })
         //.then()
         .catch(err => {
-            console.log("flame-debug auto connect fail ",err)
-            Toast.show({
-                text: "Connected Fails",
-                type: "danger"
-            })
+            console.log("flame-debug auto connect fail ", err)
+            if (showToast) {
+                Toast.show({
+                    text: "Connected Fails",
+                    type: "danger"
+                })
+            }
         })
 }
 

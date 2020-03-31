@@ -107,7 +107,7 @@ export default class DeviceScreen extends React.Component {
             .then(ret => {
                 // found data go to then()
                 //console.log("flame-debug storage ", ret.name, ret.mac);
-                AutoConnect(ret.name, ret.mac)
+                AutoConnect(ret.name, ret.mac,false)
             })
             .catch(err => {
                 // any exception including data not found
@@ -129,7 +129,7 @@ export default class DeviceScreen extends React.Component {
         //console.log('flame DiscoverPeripheral', data.id, data.name);
         if (BLEStatus.autoConnectMode && data.name != null && data.name.startsWith('PM') && parseInt(data.rssi) > -65) {
             BluetoothManager.stopScan();
-            AutoConnect(data.name, data.id)
+            AutoConnect(data.name, data.id,true)
             console.log("flame-debug found device ", data.name, data.id,data.rssi)
         }
     }
@@ -273,7 +273,7 @@ export default class DeviceScreen extends React.Component {
         if (BLEStatus.connectedDeviceMAC !== '' && this.autoReconnectTimer === null) {
             this.autoReconnectTimer = setInterval(
                 () => {
-                    AutoConnect(BLEStatus.connectedDeviceName, BLEStatus.connectedDeviceMAC)
+                    AutoConnect(BLEStatus.connectedDeviceName, BLEStatus.connectedDeviceMAC,false)
                     //console.log("flame-debug autoReconnectTimer")
                 },
                 3000,
