@@ -127,10 +127,11 @@ export default class DeviceScreen extends React.Component {
     //发现设备
     handleDiscoverPeripheral = (data) => {
         //console.log('flame DiscoverPeripheral', data.id, data.name);
+        console.log("flame-debug found device ", data.name, data.id, data.rssi)
         if (BLEStatus.autoConnectMode && data.name != null && data.name.startsWith('PM') && parseInt(data.rssi) > -65) {
             BluetoothManager.stopScan();
+            console.log("flame-debug start connect", data.name, data.id, data.rssi)
             AutoConnect(data.name, data.id,true)
-            console.log("flame-debug found device ", data.name, data.id,data.rssi)
         }
     }
 
