@@ -48,24 +48,46 @@ export default class DeviceScreen extends React.Component {
             BLEStatus.isStart = true
             BluetoothManager.start();
         }
+        this.buletooth_state = false
+
         this.UpdateReceiveDataListener = BluetoothManager.addListener('BleManagerDidUpdateValueForCharacteristic', this.handleBLEReceiveData);
-        //this.UpdateStateListener = BluetoothManager.addListener('BleManagerDidUpdateState', this.handleBLEUpdateState);
+        this.UpdateStateListener = BluetoothManager.addListener('BleManagerDidUpdateState', this.handleBLEUpdateState);
         this.connectPeripheralListener = BluetoothManager.addListener('BleManagerConnectPeripheral', this.handleConnectPeripheral);
         this.discoverPeripheralListener = BluetoothManager.addListener('BleManagerDiscoverPeripheral', this.handleDiscoverPeripheral);
         this.disconnectPeripheralListener = BluetoothManager.addListener('BleManagerDisconnectPeripheral', this.handleDisconnectPeripheral);
         BluetoothManager.checkState();
         this.timer = null;
         this.autoReconnectTimer = null
+
+        
         //this.countdownTimer = null
     }
 
+    
+    //蓝牙状态改变
+    handleBLEUpdateState = (args) => {
+        //console.log('BleManagerDidUpdateStatea:', args);
+        BluetoothManager.bluetoothState = args.state;
+        if (args.state == 'on') {  //蓝牙打开时自动搜索
+            //this.setState({ bluetooth: '1' })
+            this.buletooth_state = true
+            //console.log("flame-debug bluetooth on start connect")
+            this.load_storage_data()
+        } else {
+            this.buletooth_state = false
+            //this.setState({ bluetooth: '0' })
+        }
+        
+    }
+    
+
     componentDidMount() { 
         //BluetoothManager.enableBluetooth()
-        this.load_storage_data()
+        //this.load_storage_data()
     }
     componentWillUnmount() {
         this.UpdateReceiveDataListener.remove();
-        //this.UpdateStateListener.remove();
+        this.UpdateStateListener.remove()
         this.connectPeripheralListener.remove();
         this.disconnectPeripheralListener.remove()
         this.discoverPeripheralListener.remove()
@@ -271,7 +293,7 @@ export default class DeviceScreen extends React.Component {
                 gif_display_offset: 3,
             })
         }
-        if (BLEStatus.connectedDeviceMAC !== '' && this.autoReconnectTimer === null) {
+        if (BLEStatus.connectedDeviceMAC !== '' && this.autoReconnectTimer === null && this.buletooth_state) {
             this.autoReconnectTimer = setInterval(
                 () => {
                     AutoConnect(BLEStatus.connectedDeviceName, BLEStatus.connectedDeviceMAC,false)
