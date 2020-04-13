@@ -35,7 +35,9 @@ export default class ParsePackage{
         result.type = 1;
         result.battery = data[3] ? "Full":"charging";
         result.current = ((data[4]<<8) + data[5])*3.3/65535*500;
-        result.timestat = data[6] ? true:false;
+        result.timestat = data[6] ? true : false;
+        result.voltage = ((data[8] << 8) + data[9]) * 3.3 / 65535 * 1.5 * 1000;
+        result.cd = data[7] ? true : false;
 
         console.log("flame parse CHRG_PACKAGE ",JSON.stringify(result));
         return result;

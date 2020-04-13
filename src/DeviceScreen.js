@@ -163,16 +163,6 @@ export default class DeviceScreen extends React.Component {
     //接受蓝牙传输的数据
     handleBLEReceiveData = (data) => {
         if (BLEStatus.manufacturer === '') {
-            /*
-            BluetoothManager.read(5)
-                .then(data => {
-                    this.setState({ readData: data });
-                    console.log("flame-debug read ", data.map(b => String.fromCharCode(b)).join(""))
-                })
-                .catch(err => {
-                    console.log("flame-debug read fail",err)
-                })
-            */
             BluetoothManager.readUUID(DeviceInfoUUID, HardwareRevisionUUID)
                 .then(data => {
                     BLEStatus.hardware = data.map(b => String.fromCharCode(b)).join("")
@@ -198,9 +188,6 @@ export default class DeviceScreen extends React.Component {
                 .catch(err => {
                     //console.log("flame-debug read fail", err)
                 })
-            
-
-            
         }
 
         var  charging = false , gif = 0, voltage = 'N/A',RTC = 'N/A'
@@ -266,6 +253,7 @@ export default class DeviceScreen extends React.Component {
                 gif_display_offset: gif,
                 ChargingCurrent: current,
                 ChargingTime: chargingt,
+                BatteryVoltage: voltage,
             })
 
         } else {
