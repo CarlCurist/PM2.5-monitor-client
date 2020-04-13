@@ -27,9 +27,9 @@ export default class DeviceScreen extends React.Component {
             RTCTime: 'N/A',
             DeviceName: 'N/A',
             MACAddress: 'N/A',
-            SoftwareRevision: 'VERSION-2.1',
-            HardwareRevision: 'VERSION-2.1',
-            Manufacturer: 'CUHK-IOFC',
+            SoftwareRevision: '',
+            HardwareRevision: '',
+            Manufacturer: '',
 
             ChargingTime: 'N/A',
             ChargingCurrent: 'N/A',
@@ -153,12 +153,56 @@ export default class DeviceScreen extends React.Component {
         if (BLEStatus.autoConnectMode && data.name != null && data.name.startsWith('PM') && parseInt(data.rssi) > -65) {
             BluetoothManager.stopScan();
             console.log("flame-debug start connect", data.name, data.id, data.rssi)
+            //console.log("flame-debug advertising", JSON.stringify(data.advertising))
+            //console.log("flame-debug serviceData", JSON.stringify(data.serviceData))
+             
             AutoConnect(data.name, data.id,true)
         }
     }
 
     //接受蓝牙传输的数据
-    handleBLEReceiveData=(data)=> {
+    handleBLEReceiveData = (data) => {
+        if (BLEStatus.manufacturer === '') {
+            /*
+            BluetoothManager.read(5)
+                .then(data => {
+                    this.setState({ readData: data });
+                    console.log("flame-debug read ", data.map(b => String.fromCharCode(b)).join(""))
+                })
+                .catch(err => {
+                    console.log("flame-debug read fail",err)
+                })
+            */
+            BluetoothManager.readUUID(DeviceInfoUUID, HardwareRevisionUUID)
+                .then(data => {
+                    BLEStatus.hardware = data.map(b => String.fromCharCode(b)).join("")
+                    //console.log("flame-debug read ", data.map(b => String.fromCharCode(b)).join(""))
+
+                    BluetoothManager.readUUID(DeviceInfoUUID, SoftwareRevisionUUID)
+                        .then(data => {
+                            BLEStatus.software = data.map(b => String.fromCharCode(b)).join("")
+                            //console.log("flame-debug read ", data.map(b => String.fromCharCode(b)).join(""))
+                            BluetoothManager.readUUID(DeviceInfoUUID, ManufacturerUUID)
+                                .then(data => {
+                                    BLEStatus.manufacturer = data.map(b => String.fromCharCode(b)).join("")
+                                    //console.log("flame-debug read ", data.map(b => String.fromCharCode(b)).join(""))
+                                })
+                                .catch(err => {
+                                    //console.log("flame-debug read fail", err)
+                                })
+                        })
+                        .catch(err => {
+                            //console.log("flame-debug read fail", err)
+                        })
+                })
+                .catch(err => {
+                    //console.log("flame-debug read fail", err)
+                })
+            
+
+            
+        }
+
         var  charging = false , gif = 0, voltage = 'N/A',RTC = 'N/A'
         this.package = gParseData.handleUpdateValue(data);
         if (this.package.type !== 3) {
@@ -243,6 +287,9 @@ export default class DeviceScreen extends React.Component {
                 RTCTime: RTC,
                 SensingTime: this.calcConsumingTime(this.state.StartSensingDate),
                 StartChargingDate: null,
+                SoftwareRevision: BLEStatus.software,
+                HardwareRevision: BLEStatus.hardware,
+                Manufacturer: BLEStatus.manufacturer,
             })
         }
     }
@@ -283,7 +330,9 @@ export default class DeviceScreen extends React.Component {
 
         this.timer && clearTimeout(this.timer);
         this.timer = null
+        
 
+            
     }
     //蓝牙设备已断开连接
     handleDisconnectPeripheral = (args) => {
@@ -355,6 +404,9 @@ export default class DeviceScreen extends React.Component {
         BLEStatus.isConnected = false
         BLEStatus.connectedDeviceName = ''
         BLEStatus.connectedDeviceMAC = ''
+        BLEStatus.manufacturer = ''
+        BLEStatus.hardware = ''
+        BLEStatus.software = ''
         BluetoothManager.disconnect();
         device_storage.remove({
             key: 'device'
@@ -434,6 +486,7 @@ export default class DeviceScreen extends React.Component {
                     }}>
                     <Text style={styles.font_orange}>Unpair Device</Text>
                 </Button>
+
             </View>
         )
     }

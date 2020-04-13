@@ -55,7 +55,7 @@ export const AutoConnect = (Name, MACAddr,showToast) => {
                     }
 
                 })
-
+        
         })
         //.then()
         .catch(err => {

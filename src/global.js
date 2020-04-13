@@ -24,12 +24,20 @@ global.BLEStatus = {
     login:false,
     username: 'anonymous@unknown.com',
     password: '',
-    autoConnectMode:true
+    autoConnectMode: true,
+    manufacturer: '',
+    hardware: '',
+    software:'',
 }
 
 global.RWServiceUUID = '0000fff0-0000-1000-8000-00805f9b34fb';
 global.ReadUUID = '0000fff1-0000-1000-8000-00805f9b34fb';
 global.WriteUUID = '0000fff2-0000-1000-8000-00805f9b34fb';
+
+global.DeviceInfoUUID = '0000180A-0000-1000-8000-00805F9B34FB';
+global.ManufacturerUUID = '00002A29-0000-1000-8000-00805F9B34FB';
+global.HardwareRevisionUUID = '00002A27-0000-1000-8000-00805F9B34FB';
+global.SoftwareRevisionUUID = '00002A28-0000-1000-8000-00805F9B34FB';
 
 global.deviceWidth = Dimensions.get("window").width;
 global.deviceHeight = Dimensions.get("window").height;

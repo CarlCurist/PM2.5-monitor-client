@@ -178,14 +178,16 @@ export default class BleModule{
                 }
             }
         }
-        console.log('readServiceUUID',this.readServiceUUID);
-        console.log('readCharacteristicUUID',this.readCharacteristicUUID);
+        /*
+        console.log('flame-debug readServiceUUID', JSON.stringify(this.readServiceUUID));
+        console.log('flame-debug readCharacteristicUUID', JSON.stringify(this.readCharacteristicUUID));
         console.log('writeWithResponseServiceUUID',this.writeWithResponseServiceUUID);
         console.log('writeWithResponseCharacteristicUUID',this.writeWithResponseCharacteristicUUID);
         console.log('writeWithoutResponseServiceUUID',this.writeWithoutResponseServiceUUID);
         console.log('writeWithoutResponseCharacteristicUUID',this.writeWithoutResponseCharacteristicUUID);
         console.log('nofityServiceUUID',this.nofityServiceUUID);
         console.log('nofityCharacteristicUUID',this.nofityCharacteristicUUID);  
+        */
     }
 
     /** 
@@ -359,11 +361,25 @@ export default class BleModule{
      * 读取数据  
      * Read the current value of the specified characteristic, you need to call retrieveServices method before
      * */
-    read(index = 0){
+    read(index = 0) {
         return new Promise( (resolve, reject) =>{
             BleManager.read(this.peripheralId, this.readServiceUUID[index], this.readCharacteristicUUID[index])
                 .then((data) => {
                     console.log('Read: ',data);                    
+                    resolve(data);
+                })
+                .catch((error) => {
+                    console.log(error);
+                    reject(error);
+                });
+        });
+    }
+
+    readUUID(ServiceUUID = 0, CharUUID = 0) {
+        return new Promise((resolve, reject) => {
+            BleManager.read(this.peripheralId, ServiceUUID, CharUUID)
+                .then((data) => {
+                    console.log('Read: ', data);
                     resolve(data);
                 })
                 .catch((error) => {
