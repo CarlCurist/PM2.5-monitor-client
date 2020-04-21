@@ -254,6 +254,12 @@ export default class DeviceScreen extends React.Component {
                 ChargingCurrent: current,
                 ChargingTime: chargingt,
                 BatteryVoltage: voltage,
+                
+                DeviceName: BLEStatus.connectedDeviceName,
+                MACAddress: BLEStatus.connectedDeviceMAC,
+                SoftwareRevision: BLEStatus.software,
+                HardwareRevision: BLEStatus.hardware,
+                Manufacturer: BLEStatus.manufacturer,
             })
 
         } else {
