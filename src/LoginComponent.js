@@ -50,7 +50,8 @@ export default class LoginComponent extends React.Component {
         this.props.navigate('TabHome')
     }
 
-    Login(username,password) {
+    Login(username, password) {
+        //console.log("flame-debug ",username," ",password)
         NetworkManager.requestLogin(username, password)
             .then((tmp) => {
                 if (tmp === '0') {
@@ -69,8 +70,8 @@ export default class LoginComponent extends React.Component {
                                 device_storage.save({
                                     key: 'account', // Note: Do not use underscore("_") in key!
                                     data: {
-                                        username: resultjson.userName,
-                                        password: this.state.password,
+                                        username: username,
+                                        password: password,
                                     },
                                     expires: null
                                 });

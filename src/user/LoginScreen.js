@@ -102,7 +102,7 @@ class LoginScreen extends React.Component{
       </View>
     )
   }
-
+  /*
   Logout(){
     NetworkManager.requestLogout()
     .then((code)=>{
@@ -168,24 +168,8 @@ class LoginScreen extends React.Component{
         type: "danger"
       })
     })
-    /*
-    if(tmp === 0){
-      Toast.show({
-        text: "success "+"name:"+this.state.username+" pass:"+this.state.password,
-        //buttonText: "Okay",
-        type: "success"
-      })
-    }
-    if(tmp === -1){
-      Toast.show({
-        text: "Fail",
-        //buttonText: "Okay",
-        type: "danger"
-      })
-    }
-    */
-
-  }
+}
+ */ 
 }
 
 export default LoginScreen
