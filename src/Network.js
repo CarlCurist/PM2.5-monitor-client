@@ -28,6 +28,44 @@ export default class NetworkModule{
     }))
     }
 
+    async requestRegister(username, password) {
+        return new Promise(((resolve, reject) => {
+            fetch('http://106.54.62.64:8080/user/register', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                }, body: JSON.stringify({
+                    "userName": username,
+                    "password": password,
+                })
+            })
+                .then((response) => response.json())
+                .then((responseJson) => {
+                    //console.log("flame-debug100 requsetRegister ", responseJson.json());
+                    resolve(responseJson.code);
+                    /*
+                    if (responseJson.code === '-1') {
+                        Toast.show({
+                            text: "The username already exists.",
+                            type: "danger"
+                        })
+                    }
+                    if (responseJson.code === '0') {
+                        Toast.show({
+                            text: "Registered successfully",
+                            type: "success"
+                        })
+                    }
+                    */
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }))
+    }
+
+
     async requestSession(){
         return new Promise(((resolve, reject) => {
             fetch('http://106.54.62.64:8080/user/session')

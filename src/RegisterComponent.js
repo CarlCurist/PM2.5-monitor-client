@@ -26,44 +26,29 @@ export default class RegisterComponent extends React.Component {
 
 
     register() {
-        /*
-        if (this.state.password1 !== this.state.password2) {
-            Toast.show({
-                text: "The two passwords you typed do not match.",
-                type: "danger"
-            })
-            return
-        }
-        */
-        fetch('http://106.54.62.64:8080/user/register', {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            }, body: JSON.stringify({
-                "userName": this.state.username,
-                "password": this.state.password,
-            })
-        })
-            .then((response) => response.json())
-            .then((responseJson) => {
-                if (responseJson.code === '-1') {
+        NetworkManager.requestRegister(this.state.username, this.state.password)
+            .then((tmp) => {
+
+                if (tmp === '0') {
                     Toast.show({
-                        text: "The username already exists.",
-                        type: "danger"
-                    })
-                }
-                if (responseJson.code === '0') {
-                    Toast.show({
-                        text: "Registered successfully",
+                        text: "Register success",
                         type: "success"
                     })
-                    //this.props.navigation.navigate('Login')
+                } else if (tmp === '-1') {
+                    Toast.show({
+                        text: "Register fails. The username already  exists",
+                        type: "danger"
+                    })
+                } else {
+                    Toast.show({
+                        text: "Register fails.",
+                        type: "danger"
+                    })
                 }
             })
             .catch((error) => {
                 console.error(error);
-            });
+            })
     }
 
 

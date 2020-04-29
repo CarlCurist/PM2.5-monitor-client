@@ -2,7 +2,8 @@ import React from 'react';
 import { Text, View, StyleSheet,Image} from 'react-native';
 import MyHeader from './MyHeader'
 import { Global } from './global'
-import { Thumbnail, Left, Right, List, ListItem, Content} from "native-base";
+import { Thumbnail, Left, Right, List, ListItem, Content } from "native-base";
+import './Storage'
 
 export default class UserProfileScreen extends React.Component {
     constructor(props) { 
@@ -10,6 +11,9 @@ export default class UserProfileScreen extends React.Component {
     }
 
     logout() {
+        device_storage.remove({
+            key: 'account'
+        })
         this.props.navigation.navigate("Login")
     }
 

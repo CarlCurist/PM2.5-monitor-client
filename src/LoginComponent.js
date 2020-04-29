@@ -13,6 +13,42 @@ export default class LoginComponent extends React.Component {
             password: '',
         }
     }
+    componentDidMount() {
+        this.load_storage_data();
+    }
+
+    load_storage_data() {
+        device_storage
+            .load({
+                key: 'account',
+                autoSync: false,
+                syncInBackground: true,
+                syncParams: {
+                    extraFetchOptions: {
+                    },
+                    someFlag: true
+                }
+            })
+            .then(ret => {
+                this.login_succeed(ret.username, ret.password)
+            })
+            .catch(err => {
+                console.warn(err.message);
+                switch (err.name) {
+                    case 'NotFoundError':
+                        break;
+                    case 'ExpiredError':
+                        break;
+                }
+            });
+    }
+    login_succeed(username,password) {
+        BLEStatus.login = true
+        BLEStatus.username = username
+        BLEStatus.password = password
+
+        this.props.navigate('TabHome')
+    }
 
     Login() {
         NetworkManager.requestLogin(this.state.username, this.state.password)
@@ -30,10 +66,17 @@ export default class LoginComponent extends React.Component {
                                     login: resultjson.login,
                                     username: resultjson.userName
                                 })
-                                BLEStatus.login = true
-                                BLEStatus.username = resultjson.userName
-                                BLEStatus.password = this.state.password
-                                this.props.navigate('TabHome')
+                                device_storage.save({
+                                    key: 'account', // Note: Do not use underscore("_") in key!
+                                    data: {
+                                        username: resultjson.userName,
+                                        password: this.state.password,
+                                    },
+                                    expires: null
+                                });
+                                this.login_succeed(resultjson.userName, this.state.password)
+
+
                             }
                         })
                         .catch((error) => {
@@ -109,7 +152,7 @@ export default class LoginComponent extends React.Component {
                         </TouchableOpacity>
 
 
-
+                        {/** 
                         <TouchableOpacity
                             onPress={() => this.props.navigate('TabHome')}
                         >
@@ -118,7 +161,7 @@ export default class LoginComponent extends React.Component {
                                 source={require('../assets/icon/login_icon_white.png')}
                             />
                         </TouchableOpacity>
-
+                        */}
                     </View>
 
                 </Content>

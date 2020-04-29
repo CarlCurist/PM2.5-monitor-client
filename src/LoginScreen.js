@@ -29,6 +29,7 @@ import {
   Right,
   Body
 } from "native-base";
+import './Storage'
 
 var window_width = Dimensions.get('window').width;//得到屏幕宽度
 
@@ -37,6 +38,7 @@ export default class LoginScreen extends React.Component {
     super(props);
     this.state = { username: '',password:'',token:'' };
   }
+
   render() {
     //const { navigation } = this.props;
     const logined = this.props.navigation.getParam('logined', false);
