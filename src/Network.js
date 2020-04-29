@@ -22,7 +22,6 @@ export default class NetworkModule{
          resolve(responseJson.code);
         })
         .catch((error) => {
-          console.error(error);
           reject(error);
         });
     }))
@@ -60,7 +59,7 @@ export default class NetworkModule{
                     */
                 })
                 .catch((error) => {
-                    console.error(error);
+                    reject(error);
                 });
         }))
     }
@@ -74,7 +73,6 @@ export default class NetworkModule{
          resolve(responseJson);
         })
         .catch((error) => {
-          console.error(error);
           reject(error);
         });
     }))
@@ -88,7 +86,6 @@ export default class NetworkModule{
          resolve(responseJson.code);
         })
         .catch((error) => {
-          console.error(error);
           reject(error);
         });
     }))
@@ -118,7 +115,6 @@ export default class NetworkModule{
          resolve(responseJson.code);
         })
         .catch((error) => {
-          console.error(error);
           reject(error);
         });
     }))

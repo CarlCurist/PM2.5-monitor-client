@@ -308,7 +308,7 @@ export default class HomeScreen extends React.Component {
       console.log("upload success")
     })
     .catch((error)=>{
-      console.error(error);
+      //console.error(error);
     })
   }
 

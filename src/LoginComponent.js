@@ -30,7 +30,7 @@ export default class LoginComponent extends React.Component {
                 }
             })
             .then(ret => {
-                this.login_succeed(ret.username, ret.password)
+                this.Login(ret.username, ret.password)
             })
             .catch(err => {
                 console.warn(err.message);
@@ -50,8 +50,8 @@ export default class LoginComponent extends React.Component {
         this.props.navigate('TabHome')
     }
 
-    Login() {
-        NetworkManager.requestLogin(this.state.username, this.state.password)
+    Login(username,password) {
+        NetworkManager.requestLogin(username, password)
             .then((tmp) => {
                 if (tmp === '0') {
                     Toast.show({
@@ -80,7 +80,10 @@ export default class LoginComponent extends React.Component {
                             }
                         })
                         .catch((error) => {
-                            console.error(error);
+                            Toast.show({
+                                text: "Login fails. Please check your phone is connected to Internet.",
+                                type: "danger"
+                            })
                         })
                 }
                 if (tmp === '-1') {
@@ -92,7 +95,10 @@ export default class LoginComponent extends React.Component {
                 }
             })
             .catch((error) => {
-                console.error(error);
+                Toast.show({
+                    text: "Login fails. Please check your phone is connected to Internet.",
+                    type: "danger"
+                })
             })
 
     }
@@ -143,7 +149,7 @@ export default class LoginComponent extends React.Component {
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                            onPress={() => this.Login()}
+                            onPress={() => this.Login(this.state.username,this.state.password)}
                         >
                             <Image
                                 style={styles.go_button}

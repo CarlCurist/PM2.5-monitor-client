@@ -108,7 +108,10 @@ class RegisterScreen extends React.Component{
          }
         })
         .catch((error) => {
-          console.error(error);
+          Toast.show({
+            text: "Please check your phone is connected to Internet.",
+            type: "danger"
+          })
         });
   }
 }

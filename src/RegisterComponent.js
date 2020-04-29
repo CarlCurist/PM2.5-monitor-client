@@ -47,7 +47,10 @@ export default class RegisterComponent extends React.Component {
                 }
             })
             .catch((error) => {
-                console.error(error);
+                Toast.show({
+                    text: "Register fails. Please check your phone is connected to Internet.",
+                    type: "danger"
+                })
             })
     }
 

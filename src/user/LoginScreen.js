@@ -121,7 +121,10 @@ class LoginScreen extends React.Component{
       }
     })
     .catch((error)=>{
-      console.error(error);
+      Toast.show({
+        text: "Please check your phone is connected to Internet.",
+        type: "danger"
+      })
     })
   }
   StartLogin(){
@@ -145,7 +148,10 @@ class LoginScreen extends React.Component{
           }
         })
         .catch((error)=>{
-          console.error(error);
+                Toast.show({
+        text: "Please check your phone is connected to Internet.",
+        type: "danger"
+      })
         })
       }
       if(tmp === '-1'){
@@ -157,7 +163,10 @@ class LoginScreen extends React.Component{
       }
     })
     .catch((error)=>{
-      console.error(error);
+      Toast.show({
+        text: "Please check your phone is connected to Internet.",
+        type: "danger"
+      })
     })
     /*
     if(tmp === 0){
