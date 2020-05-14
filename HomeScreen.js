@@ -38,7 +38,6 @@ import {
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createDrawerNavigator } from 'react-navigation-drawer';
-import SideBar from "./src/sidebar";
 
 import {
   LearnMoreLinks,
@@ -52,13 +51,7 @@ import DatabaseServices from './src/DatabaseHelper'; //annotation for debug
 import {Global} from './src/global'
 import { isDeclareModuleExports } from '@babel/types';
 
-import MyLineChart from './src/both-axes';
-import ExtrasExample from './src/extras';
-import { Grid, LineChart, XAxis, YAxis } from 'react-native-svg-charts'
-import LoginScreen from './src/user/LoginScreen'
-import UserScreen from './src/user/UserScreen'
-import RegisterScreen from './src/user/RegisterScreen'
-import ViewDetailData from './src/ViewDetailData'
+
 //import NewDetailScreen from './src/NewDetailScreen'
 //import NetworkModule from './src/Network';
 //import DataCard from './src/DataCard/DataCard'
